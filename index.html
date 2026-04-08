@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lucas Martinez - Rally Photography</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='black'/%3E%3Ctext x='16' y='21' font-family='Montserrat,sans-serif' font-size='11' font-weight='300' fill='white' text-anchor='middle' letter-spacing='2'%3ELM%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{width:100%;}
+body{width:100%;background:#000;font-family:'Montserrat',sans-serif;overflow-x:hidden;overflow-y:scroll;}
+.topbar{position:fixed;top:0;z-index:200;display:flex;justify-content:space-between;align-items:center;padding:18px 0;pointer-events:none;}
+.topbar>*{pointer-events:all;}
+.tb-left{display:flex;align-items:center;gap:28px;}
+.tb-name{font-weight:300;font-size:0.85rem;letter-spacing:0.32em;text-transform:uppercase;color:#fff;white-space:nowrap;cursor:pointer;}
+.tb-btn{font-family:'Montserrat',sans-serif;font-weight:300;font-size:0.65rem;letter-spacing:0.28em;text-transform:uppercase;color:rgba(255,255,255,0.45);background:none;border:none;cursor:pointer;padding:0;transition:color 0.2s;}
+.tb-btn:hover,.tb-btn.active{color:#fff;}
+.tb-icons{display:flex;gap:18px;align-items:center;}
+.tb-icon{color:rgba(255,255,255,0.55);text-decoration:none;display:flex;align-items:center;transition:color 0.2s;}
+.tb-icon:hover{color:#fff;}
+.tb-icon svg{width:18px;height:18px;display:block;}
+.lang-btn{font-family:'Montserrat',sans-serif;font-weight:300;font-size:0.6rem;letter-spacing:0.2em;color:rgba(255,255,255,0.35);background:none;border:none;cursor:pointer;padding:0;transition:color 0.2s;}
+.lang-btn.active{color:rgba(255,255,255,0.85);}
+.lang-sep{color:rgba(255,255,255,0.15);font-size:0.6rem;}
+.cf-section{width:100vw;height:100vh;display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;background:#000;}
+.cf-stage{flex:1;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.cf-track{position:absolute;display:flex;align-items:center;justify-content:center;width:100%;height:100%;}
+.cf-item{position:absolute;cursor:pointer;transition:all 0.5s cubic-bezier(0.25,0.46,0.45,0.94);transform-origin:center center;will-change:transform,filter,opacity;}
+.cf-item img{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;border-radius:2px;}
+.cf-caption{position:absolute;display:flex;flex-direction:column;gap:3px;pointer-events:none;opacity:0;transition:opacity 0.4s ease;text-align:left;}
+.cf-caption.visible{opacity:1;}
+.cf-caption span{font-family:'Montserrat',sans-serif;font-weight:300;font-size:0.58rem;letter-spacing:0.1em;color:rgba(255,255,255,0.55);white-space:nowrap;line-height:1.6;display:block;}
+.cf-caption span.hi{color:rgba(255,255,255,0.85);}
+.cf-counter{position:absolute;bottom:16px;right:90px;font-size:0.6rem;letter-spacing:0.2em;color:rgba(255,255,255,0.3);font-weight:300;z-index:10;}
+.cf-arrows{position:absolute;bottom:12px;right:16px;display:flex;gap:2px;z-index:10;}
+.cf-arr{background:rgba(0,0,0,0.5);border:0.5px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.75);width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.9rem;transition:background 0.2s,color 0.2s;user-select:none;}
+.cf-arr:hover{background:rgba(255,255,255,0.15);color:#fff;}
+.scroll-hint{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);font-size:0.55rem;letter-spacing:0.25em;text-transform:uppercase;color:rgba(255,255,255,0.2);animation:fud 2s ease-in-out infinite;white-space:nowrap;pointer-events:none;z-index:10;}
+@keyframes fud{0%,100%{opacity:0.2;transform:translateX(-50%) translateY(0);}50%{opacity:0.6;transform:translateX(-50%) translateY(-4px);}}
+.sp-wrap{width:100%;background:#000;padding:48px 20px;display:flex;justify-content:center;align-items:center;}
+.sp-wrap iframe{width:100%;max-width:380px;border-radius:10px;display:block;}
+.fototeca{position:fixed;inset:0;background:#000;z-index:150;display:none;flex-direction:column;opacity:0;transition:opacity 0.35s ease;}
+.fototeca.open{display:flex;}
+.fototeca.visible{opacity:1;}
+.fototeca-header{flex-shrink:0;height:56px;display:flex;align-items:center;justify-content:flex-end;padding:0 24px;border-bottom:0.5px solid rgba(255,255,255,0.07);}
+.fototeca-close{font-family:'Montserrat',sans-serif;font-weight:300;font-size:0.65rem;letter-spacing:0.28em;text-transform:uppercase;color:rgba(255,255,255,0.5);background:none;border:none;cursor:pointer;transition:color 0.2s;}
+.fototeca-close:hover{color:#fff;}
+.fototeca-grid{flex:1;overflow-y:auto;padding:3px;-webkit-overflow-scrolling:touch;}
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;}
+.grid-item{position:relative;aspect-ratio:1/1;overflow:hidden;cursor:pointer;background:#111;}
+.grid-item img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity 0.2s;pointer-events:none;}
+.grid-item:hover img{opacity:0.85;}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,0.97);z-index:300;display:none;flex-direction:column;align-items:center;justify-content:center;}
+.lightbox.open{display:flex;}
+.lb-img-wrap{position:relative;max-width:90vw;max-height:75vh;display:flex;align-items:center;justify-content:center;}
+.lb-img-wrap img{max-width:90vw;max-height:75vh;width:auto;height:auto;display:block;object-fit:contain;}
+.lb-close{position:absolute;top:18px;right:20px;font-size:1.4rem;color:rgba(255,255,255,0.5);cursor:pointer;background:none;border:none;line-height:1;transition:color 0.2s;z-index:10;}
+.lb-close:hover{color:#fff;}
+.lb-nav{position:absolute;top:50%;transform:translateY(-50%);display:flex;justify-content:space-between;width:100%;padding:0 10px;pointer-events:none;}
+.lb-arr{pointer-events:all;background:rgba(0,0,0,0.5);border:0.5px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.1rem;transition:background 0.2s,color 0.2s;}
+.lb-arr:hover{background:rgba(255,255,255,0.15);color:#fff;}
+.lb-meta{margin-top:16px;display:flex;flex-direction:column;align-items:center;gap:5px;}
+.lb-meta-row{font-family:'Montserrat',sans-serif;font-weight:300;font-size:0.62rem;letter-spacing:0.14em;color:rgba(255,255,255,0.4);text-align:center;}
+.lb-meta-row.hi{color:rgba(255,255,255,0.75);}
+.about-section{width:100%;background:#000;padding:80px 20px 100px;display:flex;flex-direction:column;align-items:center;}
+.about-inner{width:100%;display:flex;flex-direction:column;align-items:center;gap:40px;}
+.about-label{font-weight:300;font-size:0.65rem;letter-spacing:0.4em;text-transform:uppercase;color:rgba(255,255,255,0.3);text-align:center;}
+.about-photo{width:180px;height:180px;border-radius:50%;overflow:hidden;flex-shrink:0;filter:grayscale(30%) brightness(0.9);}
+.about-photo img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;}
+.about-text p{font-weight:300;font-size:0.82rem;line-height:2;letter-spacing:0.03em;color:rgba(255,255,255,0.6);margin-bottom:1.6em;text-align:justify;text-align-last:center;}
+.about-text p:last-child{margin-bottom:0;}
+@media (max-width: 768px) {
+  .topbar{display:none;}
+  .tab-bar{display:flex;}
+  .cf-arrows{display:none;}
+  .cf-counter{right:14px;bottom:62px;font-size:0.5rem;}
+  .cf-caption{display:none !important;}
+  .cf-caption-m{display:flex !important;}
+  .cf-section{height:100svh;}
+  .sp-wrap{padding:32px 16px;}
+  .about-section{padding:48px 16px 80px;}
+  .photo-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media (min-width: 769px) {
+  .tab-bar{display:none !important;}
+}
+.cf-caption-m{position:absolute;bottom:62px;left:14px;display:none;flex-direction:column;gap:2px;pointer-events:none;opacity:0;transition:opacity 0.4s ease;}
+.cf-caption-m.visible{opacity:1;}
+.cf-caption-m span{font-family:'Montserrat',sans-serif;font-weight:300;font-size:0.29rem;letter-spacing:0.09em;color:rgba(255,255,255,0.5);white-space:nowrap;line-height:1.6;display:block;}
+.cf-caption-m span.hi{color:rgba(255,255,255,0.8);}
+.tab-bar{
+  position:fixed;bottom:0;left:0;right:0;z-index:200;
+  height:56px;background:rgba(0,0,0,0.92);
+  border-top:0.5px solid rgba(255,255,255,0.08);
+  display:none;
+  align-items:center;justify-content:space-around;
+  padding:0 8px;padding-bottom:env(safe-area-inset-bottom);
+}
+.tab-item{
+  display:flex;flex-direction:column;align-items:center;
+  gap:3px;cursor:pointer;padding:4px 12px;
+  background:none;border:none;
+}
+.tab-item svg{width:18px;height:18px;stroke:rgba(255,255,255,0.35);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;transition:stroke 0.2s;}
+.tab-item span{font-family:'Montserrat',sans-serif;font-size:7px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.35);transition:color 0.2s;}
+.tab-item.active svg{stroke:#fff;}
+.tab-item.active span{color:#fff;}
+</style>
+</head>
+<body>
+
+<div class="topbar" id="topbar">
+  <div class="tb-left">
+    <div class="tb-name">Lucas Martinez</div>
+    <button class="tb-btn" id="btnGaleria">Gallery</button>
+    <button class="tb-btn" id="btnAbout">About</button>
+  </div>
+  <div class="tb-icons">
+    <button class="lang-btn" id="langES" onclick="setLang('es')">ES</button>
+    <span class="lang-sep">/</span>
+    <button class="lang-btn active" id="langEN" onclick="setLang('en')">EN</button>
+    <a class="tb-icon" href="https://instagram.com/lucasmartineza" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+    <a class="tb-icon" href="https://wa.me/5493513020815" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></a>
+    <a class="tb-icon" href="mailto:lucasmartinez.a@gmail.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg></a>
+  </div>
+</div>
+
+<section class="cf-section">
+  <div class="cf-stage" id="cfStage">
+    <div class="cf-track" id="cfTrack"></div>
+    <div class="cf-caption" id="cfCaption"></div>
+    <div class="cf-caption-m" id="cfCaptionM"></div>
+    <div class="cf-counter" id="cfCounter">1 / 111</div>
+    <div class="cf-arrows">
+      <div class="cf-arr" id="cfPrev">&#8592;</div>
+      <div class="cf-arr" id="cfNext">&#8594;</div>
+    </div>
+    <div class="scroll-hint">&#8595;</div>
+  </div>
+</section>
+
+<div class="sp-wrap">
+  <iframe src="https://open.spotify.com/embed/playlist/3NimH9q2tjkia3ocon5MsH?utm_source=generator&theme=0" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+<div class="fototeca" id="fototeca">
+  <div class="fototeca-header"><button class="fototeca-close" id="fototecaClose">Close &#x2715;</button></div>
+  <div class="fototeca-grid"><div class="photo-grid" id="photoGrid"></div></div>
+</div>
+
+<nav class="tab-bar" id="tabBar">
+  <button class="tab-item active" id="tabHome">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+    <span>Home</span>
+  </button>
+  <button class="tab-item" id="tabGallery">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" stroke="none"/><polyline points="21,15 16,10 5,21"/></svg>
+    <span>Gallery</span>
+  </button>
+  <button class="tab-item" id="tabAbout">
+    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span>About</span>
+  </button>
+  <button class="tab-item" id="tabSpotify">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M8 11.5c2.5-.8 5-.8 8 0M7 15c3-1 5.5-1 9 0M9.5 8.5c2-.5 4-.5 6 0"/></svg>
+    <span>Spotify</span>
+  </button>
+</nav>
+
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" id="lbClose">&#x2715;</button>
+  <div class="lb-img-wrap">
+    <img id="lbImg" src="" alt="">
+    <div class="lb-nav">
+      <div class="lb-arr" id="lbPrev">&#8592;</div>
+      <div class="lb-arr" id="lbNext">&#8594;</div>
+    </div>
+  </div>
+  <div class="lb-meta" id="lbMeta"></div>
+</div>
+
+<section class="about-section" id="aboutSection">
+  <div class="about-inner" id="aboutInner">
+    <div class="about-label">About</div>
+    <div class="about-photo"><img src="about.jpg" alt="Lucas Martinez"></div>
+    <div class="about-text">
+      <p>Trabajo la fotografía de rally desde un lugar que intenta correrse de lo más evidente. No me interesa únicamente la velocidad o el momento más espectacular, sino también lo que sucede alrededor: la tensión previa, los instantes intermedios, la relación entre el auto y el entorno.</p>
+      <p>Busco construir la imagen más que solo registrarla. En un contexto que suele ser caótico e impredecible, me interesa encontrar cierto orden, cierta armonía. Por eso muchas veces el paisaje tiene tanto peso como la acción, y el encuadre aparece como una herramienta para equilibrar esos elementos.</p>
+      <p>No busco que las imágenes griten ni que se impongan desde el impacto inmediato. Me interesa más bien lo contrario: que funcionen en un registro más bajo, que obliguen —o inviten— a una pausa breve. Que en esa pausa aparezcan detalles que no están a primera vista: una trayectoria insinuada, una relación de escalas, una atmósfera.</p>
+      <p>Mi enfoque está más cerca de una mirada autoral que de lo puramente documental, sin perder vínculo con lo que realmente ocurre. Me interesa no solo mostrar lo que pasó, sino transmitir, en alguna medida, cómo se sintió estar ahí.</p>
+      <p>De alguna forma, estas imágenes también buscan desprenderse del ruido y la urgencia del momento en que fueron tomadas. Invitan a ser vistas con distancia, en otro tiempo, donde el caos ya no domina la escena y es posible detenerse a leer lo que, en el instante, pasaba desapercibido.</p>
+    </div>
+  </div>
+</section>
+
+<script>
+var HERO    = [{"file": "@lucasmartineza_-0069.jpg", "meta": {"camera": "FC3411", "lens": "22.4 mm f/2.8", "iso": "ISO 100", "shutter": "1/1000s", "aperture": "f/3.0", "date": "2026-03-22"}}, {"file": "0Y2A7056.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/2000s", "aperture": "f/3.0", "date": "2026-03-21"}}, {"file": "0Y2A7053.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/2000s", "aperture": "f/3.0", "date": "2026-03-21"}}, {"file": "0Y2A6906.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/2500s", "aperture": "f/3.0", "date": "2026-03-21"}}, {"file": "0Y2A6724.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/1600s", "aperture": "f/3.4", "date": "2026-03-21"}}, {"file": "0Y2A6646.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/8000s", "aperture": "f/3.4", "date": "2026-03-21"}}, {"file": "@lucasmartineza_-6339.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 250", "shutter": "1/250s", "aperture": "f/4.6", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-2.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 250", "shutter": "1/250s", "aperture": "f/4.6", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-6270.jpg", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 125", "shutter": "1/5s", "aperture": "f/4.6", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-6268.jpg", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 125", "shutter": "1/5s", "aperture": "f/4.6", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-6253.jpg", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 125", "shutter": "1/5s", "aperture": "f/4.6", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-5952.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 100", "shutter": "1/1250s", "aperture": "f/5.0", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-5934.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 100", "shutter": "1/1250s", "aperture": "f/5.0", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-5910.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 100", "shutter": "1/1250s", "aperture": "f/5.0", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-5853.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/1250s", "aperture": "f/4.0", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-5826.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/1000s", "aperture": "f/4.0", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-5666.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 160", "shutter": "1/1000s", "aperture": "f/5.0", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-4865.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 160", "shutter": "1/1250s", "aperture": "f/4.0", "date": "2026-03-15"}}, {"file": "0Y2A4760.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 160", "shutter": "1/1250s", "aperture": "f/4.0", "date": "2026-03-15"}}, {"file": "0Y2A4720.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 160", "shutter": "1/1250s", "aperture": "f/4.0", "date": "2026-03-15"}}, {"file": "0Y2A4715.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 160", "shutter": "1/1250s", "aperture": "f/4.0", "date": "2026-03-15"}}, {"file": "0Y2A4702.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 160", "shutter": "1/1250s", "aperture": "f/4.0", "date": "2026-03-15"}}, {"file": "0Y2A4491.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 160", "shutter": "1/1250s", "aperture": "f/3.0", "date": "2026-03-15"}}, {"file": "0Y2A4446.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/1250s", "aperture": "f/3.0", "date": "2026-03-15"}}, {"file": "0Y2A4439.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/1250s", "aperture": "f/3.0", "date": "2026-03-15"}}, {"file": "@lucasmartineza_-0609.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/3200s", "aperture": "f/3.0", "date": "2026-02-28"}}, {"file": "@lucasmartineza_-0519.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/3200s", "aperture": "f/3.0", "date": "2026-02-28"}}, {"file": "@lucasmartineza_-0127.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/3200s", "aperture": "f/3.0", "date": "2026-02-28"}}, {"file": "@lucasmartineza_-3962.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/1000s", "aperture": "f/4.6", "date": "2026-02-27"}}, {"file": "@lucasmartineza_-3910.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/1000s", "aperture": "f/4.6", "date": "2026-02-27"}}, {"file": "@lucasmartineza_-3722 2.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/1000s", "aperture": "f/5.0", "date": "2026-02-27"}}, {"file": "@lucasmartineza_-3722.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/1000s", "aperture": "f/5.0", "date": "2026-02-27"}}, {"file": "@lucasmartineza_-3704.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/1000s", "aperture": "f/5.0", "date": "2026-02-27"}}, {"file": "@lucasmartineza_-3607.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/1000s", "aperture": "f/5.0", "date": "2026-02-27"}}, {"file": "@lucasmartineza_-9427.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 200", "shutter": "1/1000s", "aperture": "f/4.0", "date": "2025-12-06"}}, {"file": "@lucasmartineza_-8919.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/800s", "aperture": "f/3.0", "date": "2025-12-05"}}, {"file": "@lucasmartineza_sabado78.JPG", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 200", "shutter": "1/1600s", "aperture": "f/5.3", "date": "2025-11-22"}}, {"file": "@lucasmartineza_sabado29.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/6.9", "date": "2025-11-22"}}, {"file": "@lucasmartineza_sabado18.JPG", "meta": {"camera": "Canon EOS R8", "lens": "EF17-40mm f/4L USM", "iso": "ISO 160", "shutter": "1/3200s", "aperture": "f/4.0", "date": "2025-11-22"}}, {"file": "@lucasmartineza_sabado14.jpg", "meta": {"camera": "Canon EOS R8", "lens": "EF17-40mm f/4L USM", "iso": "ISO 125", "shutter": "1/3200s", "aperture": "f/4.0", "date": "2025-11-22"}}, {"file": "@lucasmartineza_viernes101.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 125", "shutter": "1/200s", "aperture": "f/6.3", "date": "2025-11-21"}}, {"file": "@lucasmartineza-1616.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 160", "shutter": "1/1250s", "aperture": "f/5.3", "date": "2025-10-04"}}, {"file": "@lucasmartineza-1231.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 125", "shutter": "1/640s", "aperture": "f/5.3", "date": "2025-10-04"}}, {"file": "@lucasmartineza-9739.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "15mm", "iso": "ISO 800", "shutter": "1/3200s", "aperture": "f/6.6", "date": "2025-10-04"}}, {"file": "0Y2A9418.JPG", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 125", "shutter": "1/2000s", "aperture": "f/4.6", "date": "2025-09-14"}}, {"file": "0Y2A9353 2.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF8-15mm f/4L FISHEYE USM", "iso": "ISO 100", "shutter": "1/2500s", "aperture": "f/4.0", "date": "2025-09-14"}}, {"file": "@lucasmartineza-9339.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 100", "shutter": "1/2500s", "aperture": "f/5.0", "date": "2025-09-14"}}, {"file": "@lucasmartineza-9564.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 320", "shutter": "1/800s", "aperture": "f/5.0", "date": "2025-09-13"}}, {"file": "0Y2A9412 2.JPG", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 320", "shutter": "1/800s", "aperture": "f/5.3", "date": "2025-09-13"}}, {"file": "0Y2A9383.JPG", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 320", "shutter": "1/800s", "aperture": "f/5.0", "date": "2025-09-13"}}, {"file": "@lucasmartineza--2.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 250", "shutter": "1/800s", "aperture": "f/5.3", "date": "2025-09-13"}}, {"file": "@lucasmartineza-9087 2.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 250", "shutter": "1/250s", "aperture": "f/5.3", "date": "2025-09-13"}}, {"file": "@lucasmartineza-2-8.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF8-15mm f/4L FISHEYE USM", "iso": "ISO 200", "shutter": "1/2000s", "aperture": "f/4.0", "date": "2025-09-12"}}, {"file": "@lucasmartineza-0007.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF8-15mm f/4L FISHEYE USM", "iso": "ISO 200", "shutter": "1/2000s", "aperture": "f/4.0", "date": "2025-09-12"}}, {"file": "@lucasmartineza-7998.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/40s", "aperture": "f/6.0", "date": "2025-09-11"}}, {"file": "@lucasmartineza-2 2.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 250", "shutter": "1/1600s", "aperture": "f/4.0", "date": "2025-09-11"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-.jpg", "meta": {"date": "2025-09-02"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-2-3.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 1000", "shutter": "1/1000s", "aperture": "f/5.0", "date": "2025-08-31"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-9863.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "70-200mm", "iso": "ISO 200", "shutter": "1/1600s", "aperture": "f/3.0", "date": "2025-08-31"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-0042.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 200", "shutter": "1/1000s", "aperture": "f/4.0", "date": "2025-08-31"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-9445.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 320", "shutter": "1/500s", "aperture": "f/3.0", "date": "2025-08-30"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-8869.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 160", "shutter": "1/640s", "aperture": "f/4.6", "date": "2025-08-29"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-8644.jpg", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 100", "shutter": "1/30s", "aperture": "f/6.3", "date": "2025-08-29"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-8568.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/2500s", "aperture": "f/3.0", "date": "2025-08-29"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-6597.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/3200s", "aperture": "f/3.0", "date": "2025-08-28"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-6367.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 400", "shutter": "1/1250s", "aperture": "f/5.0", "date": "2025-08-28"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-6203.jpg", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 100", "shutter": "1/3200s", "aperture": "f/3.6", "date": "2025-08-28"}}, {"file": "@LUCASMARTINEZA-2-9.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/200s", "aperture": "f/4.3", "date": "2025-08-03"}}, {"file": "@LUCASMARTINEZA-5056.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "15mm", "iso": "ISO 160", "shutter": "1/3200s", "aperture": "f/3.0", "date": "2025-07-05"}}, {"file": "@LUCASMARTINEZA-7816.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 250", "shutter": "1/1000s", "aperture": "f/4.0", "date": "2025-07-05"}}, {"file": "@LUCASMARTINEZA-2-23.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 125", "shutter": "1/500s", "aperture": "f/5.3", "date": "2025-06-07"}}, {"file": "@LUCASMARTINEZA-2-16.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 125", "shutter": "1/250s", "aperture": "f/5.3", "date": "2025-06-07"}}, {"file": "@LUCASMARTINEZA-5304.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 125", "shutter": "1/160s", "aperture": "f/5.3", "date": "2025-06-07"}}, {"file": "@LUCASMARTINEZA-4421.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "15mm", "iso": "ISO 1000", "shutter": "1/2000s", "aperture": "f/5.0", "date": "2025-06-07"}}, {"file": "@LUCASMARTINEZA-4284.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/200s", "aperture": "f/5.3", "date": "2025-06-06"}}, {"file": "@LUCASMARTINEZA_1.jpg", "meta": {"date": "2025-05-26"}}, {"file": "@LUCASMARTINEZA-3885.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "15mm", "iso": "ISO 640", "shutter": "1/3200s", "aperture": "f/5.3", "date": "2025-04-13"}}, {"file": "@LUCASMARTINEZA-0288.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/5.7", "date": "2025-04-13"}}, {"file": "@LUCASMARTINEZA-9957.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 100", "shutter": "1/400s", "aperture": "f/5.7", "date": "2025-04-12"}}, {"file": "@LUCASMARTINEZA-9108.jpg", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 100", "shutter": "1/1000s", "aperture": "f/5.0", "date": "2025-04-11"}}, {"file": "*@lucasmartineza-01-3.jpg", "meta": {"date": "2024-12-01"}}, {"file": "*@lucasmartineza-1164.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/7.6", "date": "2024-11-30"}}, {"file": "@lucasmartineza-0863.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/6.0", "date": "2024-11-30"}}, {"file": "@lucasmartineza-0794.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/6.6", "date": "2024-11-29"}}, {"file": "*@lucasmartineza-0633.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/7.4", "date": "2024-11-29"}}, {"file": "@lucasmartineza-9766.jpg", "meta": {"camera": "Canon EOS 7D", "lens": "15mm", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/6.6", "date": "2024-10-25"}}, {"file": "@lucasmartineza-58.jpg", "meta": {"date": "2024-09-22"}}, {"file": "@lucasmartineza-12.jpg", "meta": {"date": "2024-09-22"}}, {"file": "@lucasmartineza-6318.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF17-40mm f/4L USM", "iso": "ISO 100", "shutter": "1/1250s", "aperture": "f/4.6", "date": "2024-09-20"}}, {"file": "@LUCASMARTINEZA -2-9 2.jpg", "meta": {"date": "2024-06-08"}}, {"file": "@lucasmartinezadrone-17.jpg", "meta": {"camera": "FC7303", "lens": "20.7 mm", "iso": "ISO 200", "shutter": "1/800s", "aperture": "f/3.0", "date": "2024-04-14"}}, {"file": "@lucasmartineza_-5123.jpg", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 100", "shutter": "1/4000s", "aperture": "f/4.0", "date": "2024-01-07"}}, {"file": "IMG_4623.JPG", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 100", "shutter": "1/2500s", "aperture": "f/4.0", "date": "2024-01-02"}}, {"file": "IMG_4588.JPG", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 100", "shutter": "1/2500s", "aperture": "f/4.0", "date": "2024-01-02"}}, {"file": "IMG_4276.JPG", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 100", "shutter": "1/2500s", "aperture": "f/4.0", "date": "2024-01-02"}}, {"file": "IMG_3557.JPG", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 500", "shutter": "1/2500s", "aperture": "f/4.0", "date": "2024-01-01"}}, {"file": "9E4Q2290.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF28-135mm f/3.5-5.6 IS USM", "iso": "ISO 200", "shutter": "1/125s", "aperture": "f/4.3", "date": "2023-06-04"}}, {"file": "@lucasmartineza_s2_127 2.jpg", "meta": {"camera": "Canon EOS 6D", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "shutter": "1/800s", "aperture": "f/5.0", "date": "2023-06-03"}}, {"file": "@lucasmartineza_s2_173.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF28-135mm f/3.5-5.6 IS USM", "iso": "ISO 200", "shutter": "1/1000s", "aperture": "f/4.3", "date": "2023-06-03"}}, {"file": "@lucasmartineza_s1_68.JPG", "meta": {"date": "2023-06-03"}}, {"file": "@lucasmartineza__96.JPG", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF28-135mm f/3.5-5.6 IS USM", "iso": "ISO 100", "shutter": "1/1250s", "aperture": "f/4.6", "date": "2023-05-13"}}, {"file": "@lucasmartineza --1 6.JPG", "meta": {"camera": "Canon EOS 6D", "lens": "EF17-40mm f/4L USM", "iso": "ISO 200", "shutter": "1/160s", "aperture": "f/6.9", "date": "2023-04-23"}}, {"file": "@LUCASMARTINEZA-0059.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/5.0", "date": "2001-01-01"}}, {"file": "@lucasmartineza-7423.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "shutter": "1/320s", "aperture": "f/6.3", "date": "2001-01-01"}}, {"file": "@lucasmartineza-9042 2.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/200s", "aperture": "f/4.3", "date": "2001-01-01"}}, {"file": "@lucasmartineza-8598.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "shutter": "1/1600s", "aperture": "f/5.3", "date": "2001-01-01"}}, {"file": "@LUCASMARTINEZA -1550.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF17-40mm f/4L USM", "iso": "ISO 100", "shutter": "1/125s", "aperture": "f/6.3", "date": "2001-01-01"}}, {"file": "@lucasmartineza-9034.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/160s", "aperture": "f/4.0", "date": "2001-01-01"}}, {"file": "@lucasmartineza-9617.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/1250s", "aperture": "f/4.6", "date": "2001-01-01"}}, {"file": "@LUCASMARTINEZA-0180.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/5.0", "date": "2001-01-01"}}, {"file": "@lucasmartineza-9291.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/1250s", "aperture": "f/4.6", "date": "2001-01-01"}}];
+var GALLERY = [{"file": "@lucasmartineza_-0069.jpg", "meta": {"camera": "FC3411", "lens": "22.4 mm f/2.8", "iso": "ISO 100", "shutter": "1/1000s", "aperture": "f/3.0", "date": "2026-03-22"}}, {"file": "0Y2A7056.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/2000s", "aperture": "f/3.0", "date": "2026-03-21"}}, {"file": "0Y2A7053.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/2000s", "aperture": "f/3.0", "date": "2026-03-21"}}, {"file": "0Y2A6906.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/2500s", "aperture": "f/3.0", "date": "2026-03-21"}}, {"file": "0Y2A6724.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/1600s", "aperture": "f/3.4", "date": "2026-03-21"}}, {"file": "0Y2A6646.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/8000s", "aperture": "f/3.4", "date": "2026-03-21"}}, {"file": "@lucasmartineza_-6339.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 250", "shutter": "1/250s", "aperture": "f/4.6", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-2.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 250", "shutter": "1/250s", "aperture": "f/4.6", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-6270.jpg", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 125", "shutter": "1/5s", "aperture": "f/4.6", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-6268.jpg", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 125", "shutter": "1/5s", "aperture": "f/4.6", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-6253.jpg", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 125", "shutter": "1/5s", "aperture": "f/4.6", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-5952.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 100", "shutter": "1/1250s", "aperture": "f/5.0", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-5934.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 100", "shutter": "1/1250s", "aperture": "f/5.0", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-5910.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 100", "shutter": "1/1250s", "aperture": "f/5.0", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-5853.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/1250s", "aperture": "f/4.0", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-5826.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/1000s", "aperture": "f/4.0", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-5666.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 160", "shutter": "1/1000s", "aperture": "f/5.0", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-4865.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 160", "shutter": "1/1250s", "aperture": "f/4.0", "date": "2026-03-15"}}, {"file": "0Y2A4760.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 160", "shutter": "1/1250s", "aperture": "f/4.0", "date": "2026-03-15"}}, {"file": "0Y2A4720.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 160", "shutter": "1/1250s", "aperture": "f/4.0", "date": "2026-03-15"}}, {"file": "0Y2A4715.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 160", "shutter": "1/1250s", "aperture": "f/4.0", "date": "2026-03-15"}}, {"file": "0Y2A4702.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 160", "shutter": "1/1250s", "aperture": "f/4.0", "date": "2026-03-15"}}, {"file": "0Y2A4491.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 160", "shutter": "1/1250s", "aperture": "f/3.0", "date": "2026-03-15"}}, {"file": "0Y2A4446.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/1250s", "aperture": "f/3.0", "date": "2026-03-15"}}, {"file": "0Y2A4439.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/1250s", "aperture": "f/3.0", "date": "2026-03-15"}}, {"file": "@lucasmartineza_-0609.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/3200s", "aperture": "f/3.0", "date": "2026-02-28"}}, {"file": "@lucasmartineza_-0519.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/3200s", "aperture": "f/3.0", "date": "2026-02-28"}}, {"file": "@lucasmartineza_-0127.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/3200s", "aperture": "f/3.0", "date": "2026-02-28"}}, {"file": "@lucasmartineza_-3962.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/1000s", "aperture": "f/4.6", "date": "2026-02-27"}}, {"file": "@lucasmartineza_-3910.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/1000s", "aperture": "f/4.6", "date": "2026-02-27"}}, {"file": "@lucasmartineza_-3722 2.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/1000s", "aperture": "f/5.0", "date": "2026-02-27"}}, {"file": "@lucasmartineza_-3722.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/1000s", "aperture": "f/5.0", "date": "2026-02-27"}}, {"file": "@lucasmartineza_-3704.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/1000s", "aperture": "f/5.0", "date": "2026-02-27"}}, {"file": "@lucasmartineza_-3607.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/1000s", "aperture": "f/5.0", "date": "2026-02-27"}}, {"file": "@lucasmartineza_-0029.jpg", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 100", "shutter": "1/1250s", "aperture": "f/3.0", "date": "2025-12-07"}}, {"file": "@lucasmartineza_-0304.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/400s", "aperture": "f/4.0", "date": "2025-12-07"}}, {"file": "@lucasmartineza_133.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/2000s", "aperture": "f/3.0", "date": "2025-12-07"}}, {"file": "@lucasmartineza_-9734.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 160", "shutter": "1/800s", "aperture": "f/3.0", "date": "2025-12-06"}}, {"file": "@lucasmartineza_-7733.jpg", "meta": {"camera": "Canon EOS R8", "lens": "70.0-200.0 mm", "iso": "ISO 200", "shutter": "1/1250s", "aperture": "f/4.0", "date": "2025-12-06"}}, {"file": "@lucasmartineza_-7426.jpg", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 640", "shutter": "1/2500s", "aperture": "f/4.0", "date": "2025-12-05"}}, {"file": "@lucasmartineza_-8420.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/4000s", "aperture": "f/3.0", "date": "2025-12-05"}}, {"file": "@lucasmartineza_domingo34.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/3200s", "aperture": "f/3.0", "date": "2025-11-23"}}, {"file": "@lucasmartineza_domingo94.JPG", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 100", "shutter": "1/3200s", "aperture": "f/4.0", "date": "2025-11-23"}}, {"file": "@lucasmartineza_domingo12.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/3200s", "aperture": "f/3.0", "date": "2025-11-23"}}, {"file": "@lucasmartineza_domingo7.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/3200s", "aperture": "f/3.0", "date": "2025-11-23"}}, {"file": "@lucasmartineza_sabado75.JPG", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 200", "shutter": "1/1600s", "aperture": "f/5.3", "date": "2025-11-22"}}, {"file": "@lucasmartineza_sabado61.JPG", "meta": {"camera": "Canon EOS R8", "lens": "EF17-40mm f/4L USM", "iso": "ISO 250", "shutter": "1/3200s", "aperture": "f/4.0", "date": "2025-11-22"}}, {"file": "@lucasmartineza_sabado24.JPG", "meta": {"camera": "Canon EOS R8", "lens": "EF17-40mm f/4L USM", "iso": "ISO 100", "shutter": "1/3200s", "aperture": "f/4.0", "date": "2025-11-22"}}, {"file": "@lucasmartineza_viernes127.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/6.0", "date": "2025-11-21"}}, {"file": "@lucasmartineza_viernes120.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 1250", "shutter": "1/250s", "aperture": "f/6.0", "date": "2025-11-21"}}, {"file": "@lucasmartineza_viernes93.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 125", "shutter": "1/200s", "aperture": "f/6.3", "date": "2025-11-21"}}, {"file": "@lucasmartineza-1613.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 160", "shutter": "1/1250s", "aperture": "f/5.3", "date": "2025-10-04"}}, {"file": "@lucasmartineza-1486.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 100", "shutter": "1/60s", "aperture": "f/7.6", "date": "2025-10-04"}}, {"file": "@lucasmartineza-1404.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 125", "shutter": "1/800s", "aperture": "f/5.3", "date": "2025-10-04"}}, {"file": "@lucasmartineza-1223.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 100", "shutter": "1/640s", "aperture": "f/5.3", "date": "2025-10-04"}}, {"file": "@lucasmartineza-1075.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/500s", "aperture": "f/5.3", "date": "2025-10-04"}}, {"file": "@lucasmartineza-9788.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "15mm", "iso": "ISO 800", "shutter": "1/3200s", "aperture": "f/6.9", "date": "2025-10-04"}}, {"file": "@lucasmartineza-0452.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 100", "shutter": "1/1250s", "aperture": "f/5.0", "date": "2025-10-03"}}, {"file": "@lucasmartineza-0443.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 100", "shutter": "1/1250s", "aperture": "f/5.0", "date": "2025-10-03"}}, {"file": "@lucasmartineza--4.jpg", "meta": {"date": "2025-09-16"}}, {"file": "0Y2A9311.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/2500s", "aperture": "f/4.0", "date": "2025-09-14"}}, {"file": "0Y2A9307.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/2500s", "aperture": "f/4.0", "date": "2025-09-14"}}, {"file": "@lucasmartineza-0240.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/800s", "aperture": "f/3.0", "date": "2025-09-14"}}, {"file": "@lucasmartineza-9964.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 125", "shutter": "1/800s", "aperture": "f/3.0", "date": "2025-09-14"}}, {"file": "@lucasmartineza-9858.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 320", "shutter": "1/400s", "aperture": "f/3.0", "date": "2025-09-14"}}, {"file": "@lucasmartineza-9729.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 250", "shutter": "1/60s", "aperture": "f/4.0", "date": "2025-09-14"}}, {"file": "@lucasmartineza-9019.png", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 800", "shutter": "1/2000s", "aperture": "f/6.3", "date": "2025-09-13"}}, {"file": "@lucasmartineza-9082.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 250", "shutter": "1/250s", "aperture": "f/5.3", "date": "2025-09-13"}}, {"file": "@lucasmartineza-8926.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 500", "shutter": "1/2500s", "aperture": "f/4.6", "date": "2025-09-12"}}, {"file": "@lucasmartineza-0012.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF8-15mm f/4L FISHEYE USM", "iso": "ISO 200", "shutter": "1/2000s", "aperture": "f/4.0", "date": "2025-09-12"}}, {"file": "@lucasmartineza-9996.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 320", "shutter": "1/2000s", "aperture": "f/4.6", "date": "2025-09-12"}}, {"file": "@lucasmartineza-9990.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 320", "shutter": "1/2000s", "aperture": "f/4.6", "date": "2025-09-12"}}, {"file": "@lucasmartineza-8788.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 1600", "shutter": "1/2500s", "aperture": "f/4.0", "date": "2025-09-12"}}, {"file": "@lucasmartineza8.JPG", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 500", "shutter": "1/1600s", "aperture": "f/5.3", "date": "2025-09-12"}}, {"file": "@lucasmartineza3.JPG", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 500", "shutter": "1/2000s", "aperture": "f/5.3", "date": "2025-09-12"}}, {"file": "@lucasmartineza-7886.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF8-15mm f/4L FISHEYE USM", "iso": "ISO 400", "shutter": "1/640s", "aperture": "f/4.0", "date": "2025-09-11"}}, {"file": "@lucasmartineza-7803.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 320", "shutter": "1/2000s", "aperture": "f/4.0", "date": "2025-09-11"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-.jpg", "meta": {"date": "2025-09-02"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-2-3.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 1000", "shutter": "1/1000s", "aperture": "f/5.0", "date": "2025-08-31"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-9863.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "70-200mm", "iso": "ISO 200", "shutter": "1/1600s", "aperture": "f/3.0", "date": "2025-08-31"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-0042.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 200", "shutter": "1/1000s", "aperture": "f/4.0", "date": "2025-08-31"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-9445.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 320", "shutter": "1/500s", "aperture": "f/3.0", "date": "2025-08-30"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-8869.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 160", "shutter": "1/640s", "aperture": "f/4.6", "date": "2025-08-29"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-8644.jpg", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 100", "shutter": "1/30s", "aperture": "f/6.3", "date": "2025-08-29"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-8568.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/2500s", "aperture": "f/3.0", "date": "2025-08-29"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-6597.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/3200s", "aperture": "f/3.0", "date": "2025-08-28"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-6367.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 400", "shutter": "1/1250s", "aperture": "f/5.0", "date": "2025-08-28"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-6203.jpg", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 100", "shutter": "1/3200s", "aperture": "f/3.6", "date": "2025-08-28"}}, {"file": "@LUCASMARTINEZA-4204.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/5.7", "date": "2025-08-03"}}, {"file": "@LUCASMARTINEZA-3681.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/5.0", "date": "2025-08-03"}}, {"file": "@LUCASMARTINEZA-3594.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 250", "shutter": "1/250s", "aperture": "f/3.0", "date": "2025-08-02"}}, {"file": "@LUCASMARTINEZA-8794.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 125", "shutter": "1/500s", "aperture": "f/5.0", "date": "2025-07-06"}}, {"file": "@LUCASMARTINEZA-8464.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/50s", "aperture": "f/8.0", "date": "2025-07-05"}}, {"file": "@LUCASMARTINEZA-7828 (1).jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 250", "shutter": "1/1000s", "aperture": "f/4.0", "date": "2025-07-05"}}, {"file": "@LUCASMARTINEZA-7482.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 320", "shutter": "1/800s", "aperture": "f/5.3", "date": "2025-07-04"}}, {"file": "@LUCASMARTINEZA-7424.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 160", "shutter": "1/800s", "aperture": "f/5.3", "date": "2025-07-04"}}, {"file": "@LUCASMARTINEZA-7363.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 125", "shutter": "1/1600s", "aperture": "f/3.0", "date": "2025-07-04"}}, {"file": "@LUCASMARTINEZA-7248.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 250", "shutter": "1/640s", "aperture": "f/4.6", "date": "2025-07-04"}}, {"file": "@LUCASMARTINEZA_dom_54.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/5.7", "date": "2025-06-08"}}, {"file": "@LUCASMARTINEZA-13-4.jpg", "meta": {"date": "2025-06-08"}}, {"file": "@LUCASMARTINEZA-5810.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 250", "shutter": "1/1000s", "aperture": "f/5.3", "date": "2025-06-07"}}, {"file": "@LUCASMARTINEZA-5364.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 125", "shutter": "1/250s", "aperture": "f/5.3", "date": "2025-06-07"}}, {"file": "@LUCASMARTINEZA-4393.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "15mm", "iso": "ISO 1000", "shutter": "1/2000s", "aperture": "f/4.6", "date": "2025-06-07"}}, {"file": "@LUCASMARTINEZA-5221.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 125", "shutter": "1/400s", "aperture": "f/5.3", "date": "2025-06-07"}}, {"file": "@LUCASMARTINEZA-4339.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "15mm", "iso": "ISO 1000", "shutter": "1/2000s", "aperture": "f/5.0", "date": "2025-06-07"}}, {"file": "@LUCASMARTINEZA-4292.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/200s", "aperture": "f/5.3", "date": "2025-06-06"}}, {"file": "@LUCASMARTINEZA-4258.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 100", "shutter": "1/200s", "aperture": "f/5.3", "date": "2025-06-06"}}, {"file": "@LUCASMARTINEZA-3271.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/200s", "aperture": "f/5.0", "date": "2025-06-06"}}, {"file": "@LUCASMARTINEZA_8.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 400", "shutter": "1/250s", "aperture": "f/5.3", "date": "2025-05-24"}}, {"file": "@LUCASMARTINEZA_7.JPG", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 400", "shutter": "1/250s", "aperture": "f/5.3", "date": "2025-05-24"}}, {"file": "@LUCASMARTINEZA_3.JPG", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 800", "shutter": "1/320s", "aperture": "f/5.3", "date": "2025-05-24"}}, {"file": "@LUCASMARTINEZA_9.JPG", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 125", "shutter": "1/2500s", "aperture": "f/3.6", "date": "2025-05-23"}}, {"file": "@LUCASMARTINEZA_13.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 200", "shutter": "1/250s", "aperture": "f/5.7", "date": "2025-05-23"}}, {"file": "@LUCASMARTINEZA-0603.jpg", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 100", "shutter": "1/2000s", "aperture": "f/4.0", "date": "2025-04-13"}}, {"file": "@LUCASMARTINEZA-0160.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 160", "shutter": "1/250s", "aperture": "f/4.0", "date": "2025-04-12"}}, {"file": "@LUCASMARTINEZA-0055.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 500", "shutter": "1/125s", "aperture": "f/4.6", "date": "2025-04-12"}}, {"file": "@LUCASMARTINEZA-9447.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 500", "shutter": "1/125s", "aperture": "f/4.6", "date": "2025-04-11"}}, {"file": "@LUCASMARTINEZA-9087.jpg", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 100", "shutter": "1/1600s", "aperture": "f/4.3", "date": "2025-04-11"}}, {"file": "@LUCASMARTINEZA-2982.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "15mm", "iso": "ISO 640", "shutter": "1/2500s", "aperture": "f/5.3", "date": "2025-03-09"}}, {"file": "@LUCASMARTINEZA-2.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/7.4", "date": "2025-03-07"}}, {"file": "@lucasmartineza-09.jpg", "meta": {"date": "2024-12-01"}}, {"file": "@lucasmartineza-1166.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/7.6", "date": "2024-11-30"}}, {"file": "@lucasmartineza-3-32.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/5.3", "date": "2024-11-28"}}, {"file": "@lucasmartineza-0266.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/7.4", "date": "2024-10-27"}}, {"file": "@lucasmartineza-0244.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/7.4", "date": "2024-10-27"}}, {"file": "@lucasmartineza-9553 2.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/8.0", "date": "2024-10-26"}}, {"file": "@lucasmartineza-9301.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/7.4", "date": "2024-10-26"}}, {"file": "@lucasmartineza-9198.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/7.4", "date": "2024-10-26"}}, {"file": "@lucasmartineza-9553.jpg", "meta": {"camera": "Canon EOS 7D", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "shutter": "1/160s", "aperture": "f/6.6", "date": "2024-10-25"}}, {"file": "@lucasmartineza-9499.jpg", "meta": {"camera": "Canon EOS 7D", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "shutter": "1/160s", "aperture": "f/6.6", "date": "2024-10-25"}}, {"file": "@lucasmartineza-7611.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "15mm", "iso": "ISO 400", "shutter": "1/2500s", "aperture": "f/6.3", "date": "2024-09-22"}}, {"file": "@lucasmartineza-7299.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "15mm", "iso": "ISO 200", "shutter": "1/1600s", "aperture": "f/5.3", "date": "2024-09-21"}}, {"file": "@lucasmartinezadrone-09.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF17-40mm f/4L USM", "iso": "ISO 100", "shutter": "1/400s", "aperture": "f/4.0", "date": "2024-08-04"}}, {"file": "@LUCASMARTINEZA-01.jpg", "meta": {"date": "2024-04-14"}}, {"file": "@lucasmartinezadrone-25.jpg", "meta": {"camera": "FC7303", "lens": "20.7 mm", "iso": "ISO 100", "shutter": "1/500s", "aperture": "f/3.0", "date": "2024-04-14"}}, {"file": "@LUCASMARTINEZA-2207.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 500", "shutter": "1/1600s", "aperture": "f/4.0", "date": "2024-04-14"}}, {"file": "@lucasmartineza_-5123.jpg", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 100", "shutter": "1/4000s", "aperture": "f/4.0", "date": "2024-01-07"}}, {"file": "IMG_4623.JPG", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 100", "shutter": "1/2500s", "aperture": "f/4.0", "date": "2024-01-02"}}, {"file": "IMG_4588.JPG", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 100", "shutter": "1/2500s", "aperture": "f/4.0", "date": "2024-01-02"}}, {"file": "IMG_4276.JPG", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 100", "shutter": "1/2500s", "aperture": "f/4.0", "date": "2024-01-02"}}, {"file": "IMG_3557.JPG", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 500", "shutter": "1/2500s", "aperture": "f/4.0", "date": "2024-01-01"}}, {"file": "_LUCASMARTINEZA-5593.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "shutter": "1/800s", "aperture": "f/5.0", "date": "2023-12-10"}}, {"file": "_LUCASMARTINEZA-2-3.jpg", "meta": {"camera": "Canon EOS 6D", "lens": "10-20mm", "iso": "ISO 200", "shutter": "1/2500s", "aperture": "f/5.0", "date": "2023-11-11"}}, {"file": "_LUCASMARTINEZA-1356.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF17-40mm f/4L USM", "iso": "ISO 100", "shutter": "1/1000s", "aperture": "f/4.3", "date": "2023-11-11"}}, {"file": "_LUCASMARTINEZA S230.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF17-40mm f/4L USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/6.0", "date": "2023-11-10"}}, {"file": "_@lucasmartineza2.jpg", "meta": {"date": "2023-10-15"}}, {"file": "_@lucasmartineza41 (1).jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/7.4", "date": "2023-10-14"}}, {"file": "_LUCASMARTINEZA-1977.jpg", "meta": {"date": "2023-10-02"}}, {"file": "_LUCASMARTINEZA-.jpg", "meta": {"date": "2023-10-02"}}, {"file": "_LUCASMARTINEZA-2-2.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "shutter": "1/200s", "aperture": "f/5.3", "date": "2023-10-01"}}, {"file": "_LUCASMARTINEZA-2-13.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "shutter": "1/200s", "aperture": "f/5.3", "date": "2023-10-01"}}, {"file": "_LUCASMARTINEZA-8972.jpg", "meta": {"camera": "Canon EOS 6D", "lens": "EF17-40mm f/4L USM", "iso": "ISO 100", "shutter": "1/400s", "aperture": "f/5.0", "date": "2023-10-01"}}, {"file": "_LUCASMARTINEZA-8377.jpg", "meta": {"camera": "Canon EOS 6D", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 125", "shutter": "1/1000s", "aperture": "f/4.6", "date": "2023-09-30"}}, {"file": "_LUCASMARTINEZA-2011.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "10-20mm", "iso": "ISO 100", "shutter": "1/800s", "aperture": "f/4.6", "date": "2023-09-30"}}, {"file": "_LUCASMARTINEZA-1958.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF17-40mm f/4L USM", "iso": "ISO 100", "shutter": "1/500s", "aperture": "f/5.3", "date": "2023-09-30"}}, {"file": "_LUCASMARTINEZA-1905.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/6.0", "date": "2023-09-29"}}, {"file": "@lucasmartineza --14.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/6.3", "date": "2023-09-16"}}, {"file": "_@LUCASMARTINEZA_-8964.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "10-20mm", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/6.0", "date": "2023-09-15"}}, {"file": "_@LUCASMARTINEZA_-8898.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "10-20mm", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/6.3", "date": "2023-09-15"}}, {"file": "_@LUCASMARTINEZA_-8877.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "10-20mm", "iso": "ISO 100", "shutter": "1/100s", "aperture": "f/6.3", "date": "2023-09-15"}}, {"file": "_@LUCASMARTINEZA_-7049.jpg", "meta": {"camera": "Canon EOS 6D", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 160", "shutter": "1/160s", "aperture": "f/5.7", "date": "2023-09-15"}}, {"file": "_@LUCASMARTINEZA_-8693.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "10-20mm", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/8.3", "date": "2023-09-15"}}, {"file": "@lucasmartineza --44.JPG", "meta": {"camera": "Canon EOS 6D", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "shutter": "1/160s", "aperture": "f/7.6", "date": "2023-06-24"}}, {"file": "@LUCASMARTINEZA_-6009.jpg", "meta": {"camera": "Canon EOS 6D", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "shutter": "1/160s", "aperture": "f/6.9", "date": "2023-06-23"}}, {"file": "@LUCASMARTINEZA_-5908.jpg", "meta": {"camera": "Canon EOS 6D", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "shutter": "1/160s", "aperture": "f/6.9", "date": "2023-06-23"}}, {"file": "9E4Q2290 copy.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF28-135mm f/3.5-5.6 IS USM", "iso": "ISO 200", "shutter": "1/125s", "aperture": "f/4.3", "date": "2023-06-04"}}, {"file": "@lucasmartineza_s2_60.jpg", "meta": {"camera": "Canon EOS 6D", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 125", "shutter": "1/1000s", "aperture": "f/5.0", "date": "2023-06-03"}}, {"file": "_@lucasmartineza_s1_142.JPG", "meta": {"date": "2023-06-03"}}, {"file": "@lucasmartineza___3.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/6.6", "date": "2023-05-14"}}, {"file": "@lucasmartineza --22.JPG", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/6.0", "date": "2023-05-13"}}, {"file": "@lucasmartineza-2070.jpg", "meta": {"camera": "Canon EOS 6D", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 200", "shutter": "1/125s", "aperture": "f/7.4", "date": "2023-04-22"}}, {"file": "*@lucasmartineza-9471.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "15mm", "iso": "ISO 800", "shutter": "1/1600s", "aperture": "f/4.0", "date": "2007-02-09"}}, {"file": "@lucasmartineza-9302.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 500", "shutter": "1/1250s", "aperture": "f/5.0", "date": "2001-01-01"}}, {"file": "_06Q8468 2.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "shutter": "1/200s", "aperture": "f/5.0", "date": "2001-01-01"}}, {"file": "@lucasmartineza_shake25.JPG", "meta": {"camera": "Canon EOS-1D X", "lens": "15mm", "iso": "ISO 250", "shutter": "1/320s", "aperture": "f/5.7", "date": "2001-01-01"}}, {"file": "@LUCASMARTINEZA -5072.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/6.9", "date": "2001-01-01"}}, {"file": "@lucasmartineza-7894.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "shutter": "1/1250s", "aperture": "f/5.3", "date": "2001-01-01"}}, {"file": "@LUCASMARTINEZA-8677.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/6.9", "date": "2001-01-01"}}, {"file": "@lucasmartineza-6767.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 200", "shutter": "1/1000s", "aperture": "f/5.0", "date": "2001-01-01"}}, {"file": "@lucasmartineza_shake18.JPG", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/5.7", "date": "2001-01-01"}}, {"file": "@lucasmartineza-9307.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 500", "shutter": "1/1250s", "aperture": "f/4.6", "date": "2001-01-01"}}, {"file": "@LUCASMARTINEZA -2915.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "15mm", "iso": "ISO 100", "shutter": "1/60s", "aperture": "f/8.0", "date": "2001-01-01"}}, {"file": "@LUCASMARTINEZA -2858.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF28-135mm f/3.5-5.6 IS USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/6.9", "date": "2001-01-01"}}, {"file": "@LUCASMARTINEZA -0711.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF28-135mm f/3.5-5.6 IS USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/6.3", "date": "2001-01-01"}}, {"file": "@lucasmartinezadrone-007.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "15mm", "iso": "ISO 100", "shutter": "1/50s", "aperture": "f/6.6", "date": "2001-01-01"}}, {"file": "@lucasmartineza dom 2 13.JPG", "meta": {"camera": "Canon EOS-1D X", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/6.0", "date": "2001-01-01"}}, {"file": "@LUCASMARTINEZA -5258.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/6.9", "date": "2001-01-01"}}, {"file": "@lucasmartineza-8972.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/2000s", "aperture": "f/4.6", "date": "2001-01-01"}}, {"file": "@lucasmartineza-9939.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/7.4", "date": "2001-01-01"}}, {"file": "@lucasmartineza-9273.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "shutter": "1/1250s", "aperture": "f/4.6", "date": "2001-01-01"}}, {"file": "@LUCASMARTINEZA-8078.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF17-40mm f/4L USM", "iso": "ISO 100", "shutter": "1/200s", "aperture": "f/4.0", "date": "2001-01-01"}}, {"file": "@LUCASMARTINEZA -0845.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF28-135mm f/3.5-5.6 IS USM", "iso": "ISO 100", "shutter": "1/250s", "aperture": "f/6.3", "date": "2001-01-01"}}, {"file": "@LUCASMARTINEZA -2-9.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "15mm", "iso": "ISO 100", "shutter": "1/100s", "aperture": "f/6.9", "date": "2001-01-01"}}];
+var NH = HERO.length;
+var NG = GALLERY.length;
+
+var topbar       = document.getElementById('topbar');
+var cfStage      = document.getElementById('cfStage');
+var cfTrack      = document.getElementById('cfTrack');
+var cfCaption    = document.getElementById('cfCaption');
+var cfCounter    = document.getElementById('cfCounter');
+var fototeca     = document.getElementById('fototeca');
+var photoGrid    = document.getElementById('photoGrid');
+var lightbox     = document.getElementById('lightbox');
+var lbImg        = document.getElementById('lbImg');
+var lbMeta       = document.getElementById('lbMeta');
+var aboutSection = document.getElementById('aboutSection');
+var aboutInner   = document.getElementById('aboutInner');
+var cur = 0;
+var isAnimating = false;
+var lbCur = 0;
+var items = [];
+
+// Build coverflow from HERO
+HERO.forEach(function(d, i) {
+  var div = document.createElement('div');
+  div.className = 'cf-item';
+  var img = new Image();
+  img.src = 'fotos-hero/' + d.file;
+  div.appendChild(img);
+  div.addEventListener('click', function() {
+    if (i !== cur) goTo(i);
+  });
+  cfTrack.appendChild(div);
+  items.push(div);
+});
+
+// Build gallery grid from GALLERY
+GALLERY.forEach(function(d, i) {
+  var div = document.createElement('div');
+  div.className = 'grid-item';
+  var img = new Image();
+  img.src = 'fotos/' + d.file;
+  div.appendChild(img);
+  div.addEventListener('click', (function(idx){ return function(){ closeF(); setTimeout(function(){ openLB(idx); }, 200); }; })(i));
+  photoGrid.appendChild(div);
+});
+
+function alignAll() {
+  var stageW = cfStage.offsetWidth;
+  var stageH = cfStage.offsetHeight;
+  var centerW = Math.min(stageW * 0.72, stageH * 0.7 * 1.5);
+  var sideMargin = (stageW - centerW) / 2;
+  topbar.style.left = sideMargin + 'px';
+  topbar.style.right = sideMargin + 'px';
+  topbar.style.width = 'auto';
+  if (aboutInner) aboutInner.style.maxWidth = centerW + 'px';
+  render();
+}
+window.addEventListener('resize', alignAll);
+requestAnimationFrame(function() { requestAnimationFrame(alignAll); });
+
+function render() {
+  var stageW = cfStage.offsetWidth;
+  var stageH = cfStage.offsetHeight;
+  var centerW = Math.min(stageW * 0.72, stageH * 0.7 * 1.5);
+  var centerH = centerW / 1.5;
+  var sideW = centerW * 0.62;
+  var overlap = sideW * 0.35;
+  var sideX = centerW / 2 - overlap + sideW / 2;
+
+  items.forEach(function(el, i) {
+    var offset = i - cur;
+    var x, scale, opacity, zIndex;
+    if (offset === 0) {
+      x = 0; scale = 1; opacity = 1; zIndex = 10;
+      el.style.filter = 'none';
+    } else if (offset === -1) {
+      x = -sideX; scale = sideW/centerW; opacity = 0.45; zIndex = 5;
+      el.style.filter = 'saturate(0) brightness(0.4)';
+    } else if (offset === 1) {
+      x = sideX; scale = sideW/centerW; opacity = 0.45; zIndex = 5;
+      el.style.filter = 'saturate(0) brightness(0.4)';
+    } else if (offset < -1) {
+      x = -(sideX + sideW * 0.3 * Math.abs(offset+1)); scale = sideW/centerW * 0.7; opacity = 0; zIndex = 1;
+      el.style.filter = 'saturate(0) brightness(0.4)';
+    } else {
+      x = sideX + sideW * 0.3 * (offset-1); scale = sideW/centerW * 0.7; opacity = 0; zIndex = 1;
+      el.style.filter = 'saturate(0) brightness(0.4)';
+    }
+    el.style.width  = centerW + 'px';
+    el.style.height = centerH + 'px';
+    el.style.transform = 'translateX(' + x + 'px) scale(' + scale + ')';
+    el.style.opacity = opacity;
+    el.style.zIndex  = zIndex;
+    el.style.cursor  = offset === 0 ? 'default' : 'pointer';
+  });
+
+  cfCounter.textContent = (cur+1) + ' / ' + NH;
+
+  var isMobile = window.innerWidth <= 768;
+  var mc = document.getElementById('cfCaptionM');
+
+  if (isMobile) {
+    // vertical layout
+    items.forEach(function(el, i) {
+      var off = i - cur, y, scale, opacity, zIndex;
+      if (off === 0)      { y = 0;          scale = 1;    opacity = 1;    zIndex = 10; el.style.filter = 'none'; }
+      else if (off === -1) { y = -(stageH*0.6); scale = 0.86; opacity = 0.35; zIndex = 5;  el.style.filter = 'saturate(0) brightness(0.35)'; }
+      else if (off === 1)  { y = stageH*0.6;  scale = 0.86; opacity = 0.35; zIndex = 5;  el.style.filter = 'saturate(0) brightness(0.35)'; }
+      else { y = off<0 ? -(stageH*1.3) : stageH*1.3; scale=0.7; opacity=0; zIndex=1; el.style.filter='saturate(0) brightness(0.35)'; }
+      el.style.width  = '100vw';
+      el.style.height = (stageH * 0.56) + 'px';
+      el.style.transform = 'translateY(' + y + 'px) scale(' + scale + ')';
+      el.style.opacity = opacity;
+      el.style.zIndex  = zIndex;
+      el.style.cursor  = off === 0 ? 'default' : 'pointer';
+    });
+    if (mc) {
+      var m = HERO[cur].meta;
+      if (m && (m.camera || m.lens || m.iso || m.shutter || m.aperture)) {
+        var lines = [];
+        if (m.camera) lines.push('<span class="hi">' + m.camera + '</span>');
+        if (m.lens)   lines.push('<span>' + m.lens + '</span>');
+        var tech = [m.iso, m.shutter, m.aperture].filter(Boolean).join(' · ');
+        if (tech) lines.push('<span>' + tech + '</span>');
+        mc.innerHTML = lines.join(''); mc.className = 'cf-caption-m visible';
+      } else { mc.innerHTML = ''; mc.className = 'cf-caption-m'; }
+    }
+    return;
+  }
+
+  var topOfCenter = (stageH - centerH) / 2;
+  var sideMargin = (stageW - centerW) / 2;
+  cfCaption.style.top   = (topOfCenter + centerH + 10) + 'px';
+  cfCaption.style.left  = sideMargin + 'px';
+  cfCaption.style.width = centerW + 'px';
+
+  var m = HERO[cur].meta;
+  if (m && (m.camera || m.lens || m.iso || m.shutter || m.aperture)) {
+    var lines = [];
+    if (m.camera) lines.push('<span class="hi">' + m.camera + '</span>');
+    if (m.lens)   lines.push('<span>' + m.lens + '</span>');
+    var tech = [m.iso, m.shutter, m.aperture].filter(Boolean).join('&nbsp;&nbsp;');
+    if (tech) lines.push('<span>' + tech + '</span>');
+    cfCaption.innerHTML = lines.join('');
+    cfCaption.className = 'cf-caption visible';
+  } else {
+    cfCaption.innerHTML = '';
+    cfCaption.className = 'cf-caption';
+  }
+}
+
+function goTo(n) {
+  if (isAnimating) return;
+  isAnimating = true;
+  cur = (n + NH) % NH;
+  render();
+  setTimeout(function() { isAnimating = false; }, 520);
+}
+
+document.getElementById('cfNext').addEventListener('click', function() { goTo(cur+1); });
+document.getElementById('cfPrev').addEventListener('click', function() { goTo(cur-1); });
+
+var autoTimer = setInterval(function() { goTo(cur+1); }, 5000);
+cfStage.addEventListener('pointerdown', function() { clearInterval(autoTimer); });
+
+var touchStartX = null;
+var touchStartY = null;
+cfStage.addEventListener('touchstart', function(e) { touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY; }, {passive:true});
+cfStage.addEventListener('touchend', function(e) {
+  if (touchStartX === null) return;
+  var dx = e.changedTouches[0].clientX - touchStartX;
+  var dy = e.changedTouches[0].clientY - touchStartY;
+  if (window.innerWidth <= 768) {
+    if (Math.abs(dy) > 40) { dy < 0 ? goTo(cur+1) : goTo(cur-1); }
+  } else {
+    if (Math.abs(dx) > 40) { dx < 0 ? goTo(cur+1) : goTo(cur-1); }
+  }
+  touchStartX = null; touchStartY = null;
+});
+
+document.querySelector('.tb-name').addEventListener('click', function() {
+  closeF(); closeLB();
+  window.scrollTo({top:0, behavior:'smooth'});
+});
+document.getElementById('btnAbout').addEventListener('click', function() {
+  closeF(); closeLB();
+  setTimeout(function() {
+    if (aboutSection) aboutSection.scrollIntoView({behavior:'smooth'});
+  }, 400);
+});
+
+function openF() {
+  fototeca.style.display = 'flex';
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() { fototeca.classList.add('visible'); });
+  });
+  document.getElementById('btnGaleria').classList.add('active');
+}
+function closeF() {
+  fototeca.classList.remove('visible');
+  setTimeout(function() { fototeca.style.display = 'none'; }, 350);
+  document.getElementById('btnGaleria').classList.remove('active');
+}
+document.getElementById('btnGaleria').addEventListener('click', openF);
+document.getElementById('fototecaClose').addEventListener('click', closeF);
+
+function openLB(idx) {
+  lbCur = idx;
+  lbImg.src = 'fotos/' + GALLERY[lbCur].file;
+  renderMeta(GALLERY[lbCur].meta);
+  lightbox.classList.add('open');
+}
+function closeLB() {
+  lightbox.classList.remove('open');
+  openF();
+}
+function lbGoTo(n) {
+  lbCur = (n + NG) % NG;
+  lbImg.src = 'fotos/' + GALLERY[lbCur].file;
+  renderMeta(GALLERY[lbCur].meta);
+}
+function renderMeta(m) {
+  if (!m) { lbMeta.innerHTML = ''; return; }
+  var rows = [];
+  if (m.camera) rows.push('<div class="lb-meta-row hi">' + m.camera + '</div>');
+  if (m.lens)   rows.push('<div class="lb-meta-row">' + m.lens + '</div>');
+  var tech = [m.iso, m.shutter, m.aperture].filter(Boolean).join('&nbsp;&nbsp;');
+  if (tech) rows.push('<div class="lb-meta-row">' + tech + '</div>');
+  if (m.date) rows.push('<div class="lb-meta-row">' + m.date + '</div>');
+  lbMeta.innerHTML = rows.join('');
+}
+document.getElementById('lbClose').addEventListener('click', closeLB);
+document.getElementById('lbPrev').addEventListener('click', function() { lbGoTo(lbCur-1); });
+document.getElementById('lbNext').addEventListener('click', function() { lbGoTo(lbCur+1); });
+lightbox.addEventListener('click', function(e) { if (e.target === lightbox) closeLB(); });
+var LANG = {
+  es: {
+    galeria: 'Galería',
+    about: 'Acerca de mí',
+    cerrar: 'Cerrar ✕',
+    hint: '↓',
+    about_text: [
+      'Trabajo la fotografía de rally desde un lugar que intenta correrse de lo más evidente. No me interesa únicamente la velocidad o el momento más espectacular, sino también lo que sucede alrededor: la tensión previa, los instantes intermedios, la relación entre el auto y el entorno.',
+      'Busco construir la imagen más que solo registrarla. En un contexto que suele ser caótico e impredecible, me interesa encontrar cierto orden, cierta armonía. Por eso muchas veces el paisaje tiene tanto peso como la acción, y el encuadre aparece como una herramienta para equilibrar esos elementos.',
+      'No busco que las imágenes griten ni que se impongan desde el impacto inmediato. Me interesa más bien lo contrario: que funcionen en un registro más bajo, que obliguen —o inviten— a una pausa breve. Que en esa pausa aparezcan detalles que no están a primera vista: una trayectoria insinuada, una relación de escalas, una atmósfera. En ese sentido, intento que cada foto tenga algo de persistencia, que no se agote en el primer golpe de vista.',
+      'Mi enfoque está más cerca de una mirada autoral que de lo puramente documental, sin perder vínculo con lo que realmente ocurre. Me interesa no solo mostrar lo que pasó, sino transmitir, en alguna medida, cómo se sintió estar ahí.',
+      'De alguna forma, estas imágenes también buscan desprenderse del ruido y la urgencia del momento en que fueron tomadas. Invitan a ser vistas con distancia, en otro tiempo, donde el caos ya no domina la escena y es posible detenerse a leer lo que, en el instante, pasaba desapercibido.'
+    ]
+  },
+  en: {
+    galeria: 'Gallery',
+    about: 'About',
+    cerrar: 'Close ✕',
+    hint: '↓',
+    about_text: [
+      'I approach rally photography from a place that tries to move away from the most obvious. I'm not solely interested in speed or the most spectacular moment, but also in what happens around it: the tension beforehand, the in-between instants, the relationship between the car and its surroundings.',
+      'I seek to construct the image rather than merely record it. In a context that tends to be chaotic and unpredictable, I'm drawn to finding a certain order, a certain harmony. That's why the landscape often carries as much weight as the action, and framing becomes a tool for balancing those elements.',
+      'I don't want the images to shout or impose themselves through immediate impact. I'm interested in the opposite: that they operate on a quieter register, that they compel — or invite — a brief pause. That within that pause, details emerge that aren't visible at first glance: a suggested trajectory, a relationship of scales, an atmosphere. In that sense, I try to give each photograph a kind of persistence — one that doesn't exhaust itself on first sight.',
+      'My approach sits closer to an authorial vision than to pure documentation, without losing touch with what actually happens. I'm interested not only in showing what occurred, but in conveying, to some degree, what it felt like to be there.',
+      'In some ways, these images also seek to detach from the noise and urgency of the moment in which they were taken. They invite being seen from a distance, in another time, where the chaos no longer dominates the scene and it becomes possible to pause and read what, in the instant, went unnoticed.'
+    ]
+  }
+};
+
+function setLang(lang) {
+  document.getElementById('langES').className = lang === 'es' ? 'lang-btn active' : 'lang-btn';
+  document.getElementById('langEN').className = lang === 'en' ? 'lang-btn active' : 'lang-btn';
+  var L = LANG[lang];
+  document.getElementById('btnGaleria').textContent = L.galeria;
+  document.getElementById('btnAbout').textContent   = L.about;
+  document.getElementById('fototecaClose').textContent = L.cerrar;
+  var paras = document.querySelectorAll('.about-text p');
+  for (var i = 0; i < paras.length; i++) {
+    if (L.about_text[i]) paras[i].textContent = L.about_text[i];
+  }
+}
+
+// Tab bar
+function setActiveTab(id) {
+  document.querySelectorAll('.tab-item').forEach(function(t) { t.classList.remove('active'); });
+  var el = document.getElementById(id);
+  if (el) el.classList.add('active');
+}
+document.getElementById('tabHome').addEventListener('click', function() {
+  closeF(); closeLB();
+  window.scrollTo({top:0, behavior:'smooth'});
+  setActiveTab('tabHome');
+});
+document.getElementById('tabGallery').addEventListener('click', function() {
+  openF();
+  setActiveTab('tabGallery');
+});
+document.getElementById('tabAbout').addEventListener('click', function() {
+  closeF(); closeLB();
+  setTimeout(function() {
+    if (aboutSection) aboutSection.scrollIntoView({behavior:'smooth'});
+  }, 100);
+  setActiveTab('tabAbout');
+});
+document.getElementById('tabSpotify').addEventListener('click', function() {
+  window.open('https://open.spotify.com/playlist/3NimH9q2tjkia3ocon5MsH', '_blank');
+});
+
+document.addEventListener('keydown', function(e) {
+  if (lightbox.classList.contains('open')) {
+    if (e.key === 'ArrowLeft')  lbGoTo(lbCur-1);
+    if (e.key === 'ArrowRight') lbGoTo(lbCur+1);
+    if (e.key === 'Escape')     closeLB();
+  } else {
+    if (e.key === 'ArrowLeft')  goTo(cur-1);
+    if (e.key === 'ArrowRight') goTo(cur+1);
+  }
+});
+</script>
+</body>
+</html>
