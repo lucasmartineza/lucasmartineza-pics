@@ -27,7 +27,7 @@ body{width:100%;background:#000;font-family:'Montserrat',sans-serif;overflow-x:h
 .cf-stage{flex:1;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
 .cf-track{position:absolute;display:flex;align-items:center;justify-content:center;width:100%;height:100%;}
 .cf-item{position:absolute;cursor:pointer;transition:all 0.5s cubic-bezier(0.25,0.46,0.45,0.94);transform-origin:center center;will-change:transform,filter,opacity;}
-.cf-item img{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;border-radius:2px;}
+.cf-item{background:#111;}.cf-item img{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;border-radius:2px;opacity:0;transition:opacity 0.4s ease;}.cf-item img.loaded{opacity:1;}
 .cf-caption{position:absolute;display:flex;flex-direction:column;gap:3px;pointer-events:none;opacity:0;transition:opacity 0.4s ease;text-align:left;}
 .cf-caption.visible{opacity:1;}
 .cf-caption span{font-family:'Montserrat',sans-serif;font-weight:300;font-size:0.58rem;letter-spacing:0.1em;color:rgba(255,255,255,0.55);white-space:nowrap;line-height:1.6;display:block;}
@@ -231,6 +231,7 @@ HERO.forEach(function(d, i) {
   var div = document.createElement('div');
   div.className = 'cf-item';
   var img = new Image();
+  img.onload = function() { this.classList.add('loaded'); };
   img.src = 'fotos-hero/' + d.file;
   div.appendChild(img);
   div.addEventListener('click', function() {
