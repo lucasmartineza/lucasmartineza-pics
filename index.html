@@ -519,6 +519,17 @@ document.addEventListener('keydown', function(e) {
   }
 });
 
+// Reset zoom on double tap / pinch end
+document.addEventListener('gestureend', function() {
+  document.body.style.zoom = 1;
+});
+document.addEventListener('touchend', function() {
+  var scale = window.visualViewport ? window.visualViewport.scale : 1;
+  if (scale !== 1) {
+    document.documentElement.style.transform = 'scale(1)';
+    setTimeout(function() { document.documentElement.style.transform = ''; }, 100);
+  }
+});
 // Prevent iOS pull-to-refresh
 var lastY = 0;
 document.addEventListener('touchstart', function(e) {
