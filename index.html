@@ -518,6 +518,20 @@ document.addEventListener('keydown', function(e) {
     if (e.key === 'ArrowRight') goTo(cur+1);
   }
 });
+
+// Prevent iOS pull-to-refresh
+var lastY = 0;
+document.addEventListener('touchstart', function(e) {
+  lastY = e.touches[0].clientY;
+}, {passive: false});
+document.addEventListener('touchmove', function(e) {
+  var y = e.touches[0].clientY;
+  var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+  if (scrollTop === 0 && y > lastY) {
+    e.preventDefault();
+  }
+  lastY = y;
+}, {passive: false});
 </script>
 </body>
 </html>
