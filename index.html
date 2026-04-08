@@ -72,7 +72,7 @@ body{width:100%;background:#000;font-family:'Montserrat',sans-serif;overflow-x:h
 .about-text p:last-child{margin-bottom:0;}
 @media (max-width: 768px) {
   .topbar{display:none;}
-  .tab-bar{display:flex;}
+  .tab-bar{display:flex !important;}
   .cf-arrows{display:none;}
   .cf-counter{right:14px;bottom:62px;font-size:0.5rem;}
   .cf-caption{display:none !important;}
@@ -358,7 +358,7 @@ function goTo(n) {
 document.getElementById('cfNext').addEventListener('click', function() { goTo(cur+1); });
 document.getElementById('cfPrev').addEventListener('click', function() { goTo(cur-1); });
 
-var autoTimer = setInterval(function() { goTo(cur+1); }, 5000);
+var autoTimer; window.addEventListener('load', function() { autoTimer = setInterval(function() { goTo(cur+1); }, 5000); });
 cfStage.addEventListener('pointerdown', function() { clearInterval(autoTimer); });
 
 var touchStartX = null;
