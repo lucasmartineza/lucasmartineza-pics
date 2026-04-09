@@ -2,14 +2,14 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lucas Martinez - Rally Photography</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='black'/%3E%3Ctext x='16' y='21' font-family='Montserrat,sans-serif' font-size='11' font-weight='300' fill='white' text-anchor='middle' letter-spacing='2'%3ELM%3C/text%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 html{width:100%;}
-body{width:100%;background:#000;font-family:'Montserrat',sans-serif;overflow-x:hidden;overflow-y:scroll;}@media(max-width:768px){html,body{overflow:hidden;height:100%;position:fixed;width:100%;overscroll-behavior:none;}}
+body{width:100%;background:#000;font-family:'Montserrat',sans-serif;overflow-x:hidden;overflow-y:scroll;}
 .topbar{position:fixed;top:0;z-index:200;display:flex;justify-content:space-between;align-items:center;padding:18px 0;pointer-events:none;}
 .topbar>*{pointer-events:all;}
 .tb-left{display:flex;align-items:center;gap:28px;}
@@ -27,7 +27,7 @@ body{width:100%;background:#000;font-family:'Montserrat',sans-serif;overflow-x:h
 .cf-stage{flex:1;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
 .cf-track{position:absolute;display:flex;align-items:center;justify-content:center;width:100%;height:100%;}
 .cf-item{position:absolute;cursor:pointer;transition:all 0.5s cubic-bezier(0.25,0.46,0.45,0.94);transform-origin:center center;will-change:transform,filter,opacity;}
-.cf-item{background:#111;}.cf-item img{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;border-radius:2px;opacity:0;transition:opacity 0.4s ease;}.cf-item img.loaded{opacity:1;}
+.cf-item img{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;border-radius:2px;}
 .cf-caption{position:absolute;display:flex;flex-direction:column;gap:3px;pointer-events:none;opacity:0;transition:opacity 0.4s ease;text-align:left;}
 .cf-caption.visible{opacity:1;}
 .cf-caption span{font-family:'Montserrat',sans-serif;font-weight:300;font-size:0.58rem;letter-spacing:0.1em;color:rgba(255,255,255,0.55);white-space:nowrap;line-height:1.6;display:block;}
@@ -70,14 +70,9 @@ body{width:100%;background:#000;font-family:'Montserrat',sans-serif;overflow-x:h
 .about-photo img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;}
 .about-text p{font-weight:300;font-size:0.82rem;line-height:2;letter-spacing:0.03em;color:rgba(255,255,255,0.6);margin-bottom:1.6em;text-align:justify;text-align-last:center;}
 .about-text p:last-child{margin-bottom:0;}
-.cf-mobile-nav{display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);flex-direction:column;gap:4px;z-index:20;}
-.cf-mobile-nav button{background:rgba(0,0,0,0.5);border:0.5px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.75);width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.9rem;}
 @media (max-width: 768px) {
-  .cf-mobile-nav{display:flex;}
-  .cf-arrows{display:none;}
-  .cf-section{overscroll-behavior:none;touch-action:pan-x pinch-zoom;}
   .topbar{display:none;}
-  .tab-bar{display:flex !important;}
+  .tab-bar{display:flex;}
   .cf-arrows{display:none;}
   .cf-counter{right:14px;bottom:62px;font-size:0.5rem;}
   .cf-caption{display:none !important;}
@@ -92,7 +87,7 @@ body{width:100%;background:#000;font-family:'Montserrat',sans-serif;overflow-x:h
 }
 .cf-caption-m{position:absolute;bottom:62px;left:14px;display:none;flex-direction:column;gap:2px;pointer-events:none;opacity:0;transition:opacity 0.4s ease;}
 .cf-caption-m.visible{opacity:1;}
-.cf-caption-m span{font-family:'Montserrat',sans-serif;font-weight:300;font-size:0.35rem;letter-spacing:0.09em;color:rgba(255,255,255,0.5);white-space:nowrap;line-height:1.6;display:block;}
+.cf-caption-m span{font-family:'Montserrat',sans-serif;font-weight:300;font-size:0.29rem;letter-spacing:0.09em;color:rgba(255,255,255,0.5);white-space:nowrap;line-height:1.6;display:block;}
 .cf-caption-m span.hi{color:rgba(255,255,255,0.8);}
 .tab-bar{
   position:fixed;bottom:0;left:0;right:0;z-index:200;
@@ -142,10 +137,6 @@ body{width:100%;background:#000;font-family:'Montserrat',sans-serif;overflow-x:h
       <div class="cf-arr" id="cfNext">&#8594;</div>
     </div>
     <div class="scroll-hint">&#8595;</div>
-    <div class="cf-mobile-nav">
-      <button onclick="goTo(cur-1)">&#8593;</button>
-      <button onclick="goTo(cur+1)">&#8595;</button>
-    </div>
   </div>
 </section>
 
@@ -231,8 +222,7 @@ HERO.forEach(function(d, i) {
   var div = document.createElement('div');
   div.className = 'cf-item';
   var img = new Image();
-  img.onload = function() { this.classList.add('loaded'); };
-  img.src = 'fotos-hero/' + d.file;
+  img.src = (window.innerWidth <= 768 ? 'fotos-hero-m/' : 'fotos-hero/') + d.file;
   div.appendChild(img);
   div.addEventListener('click', function() {
     if (i !== cur) goTo(i);
@@ -246,7 +236,7 @@ GALLERY.forEach(function(d, i) {
   var div = document.createElement('div');
   div.className = 'grid-item';
   var img = new Image();
-  img.src = 'fotos/' + d.file;
+  img.src = (window.innerWidth <= 768 ? 'fotos-m/' : 'fotos/') + d.file;
   div.appendChild(img);
   div.addEventListener('click', (function(idx){ return function(){ closeF(); setTimeout(function(){ openLB(idx); }, 200); }; })(i));
   photoGrid.appendChild(div);
@@ -368,7 +358,7 @@ function goTo(n) {
 document.getElementById('cfNext').addEventListener('click', function() { goTo(cur+1); });
 document.getElementById('cfPrev').addEventListener('click', function() { goTo(cur-1); });
 
-var autoTimer; window.addEventListener('load', function() { autoTimer = setInterval(function() { goTo(cur+1); }, 5000); });
+var autoTimer = setInterval(function() { goTo(cur+1); }, 5000);
 cfStage.addEventListener('pointerdown', function() { clearInterval(autoTimer); });
 
 var touchStartX = null;
@@ -414,7 +404,7 @@ document.getElementById('fototecaClose').addEventListener('click', closeF);
 
 function openLB(idx) {
   lbCur = idx;
-  lbImg.src = 'fotos/' + GALLERY[lbCur].file;
+  lbImg.src = (window.innerWidth <= 768 ? 'fotos-m/' : 'fotos/') + GALLERY[lbCur].file;
   renderMeta(GALLERY[lbCur].meta);
   lightbox.classList.add('open');
 }
@@ -424,7 +414,7 @@ function closeLB() {
 }
 function lbGoTo(n) {
   lbCur = (n + NG) % NG;
-  lbImg.src = 'fotos/' + GALLERY[lbCur].file;
+  lbImg.src = (window.innerWidth <= 768 ? 'fotos-m/' : 'fotos/') + GALLERY[lbCur].file;
   renderMeta(GALLERY[lbCur].meta);
 }
 function renderMeta(m) {
@@ -461,10 +451,10 @@ var LANG = {
     cerrar: 'Close ✕',
     hint: '↓',
     about_text: [
-      'I approach rally photography from a place that tries to move away from the most obvious. I am not solely interested in speed or the most spectacular moment, but also in what happens around it: the tension beforehand, the in-between instants, the relationship between the car and its surroundings.',
-      'I seek to construct the image rather than merely record it. In a context that tends to be chaotic and unpredictable, I am drawn to finding a certain order, a certain harmony. That is why the landscape often carries as much weight as the action, and framing becomes a tool for balancing those elements.',
-      'I do not want the images to shout or impose themselves through immediate impact. I am interested in the opposite: that they operate on a quieter register, that they compel — or invite — a brief pause. That within that pause, details emerge that are not visible at first glance: a suggested trajectory, a relationship of scales, an atmosphere. In that sense, I try to give each photograph a kind of persistence — one that does not exhaust itself on first sight.',
-      'My approach sits closer to an authorial vision than to pure documentation, without losing touch with what actually happens. I am interested not only in showing what occurred, but in conveying, to some degree, what it felt like to be there.',
+      'I approach rally photography from a place that tries to move away from the most obvious. I'm not solely interested in speed or the most spectacular moment, but also in what happens around it: the tension beforehand, the in-between instants, the relationship between the car and its surroundings.',
+      'I seek to construct the image rather than merely record it. In a context that tends to be chaotic and unpredictable, I'm drawn to finding a certain order, a certain harmony. That's why the landscape often carries as much weight as the action, and framing becomes a tool for balancing those elements.',
+      'I don't want the images to shout or impose themselves through immediate impact. I'm interested in the opposite: that they operate on a quieter register, that they compel — or invite — a brief pause. That within that pause, details emerge that aren't visible at first glance: a suggested trajectory, a relationship of scales, an atmosphere. In that sense, I try to give each photograph a kind of persistence — one that doesn't exhaust itself on first sight.',
+      'My approach sits closer to an authorial vision than to pure documentation, without losing touch with what actually happens. I'm interested not only in showing what occurred, but in conveying, to some degree, what it felt like to be there.',
       'In some ways, these images also seek to detach from the noise and urgency of the moment in which they were taken. They invite being seen from a distance, in another time, where the chaos no longer dominates the scene and it becomes possible to pause and read what, in the instant, went unnoticed.'
     ]
   }
@@ -519,42 +509,6 @@ document.addEventListener('keydown', function(e) {
     if (e.key === 'ArrowRight') goTo(cur+1);
   }
 });
-
-// Reset zoom on double tap / pinch end
-document.addEventListener('gestureend', function() {
-  document.body.style.zoom = 1;
-});
-document.addEventListener('touchend', function() {
-  var scale = window.visualViewport ? window.visualViewport.scale : 1;
-  if (scale !== 1) {
-    document.documentElement.style.transform = 'scale(1)';
-    setTimeout(function() { document.documentElement.style.transform = ''; }, 100);
-  }
-});
-// Reset zoom on double tap / pinch end
-document.addEventListener('gestureend', function() {
-  document.body.style.zoom = 1;
-});
-document.addEventListener('touchend', function() {
-  var scale = window.visualViewport ? window.visualViewport.scale : 1;
-  if (scale !== 1) {
-    document.documentElement.style.transform = 'scale(1)';
-    setTimeout(function() { document.documentElement.style.transform = ''; }, 100);
-  }
-});
-// Prevent iOS pull-to-refresh
-var lastY = 0;
-document.addEventListener('touchstart', function(e) {
-  lastY = e.touches[0].clientY;
-}, {passive: false});
-document.addEventListener('touchmove', function(e) {
-  var y = e.touches[0].clientY;
-  var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-  if (scrollTop === 0 && y > lastY) {
-    e.preventDefault();
-  }
-  lastY = y;
-}, {passive: false});
 </script>
 </body>
 </html>
