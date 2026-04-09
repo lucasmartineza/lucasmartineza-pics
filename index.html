@@ -233,7 +233,8 @@ var cur = 0, isAnimating = false, lbCur = 0, items = [];
     var t = rest[i]; rest[i] = rest[j]; rest[j] = t;
   }
   HERO.length = 0;
-  HERO.push(rest[0]); // will be replaced below
+  HERO.push(first);
+  for (var k = 0; k < rest.length; k++) HERO.push(rest[k]);
 })();
 
 // build coverflow items
