@@ -139,12 +139,18 @@ var NH = HERO.length, NG = GALLERY.length;
 
 // About text
 document.getElementById('aboutText').innerHTML = [
+  'Trabajo la fotografía de rally desde un lugar que intenta correrse de lo más evidente. No me interesa únicamente la velocidad o el momento más espectacular, sino también lo que sucede alrededor: la tensión previa, los instantes intermedios, la relación entre el auto y el entorno.',
+  'Busco construir la imagen más que solo registrarla. En un contexto que suele ser caótico e impredecible, me interesa encontrar cierto orden, cierta armonía. Por eso muchas veces el paisaje tiene tanto peso como la acción, y el encuadre aparece como una herramienta para equilibrar esos elementos.',
+  'No busco que las imágenes griten ni que se impongan desde el impacto inmediato. Me interesa más bien lo contrario: que funcionen en un registro más bajo, que obliguen o inviten a una pausa breve. Que en esa pausa aparezcan detalles que no están a primera vista: una trayectoria insinuada, una relación de escalas, una atmósfera.',
+  'Mi enfoque está más cerca de una mirada autoral que de lo puramente documental, sin perder vínculo con lo que realmente ocurre. Me interesa no solo mostrar lo que pasó, sino transmitir, en alguna medida, cómo se sintió estar ahí.',
+  'De alguna forma, estas imágenes también buscan desprenderse del ruido y la urgencia del momento en que fueron tomadas. Invitan a ser vistas con distancia, en otro tiempo, donde el caos ya no domina la escena.',
+  '---',
   'I approach rally photography from a place that tries to move away from the most obvious. I am not solely interested in speed or the most spectacular moment, but also in what happens around it: the tension beforehand, the in-between instants, the relationship between the car and its surroundings.',
   'I seek to construct the image rather than merely record it. In a context that tends to be chaotic and unpredictable, I am drawn to finding a certain order, a certain harmony. That is why the landscape often carries as much weight as the action, and framing becomes a tool for balancing those elements.',
   'I do not want the images to shout or impose themselves through immediate impact. I am interested in the opposite: that they operate on a quieter register, that they compel or invite a brief pause. That within that pause, details emerge that are not visible at first glance: a suggested trajectory, a relationship of scales, an atmosphere.',
   'My approach sits closer to an authorial vision than to pure documentation, without losing touch with what actually happens. I am interested not only in showing what occurred, but in conveying, to some degree, what it felt like to be there.',
   'In some ways, these images also seek to detach from the noise and urgency of the moment in which they were taken. They invite being seen from a distance, in another time, where the chaos no longer dominates the scene.'
-].map(function(p){return '<p>'+p+'</p>';}).join('');
+].map(function(p){return p==='---'?'<hr style="border:none;border-top:0.5px solid rgba(255,255,255,0.1);margin:24px 0;">':'<p>'+p+'</p>';}).join('');
 
 // Build slides
 var slidesEl = document.getElementById('slides');
