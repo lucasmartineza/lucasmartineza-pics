@@ -223,6 +223,7 @@ function showPage(id){
   document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
   document.getElementById(id).classList.add('active');
   document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+  document.querySelector('.header').style.display = id==='pageAbout' ? 'none' : 'flex';
 }
 document.getElementById('tabHome').addEventListener('click',function(){showPage('pageHome');this.classList.add('active');});
 document.getElementById('tabGallery').addEventListener('click',function(){showPage('pageGallery');this.classList.add('active');});
