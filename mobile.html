@@ -11,7 +11,7 @@ html,body{width:100%;height:100%;background:#000;font-family:'Montserrat',sans-s
 
 /* HEADER */
 .header{position:fixed;top:0;left:0;right:0;z-index:100;padding:28px 0 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(to bottom,rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.4) 70%,transparent 100%);}
-.header-top{display:flex;align-items:center;gap:14px;}
+.header-top{display:flex;align-items:center;justify-content:center;gap:14px;width:100%;}
 .header-name{font-weight:300;font-size:0.98rem;letter-spacing:0.3em;text-transform:uppercase;color:#fff;}
 .h-icon{color:rgba(255,255,255,0.55);text-decoration:none;display:flex;align-items:center;}
 .h-icon svg{width:16px;height:16px;stroke:rgba(255,255,255,0.55);}
@@ -97,8 +97,7 @@ html,body{width:100%;height:100%;background:#000;font-family:'Montserrat',sans-s
 </div>
 
 <!-- GALLERY -->
-<div class="page" id="pageGallery">
-  <div style="height:48px;display:flex;align-items:center;justify-content:center;"><span style="font-family:Montserrat,sans-serif;font-weight:300;font-size:0.75rem;letter-spacing:0.3em;text-transform:uppercase;color:#fff;">Lucas Martinez</span></div>
+<div class="page" id="pageGallery" style="overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:8px;padding-bottom:60px;">
   <div class="gallery-grid" id="galleryGrid"></div>
 </div>
 
