@@ -222,7 +222,7 @@ HERO.forEach(function(d, i) {
   var div = document.createElement('div');
   div.className = 'cf-item';
   var img = new Image();
-  img.src = (window.innerWidth <= 768 ? 'fotos-hero-m/' : 'fotos-hero/') + d.file;
+  img.src = 'fotos-hero/' + d.file;
   div.appendChild(img);
   div.addEventListener('click', function() {
     if (i !== cur) goTo(i);
@@ -236,7 +236,7 @@ GALLERY.forEach(function(d, i) {
   var div = document.createElement('div');
   div.className = 'grid-item';
   var img = new Image();
-  img.src = (window.innerWidth <= 768 ? 'fotos-m/' : 'fotos/') + d.file;
+  img.src = 'fotos/' + d.file;
   div.appendChild(img);
   div.addEventListener('click', (function(idx){ return function(){ closeF(); setTimeout(function(){ openLB(idx); }, 200); }; })(i));
   photoGrid.appendChild(div);
@@ -404,7 +404,7 @@ document.getElementById('fototecaClose').addEventListener('click', closeF);
 
 function openLB(idx) {
   lbCur = idx;
-  lbImg.src = (window.innerWidth <= 768 ? 'fotos-m/' : 'fotos/') + GALLERY[lbCur].file;
+  lbImg.src = 'fotos/' + GALLERY[lbCur].file;
   renderMeta(GALLERY[lbCur].meta);
   lightbox.classList.add('open');
 }
@@ -414,7 +414,7 @@ function closeLB() {
 }
 function lbGoTo(n) {
   lbCur = (n + NG) % NG;
-  lbImg.src = (window.innerWidth <= 768 ? 'fotos-m/' : 'fotos/') + GALLERY[lbCur].file;
+  lbImg.src = 'fotos/' + GALLERY[lbCur].file;
   renderMeta(GALLERY[lbCur].meta);
 }
 function renderMeta(m) {
