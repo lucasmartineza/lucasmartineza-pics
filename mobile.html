@@ -54,6 +54,8 @@ html,body{width:100%;height:100%;background:#000;font-family:'Montserrat',sans-s
 .about-spotify{margin-top:32px;}
 .about-spotify iframe{width:100%;border-radius:10px;}
 
+.cf-nav{position:absolute;top:50%;transform:translateY(-50%);width:100%;display:flex;justify-content:space-between;padding:0 4px;pointer-events:none;z-index:10;}
+.cf-btn{pointer-events:all;background:rgba(0,0,0,0.35);border:0.5px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);width:36px;height:36px;font-size:1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:4px;}
 /* LIGHTBOX */
 .lightbox{position:fixed;inset:0;background:rgba(0,0,0,0.97);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;}
 .lightbox.open{display:flex;}
@@ -74,6 +76,10 @@ html,body{width:100%;height:100%;background:#000;font-family:'Montserrat',sans-s
 <div class="page active" id="pageHome">
   <div class="carousel" id="carousel">
     <div class="slides" id="slides"></div>
+  </div>
+  <div class="cf-nav">
+    <div class="cf-btn" id="cfPrev">&#8592;</div>
+    <div class="cf-btn" id="cfNext">&#8594;</div>
   </div>
   <div class="slide-counter" id="slideCounter">1 / 0</div>
 </div>
@@ -180,8 +186,11 @@ function goTo(n){
   updateCounter();
 }
 updateCounter();
-setInterval(function(){goTo(cur+1);},5000);
+// no autoplay
 
+// Arrow nav
+document.getElementById('cfPrev').addEventListener('click',function(){goTo(cur-1);});
+document.getElementById('cfNext').addEventListener('click',function(){goTo(cur+1);});
 // Swipe with follow-finger
 var tx=null,ty=null,dragging=false,startOffset=0;
 function setOff(x){slidesEl.style.transform='translateX('+x+'px)';}
