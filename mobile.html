@@ -11,7 +11,10 @@ html,body{width:100%;height:100%;background:#000;font-family:'Montserrat',sans-s
 
 /* HEADER */
 .header{position:fixed;top:0;left:0;right:0;z-index:100;padding:28px 0 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(to bottom,rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.4) 70%,transparent 100%);}
+.header-top{display:flex;align-items:center;gap:14px;}
 .header-name{font-weight:300;font-size:0.98rem;letter-spacing:0.3em;text-transform:uppercase;color:#fff;}
+.h-icon{color:rgba(255,255,255,0.55);text-decoration:none;display:flex;align-items:center;}
+.h-icon svg{width:16px;height:16px;stroke:rgba(255,255,255,0.55);}
 .header-sub{font-weight:300;font-size:0.58rem;letter-spacing:0.05em;color:rgba(255,255,255,0.45);text-align:center;padding:3px 16px 0;line-height:1.6;}.header-sub-sep{border-top:0.5px solid rgba(255,255,255,0.15);margin:6px auto;width:40px;}
 
 /* TAB BAR */
@@ -71,7 +74,14 @@ html,body{width:100%;height:100%;background:#000;font-family:'Montserrat',sans-s
 </head>
 <body>
 
-<div class="header"><div class="header-name">Lucas Martinez</div>
+<div class="header"><div class="header-top">
+    <div class="header-name">Lucas Martinez</div>
+    <div class="header-icons">
+      <a href="https://instagram.com/lucasmartineza" target="_blank" class="h-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+      <a href="https://wa.me/5493513020815" target="_blank" class="h-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></a>
+      <a href="mailto:lucasmartinez.a@gmail.com" class="h-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg></a>
+    </div>
+  </div>
   <div class="header-sub">La velocidad dura un instante.<br>Activ&#225; la m&#250;sica y mir&#225; despacio.<br><em>- Us&#225; el bot&#243;n de Spotify y dej&#225; que la playlist marque el clima -</em><div class="header-sub-sep"></div><em style="font-size:0.58rem;opacity:0.6">Speed lasts an instant. Play the music and look slowly.<br>- Use the Spotify button and let the playlist set the mood while you browse the photos -</em></div></div>
 
 <!-- HOME -->
@@ -88,6 +98,7 @@ html,body{width:100%;height:100%;background:#000;font-family:'Montserrat',sans-s
 
 <!-- GALLERY -->
 <div class="page" id="pageGallery">
+  <div style="height:48px;display:flex;align-items:center;justify-content:center;"><span style="font-family:Montserrat,sans-serif;font-weight:300;font-size:0.75rem;letter-spacing:0.3em;text-transform:uppercase;color:#fff;">Lucas Martinez</span></div>
   <div class="gallery-grid" id="galleryGrid"></div>
 </div>
 
