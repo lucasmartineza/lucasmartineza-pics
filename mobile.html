@@ -240,6 +240,8 @@ function showPage(id){
   document.getElementById(id).classList.add('active');
   document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
   document.querySelector('.header').style.display = id==='pageAbout' ? 'none' : 'flex';
+  document.querySelector('.header-sub').style.display = id==='pageHome' ? 'block' : 'none';
+  document.querySelector('.header-icons').style.display = id==='pageHome' ? 'flex' : 'none';
 }
 document.getElementById('tabHome').addEventListener('click',function(){showPage('pageHome');this.classList.add('active');});
 document.getElementById('tabGallery').addEventListener('click',function(){showPage('pageGallery');this.classList.add('active');});
