@@ -584,11 +584,11 @@ function submitComment() {
   if (!ig) { msgEl.style.display='block'; msgEl.textContent='El @instagram es obligatorio.'; return; }
   if (!msg) { msgEl.style.display='block'; msgEl.textContent='Escribí un comentario.'; return; }
   document.getElementById('cmtSubmit').textContent = 'Enviando...';
-  fetch('https://script.google.com/macros/s/AKfycbwjYCVErqO6NVuQEIKKJNhd1blh0Bcq8coTdPYFlimnst5dPYwDRuy9bFjvIvAd9UjT/exec', {
-    method: 'POST',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({instagram: ig, message: msg})
-  }).then(function(r){return r.json();}).then(function(){
+  var fd = new FormData();
+  fd.append('instagram', ig);
+  fd.append('message', msg);
+  fetch('https://script.google.com/macros/s/AKfycbwjYCVErqO6NVuQEIKKJNhd1blh0Bcq8coTdPYFlimnst5dPYwDRuy9bFjvIvAd9UjT/exec', {method:'POST', body:fd, mode:'no-cors'})
+  .then(function(){
     document.getElementById('cmtInstagram').value = '';
     document.getElementById('cmtMessage').value = '';
     document.getElementById('cmtSubmit').textContent = 'ENVIAR';
