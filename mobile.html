@@ -297,54 +297,7 @@ document.getElementById('lightbox').addEventListener('click',function(e){if(e.ta
 </div>
 
 <script>
-function mRenderComments() {
-  var comments = JSON.parse(localStorage.getItem('lm_comments') || '[]');
-  var list = document.getElementById('mCmtList');
-  if (!list) return;
-  if (comments.length === 0) {
-    list.innerHTML = '<p style="color:rgba(255,255,255,0.3);font-size:0.8rem;letter-spacing:0.08em;">Sé el primero en comentar.</p>';
-    return;
-  }
-  list.innerHTML = comments.map(function(c) {
-    return '<div style="border-bottom:0.5px solid rgba(255,255,255,0.08);padding-bottom:12px;">' +
-      '<div style="color:#fff;font-size:0.8rem;font-weight:600;letter-spacing:0.06em;margin-bottom:4px;">' + c.instagram + '</div>' +
-      '<div style="color:rgba(255,255,255,0.65);font-size:0.85rem;line-height:1.5;">' + c.message + '</div>' +
-      '</div>';
-  }).join('');
-}
 
-function mSubmitComment() {
-  var ig = document.getElementById('mCmtIg').value.trim();
-  var msg = document.getElementById('mCmtMsg').value.trim();
-  var fb = document.getElementById('mCmtFeedback');
-  if (!ig) { fb.style.display='block'; fb.textContent='El @instagram es obligatorio.'; return; }
-  if (!msg) { fb.style.display='block'; fb.textContent='Escribí un comentario.'; return; }
-  document.getElementById('mCmtBtn').textContent = 'Enviando...';
-  fetch('https://formspree.io/f/mqewjpqj', {
-    method: 'POST',
-    headers: {'Content-Type':'application/json','Accept':'application/json'},
-    body: JSON.stringify({instagram: ig, message: msg})
-  }).then(function(r){return r.json();}).then(function(){
-    var comments = JSON.parse(localStorage.getItem('lm_comments') || '[]');
-    comments.unshift({instagram: ig, message: msg});
-    localStorage.setItem('lm_comments', JSON.stringify(comments));
-    mRenderComments();
-    document.getElementById('mCmtIg').value = '';
-    document.getElementById('mCmtMsg').value = '';
-    document.getElementById('mCmtBtn').textContent = 'ENVIAR';
-    fb.style.display='block'; fb.textContent='¡Comentario enviado!';
-    setTimeout(function(){ fb.style.display='none'; }, 3000);
-  }).catch(function(){
-    document.getElementById('mCmtBtn').textContent = 'ENVIAR';
-    fb.style.display='block'; fb.textContent='Error al enviar. Intentá de nuevo.';
-  });
-}
-
-document.getElementById('tabComments').addEventListener('click', function(){
-  showPage('pageComments');
-  mRenderComments();
-  this.classList.add('active');
-});
 </script>
 
 </body>
