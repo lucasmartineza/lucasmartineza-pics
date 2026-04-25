@@ -552,55 +552,9 @@ function setLang(lang) {
   </div>
 </div>
 
+
+
 <script>
-// ── COMMENTS ──
-
-    document.getElementById('cmtInstagram').value = '';
-    document.getElementById('cmtMessage').value = '';
-    document.getElementById('cmtSubmit').textContent = 'ENVIAR';
-    msgEl.style.display='block';
-    msgEl.textContent='¡Comentario enviado!';
-    setTimeout(function(){ msgEl.style.display='none'; }, 3000);
-  }).catch(function() {
-    document.getElementById('cmtSubmit').textContent = 'ENVIAR';
-    msgEl.style.display='block';
-    msgEl.textContent='Error al enviar. Intentá de nuevo.';
-  });
-}
-
-document.getElementById('tabComments').addEventListener('click', function() {
-  document.getElementById('sectionComments').style.display='block';
-  renderComments();
-  setActiveTab('tabComments');
-});
-
-function startTickerF() {
-  var comments = JSON.parse(localStorage.getItem('lm_comments') || '[]');
-  if (comments.length === 0) return;
-  var box = document.getElementById('cmtickerBoxF');
-  if (!box) return;
-  var idx = 0;
-  function showNext() {
-    var c = comments[idx % comments.length];
-    box.querySelector('.cmticker-ig').textContent = c.instagram;
-    box.querySelector('.cmticker-msg').textContent = c.message;
-    box.style.right = '-320px';
-    box.style.transition = 'none';
-    setTimeout(function() {
-      box.style.transition = 'right 0.8s ease';
-      box.style.right = '24px';
-      setTimeout(function() {
-        setTimeout(function() {
-          box.style.transition = 'right 0.8s ease';
-          box.style.right = '-320px';
-          setTimeout(function() { idx++; showNext(); }, 900);
-        }, 3000);
-      }, 900);
-    }, 50);
-  }
-  showNext();
-}
-
 function renderComments(comments) {
   var list = document.getElementById('commentsList');
   if (!list) return;
@@ -619,7 +573,7 @@ function renderComments(comments) {
 function loadComments() {
   fetch('https://script.google.com/macros/s/AKfycbwjYCVErqO6NVuQEIKKJNhd1blh0Bcq8coTdPYFlimnst5dPYwDRuy9bFjvIvAd9UjT/exec')
     .then(function(r){return r.json();})
-    .then(function(data){ renderComments(data); startTicker(data); })
+    .then(function(data){ renderComments(data); startTickerData(data); })
     .catch(function(){ console.log('Error cargando comentarios'); });
 }
 
@@ -646,13 +600,44 @@ function submitComment() {
   });
 }
 
+function startTickerData(comments) {
+  if (!comments || comments.length === 0) return;
+  var box = document.getElementById('cmtickerBoxF');
+  if (!box) return;
+  var idx = 0;
+  function showNext() {
+    var c = comments[idx % comments.length];
+    box.querySelector('.cmticker-ig').textContent = c.instagram;
+    box.querySelector('.cmticker-msg').textContent = c.message;
+    box.style.right = '-320px';
+    box.style.transition = 'none';
+    setTimeout(function() {
+      box.style.transition = 'right 0.8s ease';
+      box.style.right = '24px';
+      setTimeout(function() {
+        setTimeout(function() {
+          box.style.transition = 'right 0.8s ease';
+          box.style.right = '-320px';
+          setTimeout(function() { idx++; showNext(); }, 900);
+        }, 3000);
+      }, 900);
+    }, 50);
+  }
+  showNext();
+}
+
 document.getElementById('tabComments').addEventListener('click', function() {
   document.getElementById('sectionComments').style.display='block';
   loadComments();
   setActiveTab('tabComments');
 });
 
+document.getElementById('tabGallery').addEventListener('click', function() {
+  document.getElementById('sectionComments').style.display='none';
+  openF();
+  fetch('https://script.google.com/macros/s/AKfycbwjYCVErqO6NVuQEIKKJNhd1blh0Bcq8coTdPYFlimnst5dPYwDRuy9bFjvIvAd9UjT/exec').then(function(r){return r.json();}).then(startTickerData);
+  setActiveTab('tabGallery');
+});
 </script>
-
 </body>
 </html>
