@@ -186,6 +186,7 @@ body{overflow-x:hidden;overflow-y:scroll;}
 <div class="fototeca" id="fototeca">
   <div class="fototeca-header"><button class="fototeca-close" id="fototecaClose">Close &#x2715;</button></div>
   <div class="fototeca-grid"><div class="photo-grid" id="photoGrid"></div></div>
+  <div class="cmticker-wrap" id="cmtickerWrapF"><div class="cmticker-box" id="cmtickerBoxF"><span class="cmticker-ig"></span><span class="cmticker-msg"></span></div></div>
 </div>
 
 <div class="lightbox" id="lightbox">
@@ -475,7 +476,8 @@ document.getElementById('tabHome').addEventListener('click', function() {
 });
 document.getElementById('tabGallery').addEventListener('click', function() {
   document.getElementById('sectionComments').style.display='none';
-  openF(); setActiveTab('tabGallery');
+  openF();
+  setTimeout(startTickerF, 400); setActiveTab('tabGallery');
 });
 document.getElementById('tabAbout').addEventListener('click', function() {
   document.getElementById('sectionComments').style.display='none';
