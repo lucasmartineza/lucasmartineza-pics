@@ -5,16 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lucas Martinez - Rally Photography</title>
 
-<div id="sectionComments" style="display:none;position:fixed;top:56px;left:0;right:0;bottom:56px;overflow-y:auto;background:#000;z-index:100;padding:24px 20px 40px;">
-  <div style="max-width:480px;margin:0 auto;">
-    <h2 style="color:#fff;font-size:1.1rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:24px;">Comments</h2>
-    <form action="https://formspree.io/f/mqewjpqj" method="POST" style="display:flex;flex-direction:column;gap:12px;">
-      <input type="text" name="instagram" required placeholder="@tu_instagram (obligatorio)" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:12px 14px;color:#fff;font-size:0.95rem;outline:none;" />
-      <textarea name="message" required placeholder="Dejá tu comentario..." rows="4" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:12px 14px;color:#fff;font-size:0.95rem;outline:none;resize:none;"></textarea>
-      <button type="submit" style="background:#fff;color:#000;border:none;border-radius:8px;padding:13px;font-size:0.95rem;font-weight:600;cursor:pointer;letter-spacing:0.04em;">Enviar</button>
-    </form>
-  </div>
-</div>
 <script>if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){window.location.replace('mobile.html');}</script>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='black'/%3E%3Ctext x='16' y='21' font-family='Montserrat,sans-serif' font-size='11' font-weight='300' fill='white' text-anchor='middle' letter-spacing='2'%3ELM%3C/text%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
@@ -484,11 +474,7 @@ document.getElementById('tabAbout').addEventListener('click', function() {
   setTimeout(function() { if(aboutSection) aboutSection.scrollIntoView({behavior:'smooth'}); }, 100);
   setActiveTab('tabAbout');
 });
-document.getElementById('tabComments').addEventListener('click', function() {
-  document.getElementById('sectionComments').style.display='none';
-  document.getElementById('sectionComments').style.display='block';
-  setActiveTab('tabComments');
-});
+
 document.getElementById('tabSpotify').addEventListener('click', function() {
   document.getElementById('sectionComments').style.display='none';
   window.open('https://open.spotify.com/playlist/3NimH9q2tjkia3ocon5MsH', '_blank');
@@ -540,5 +526,77 @@ function setLang(lang) {
   for (var i=0; i<paras.length; i++) { if(L.about_text[i]) paras[i].textContent = L.about_text[i]; }
 }
 </script>
+
+<!-- COMMENTS SECTION -->
+<div id="sectionComments" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#000;z-index:400;overflow-y:auto;padding:72px 24px 80px;">
+  <div style="max-width:480px;margin:0 auto;">
+    <h2 style="color:#fff;font-size:0.85rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:32px;">Comments</h2>
+    <div id="commentsList" style="margin-bottom:32px;display:flex;flex-direction:column;gap:16px;"></div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <input id="cmtInstagram" type="text" required placeholder="@tu_instagram (obligatorio)" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:12px 14px;color:#fff;font-size:0.9rem;outline:none;font-family:inherit;" />
+      <textarea id="cmtMessage" required placeholder="Dejá tu comentario..." rows="4" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:12px 14px;color:#fff;font-size:0.9rem;outline:none;resize:none;font-family:inherit;"></textarea>
+      <button id="cmtSubmit" onclick="submitComment()" style="background:#fff;color:#000;border:none;border-radius:6px;padding:13px;font-size:0.85rem;font-weight:600;cursor:pointer;letter-spacing:0.06em;font-family:inherit;">ENVIAR</button>
+      <div id="cmtMsg" style="display:none;color:#fff;font-size:0.8rem;text-align:center;letter-spacing:0.08em;opacity:0.7;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── COMMENTS ──
+var storedComments = JSON.parse(localStorage.getItem('lm_comments') || '[]');
+
+function renderComments() {
+  var list = document.getElementById('commentsList');
+  if (!list) return;
+  if (storedComments.length === 0) {
+    list.innerHTML = '<p style="color:rgba(255,255,255,0.3);font-size:0.8rem;letter-spacing:0.08em;">Sé el primero en comentar.</p>';
+    return;
+  }
+  list.innerHTML = storedComments.map(function(c) {
+    return '<div style="border-bottom:0.5px solid rgba(255,255,255,0.08);padding-bottom:14px;">' +
+      '<div style="color:#fff;font-size:0.8rem;font-weight:600;letter-spacing:0.06em;margin-bottom:4px;">' + c.instagram + '</div>' +
+      '<div style="color:rgba(255,255,255,0.65);font-size:0.85rem;line-height:1.5;">' + c.message + '</div>' +
+      '</div>';
+  }).join('');
+}
+
+function submitComment() {
+  var ig = document.getElementById('cmtInstagram').value.trim();
+  var msg = document.getElementById('cmtMessage').value.trim();
+  var msgEl = document.getElementById('cmtMsg');
+
+  if (!ig) { msgEl.style.display='block'; msgEl.textContent='El @instagram es obligatorio.'; return; }
+  if (!msg) { msgEl.style.display='block'; msgEl.textContent='Escribí un comentario.'; return; }
+
+  document.getElementById('cmtSubmit').textContent = 'Enviando...';
+
+  fetch('https://formspree.io/f/mqewjpqj', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify({ instagram: ig, message: msg })
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    storedComments.unshift({ instagram: ig, message: msg });
+    localStorage.setItem('lm_comments', JSON.stringify(storedComments));
+    renderComments();
+    document.getElementById('cmtInstagram').value = '';
+    document.getElementById('cmtMessage').value = '';
+    document.getElementById('cmtSubmit').textContent = 'ENVIAR';
+    msgEl.style.display='block';
+    msgEl.textContent='¡Comentario enviado!';
+    setTimeout(function(){ msgEl.style.display='none'; }, 3000);
+  }).catch(function() {
+    document.getElementById('cmtSubmit').textContent = 'ENVIAR';
+    msgEl.style.display='block';
+    msgEl.textContent='Error al enviar. Intentá de nuevo.';
+  });
+}
+
+document.getElementById('tabComments').addEventListener('click', function() {
+  document.getElementById('sectionComments').style.display='block';
+  renderComments();
+  setActiveTab('tabComments');
+});
+</script>
+
 </body>
 </html>
