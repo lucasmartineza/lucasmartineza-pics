@@ -485,7 +485,7 @@ document.getElementById('tabAbout').addEventListener('click', function() {
   setActiveTab('tabAbout');
 });
 document.getElementById('tabComments').addEventListener('click', function() {
-  document.querySelectorAll('#sectionComments,#sectionAbout').forEach(s=>s.style.display='none');
+  document.getElementById('sectionComments').style.display='none';
   document.getElementById('sectionComments').style.display='block';
   setActiveTab('tabComments');
 });
