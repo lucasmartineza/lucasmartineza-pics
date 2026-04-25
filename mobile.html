@@ -20,7 +20,7 @@ html,body{width:100%;height:100%;background:#000;font-family:'Montserrat',sans-s
 
 /* TAB BAR */
 .tabbar{position:fixed;bottom:0;left:0;right:0;z-index:100;height:60px;padding-bottom:env(safe-area-inset-bottom,0);background:rgba(0,0,0,0.92);border-top:0.5px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:space-around;}
-.tab{display:flex;flex-direction:column;align-items:center;gap:3px;border:none;background:none;cursor:pointer;padding:8px 16px;}
+.tab{display:flex;flex-direction:column;align-items:center;gap:3px;border:none;background:none;cursor:pointer;padding:8px 10px;}
 .tab svg{width:22px;height:22px;stroke:rgba(255,255,255,0.3);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;transition:stroke 0.2s;}
 .tab span{font-size:8px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.3);transition:color 0.2s;}
 .tab.active svg{stroke:#fff;}
@@ -139,6 +139,10 @@ html,body{width:100%;height:100%;background:#000;font-family:'Montserrat',sans-s
   <button class="tab" id="tabAbout">
     <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
     <span>About</span>
+  </button>
+  <button class="tab" id="tabComments">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <span>Comments</span>
   </button>
   <button class="tab" id="tabSpotify">
     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 11.5c2.5-.8 5-.8 8 0M7 15c3-1 5.5-1 9 0M9.5 8.5c2-.5 4-.5 6 0"/></svg>
@@ -278,5 +282,70 @@ document.getElementById('lbPrev').addEventListener('click',function(){lbGoTo(lbC
 document.getElementById('lbNext').addEventListener('click',function(){lbGoTo(lbCur+1);});
 document.getElementById('lightbox').addEventListener('click',function(e){if(e.target===this)closeLB();});
 </script>
+
+<div id="pageComments" style="display:none;position:fixed;inset:0;background:#000;z-index:90;overflow-y:auto;padding:60px 20px 80px;">
+  <div style="max-width:480px;margin:0 auto;">
+    <h2 style="color:#fff;font-size:0.8rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:24px;">Comments</h2>
+    <div id="mCmtList" style="margin-bottom:28px;display:flex;flex-direction:column;gap:14px;"></div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <input id="mCmtIg" type="text" placeholder="@tu_instagram (obligatorio)" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:12px 14px;color:#fff;font-size:0.9rem;outline:none;font-family:inherit;-webkit-appearance:none;" />
+      <textarea id="mCmtMsg" placeholder="Dejá tu comentario..." rows="4" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:12px 14px;color:#fff;font-size:0.9rem;outline:none;resize:none;font-family:inherit;-webkit-appearance:none;"></textarea>
+      <button id="mCmtBtn" onclick="mSubmitComment()" style="background:#fff;color:#000;border:none;border-radius:6px;padding:13px;font-size:0.85rem;font-weight:600;cursor:pointer;letter-spacing:0.06em;font-family:inherit;">ENVIAR</button>
+      <div id="mCmtFeedback" style="display:none;color:#fff;font-size:0.8rem;text-align:center;letter-spacing:0.08em;opacity:0.7;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function mRenderComments() {
+  var comments = JSON.parse(localStorage.getItem('lm_comments') || '[]');
+  var list = document.getElementById('mCmtList');
+  if (!list) return;
+  if (comments.length === 0) {
+    list.innerHTML = '<p style="color:rgba(255,255,255,0.3);font-size:0.8rem;letter-spacing:0.08em;">Sé el primero en comentar.</p>';
+    return;
+  }
+  list.innerHTML = comments.map(function(c) {
+    return '<div style="border-bottom:0.5px solid rgba(255,255,255,0.08);padding-bottom:12px;">' +
+      '<div style="color:#fff;font-size:0.8rem;font-weight:600;letter-spacing:0.06em;margin-bottom:4px;">' + c.instagram + '</div>' +
+      '<div style="color:rgba(255,255,255,0.65);font-size:0.85rem;line-height:1.5;">' + c.message + '</div>' +
+      '</div>';
+  }).join('');
+}
+
+function mSubmitComment() {
+  var ig = document.getElementById('mCmtIg').value.trim();
+  var msg = document.getElementById('mCmtMsg').value.trim();
+  var fb = document.getElementById('mCmtFeedback');
+  if (!ig) { fb.style.display='block'; fb.textContent='El @instagram es obligatorio.'; return; }
+  if (!msg) { fb.style.display='block'; fb.textContent='Escribí un comentario.'; return; }
+  document.getElementById('mCmtBtn').textContent = 'Enviando...';
+  fetch('https://formspree.io/f/mqewjpqj', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json','Accept':'application/json'},
+    body: JSON.stringify({instagram: ig, message: msg})
+  }).then(function(r){return r.json();}).then(function(){
+    var comments = JSON.parse(localStorage.getItem('lm_comments') || '[]');
+    comments.unshift({instagram: ig, message: msg});
+    localStorage.setItem('lm_comments', JSON.stringify(comments));
+    mRenderComments();
+    document.getElementById('mCmtIg').value = '';
+    document.getElementById('mCmtMsg').value = '';
+    document.getElementById('mCmtBtn').textContent = 'ENVIAR';
+    fb.style.display='block'; fb.textContent='¡Comentario enviado!';
+    setTimeout(function(){ fb.style.display='none'; }, 3000);
+  }).catch(function(){
+    document.getElementById('mCmtBtn').textContent = 'ENVIAR';
+    fb.style.display='block'; fb.textContent='Error al enviar. Intentá de nuevo.';
+  });
+}
+
+document.getElementById('tabComments').addEventListener('click', function(){
+  showPage('pageComments');
+  mRenderComments();
+  this.classList.add('active');
+});
+</script>
+
 </body>
 </html>
