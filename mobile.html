@@ -361,9 +361,21 @@ function mSubmitComment() {
 }
 
 document.getElementById('tabComments').addEventListener('click', function(){
-  showPage('pageComments');
-  mLoadComments();
+  document.getElementById('pageComments').style.display='block';
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+  document.querySelector('.header').style.display = 'none';
   this.classList.add('active');
+  mLoadComments();
+});
+document.getElementById('tabHome').addEventListener('click', function(){
+  document.getElementById('pageComments').style.display='none';
+});
+document.getElementById('tabGallery').addEventListener('click', function(){
+  document.getElementById('pageComments').style.display='none';
+});
+document.getElementById('tabAbout').addEventListener('click', function(){
+  document.getElementById('pageComments').style.display='none';
 });
 </script>
 </body>
