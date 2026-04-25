@@ -607,6 +607,33 @@ document.getElementById('tabComments').addEventListener('click', function() {
   renderComments();
   setActiveTab('tabComments');
 });
+
+function startTickerF() {
+  var comments = JSON.parse(localStorage.getItem('lm_comments') || '[]');
+  if (comments.length === 0) return;
+  var box = document.getElementById('cmtickerBoxF');
+  if (!box) return;
+  var idx = 0;
+  function showNext() {
+    var c = comments[idx % comments.length];
+    box.querySelector('.cmticker-ig').textContent = c.instagram;
+    box.querySelector('.cmticker-msg').textContent = c.message;
+    box.style.right = '-320px';
+    box.style.transition = 'none';
+    setTimeout(function() {
+      box.style.transition = 'right 0.8s ease';
+      box.style.right = '24px';
+      setTimeout(function() {
+        setTimeout(function() {
+          box.style.transition = 'right 0.8s ease';
+          box.style.right = '-320px';
+          setTimeout(function() { idx++; showNext(); }, 900);
+        }, 3000);
+      }, 900);
+    }, 50);
+  }
+  showNext();
+}
 </script>
 
 </body>
