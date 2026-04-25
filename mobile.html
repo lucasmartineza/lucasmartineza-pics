@@ -71,6 +71,11 @@ html,body{width:100%;height:100%;background:#000;font-family:'Montserrat',sans-s
 .lb-meta{margin-top:16px;text-align:center;display:flex;flex-direction:column;gap:4px;}
 .lb-meta span{font-size:10px;letter-spacing:0.1em;color:rgba(255,255,255,0.4);}
 .lb-meta span.hi{color:rgba(255,255,255,0.75);}
+
+.m-ticker-wrap{position:fixed;bottom:64px;left:0;right:0;z-index:200;pointer-events:none;overflow:hidden;height:36px;}
+.m-ticker-box{position:absolute;right:-280px;background:rgba(0,0,0,0.6);border:0.5px solid rgba(255,255,255,0.12);border-radius:4px;padding:5px 12px;backdrop-filter:blur(4px);}
+.m-ticker-ig{display:block;font-family:'Montserrat',sans-serif;font-size:0.55rem;font-weight:600;letter-spacing:0.1em;color:rgba(255,255,255,0.9);}
+.m-ticker-msg{display:block;font-family:'Montserrat',sans-serif;font-size:0.6rem;font-weight:300;color:rgba(255,255,255,0.6);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 </style>
 </head>
 <body>
@@ -98,6 +103,7 @@ html,body{width:100%;height:100%;background:#000;font-family:'Montserrat',sans-s
 <!-- GALLERY -->
 <div class="page" id="pageGallery" style="overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:110px;padding-bottom:60px;">
   <div class="gallery-grid" id="galleryGrid"></div>
+  <div class="m-ticker-wrap" id="mTickerWrap"><div class="m-ticker-box" id="mTickerBox"><span class="m-ticker-ig"></span><span class="m-ticker-msg"></span></div></div>
 </div>
 
 <!-- ABOUT -->
@@ -253,7 +259,7 @@ function showPage(id){
   document.querySelector('.header-icons').style.display = 'flex';
 }
 document.getElementById('tabHome').addEventListener('click',function(){showPage('pageHome');this.classList.add('active');});
-document.getElementById('tabGallery').addEventListener('click',function(){showPage('pageGallery');this.classList.add('active');});
+document.getElementById('tabGallery').addEventListener('click',function(){showPage('pageGallery');this.classList.add('active');fetch('https://api.jsonbin.io/v3/b/69ed3173aaba88219739827f/latest',{headers:{'X-Master-Key':'$2a$10$zJd2PlMExizSpNpIxFFCJ.SqmP9bUzh5Cc2wPY1AGL3de/EFMNV16'}}).then(function(r){return r.json();}).then(function(d){startMobileTicker(d.record.comments||[]);});});
 document.getElementById('tabAbout').addEventListener('click',function(){showPage('pageAbout');this.classList.add('active');});
 document.getElementById('tabSpotify').addEventListener('click',function(){window.open('https://open.spotify.com/playlist/3NimH9q2tjkia3ocon5MsH','_blank');document.getElementById('tabHome').click();});
 
@@ -377,6 +383,33 @@ document.getElementById('tabGallery').addEventListener('click', function(){
 document.getElementById('tabAbout').addEventListener('click', function(){
   document.getElementById('pageComments').style.display='none';
 });
+
+function startMobileTicker(comments) {
+  if (!comments || comments.length === 0) return;
+  var box = document.getElementById('mTickerBox');
+  if (!box) return;
+  var idx = 0;
+  function showNext() {
+    var c = comments[idx % comments.length];
+    box.querySelector('.m-ticker-ig').textContent = c.instagram;
+    box.querySelector('.m-ticker-msg').textContent = c.message;
+    box.style.right = '-280px';
+    box.style.transition = 'none';
+    setTimeout(function() {
+      box.style.transition = 'right 0.8s ease';
+      box.style.right = '16px';
+      setTimeout(function() {
+        setTimeout(function() {
+          box.style.transition = 'right 0.8s ease';
+          box.style.right = '-280px';
+          setTimeout(function() { idx++; showNext(); }, 900);
+        }, 3000);
+      }, 900);
+    }, 50);
+  }
+  showNext();
+}
+
 </script>
 </body>
 </html>
