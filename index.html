@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lucas Martinez - Rally Photography</title>
 
-<div id="sectionComments" style="display:none;position:fixed;top:0;left:0;right:0;bottom:56px;overflow-y:auto;background:#000;z-index:100;padding:24px 20px 40px;">
+<div id="sectionComments" style="display:none;position:fixed;top:56px;left:0;right:0;bottom:56px;overflow-y:auto;background:#000;z-index:100;padding:24px 20px 40px;">
   <div style="max-width:480px;margin:0 auto;">
     <h2 style="color:#fff;font-size:1.1rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:24px;">Comments</h2>
     <form action="https://formspree.io/f/mqewjpqj" method="POST" style="display:flex;flex-direction:column;gap:12px;">
@@ -470,11 +470,13 @@ function setActiveTab(id) {
   if(el) el.classList.add('active');
 }
 document.getElementById('tabHome').addEventListener('click', function() {
+  document.getElementById('sectionComments').style.display='none';
   closeF(); closeLB();
   window.scrollTo({top:0,behavior:'smooth'});
   setActiveTab('tabHome');
 });
 document.getElementById('tabGallery').addEventListener('click', function() {
+  document.getElementById('sectionComments').style.display='none';
   openF(); setActiveTab('tabGallery');
 });
 document.getElementById('tabAbout').addEventListener('click', function() {
@@ -488,6 +490,7 @@ document.getElementById('tabComments').addEventListener('click', function() {
   setActiveTab('tabComments');
 });
 document.getElementById('tabSpotify').addEventListener('click', function() {
+  document.getElementById('sectionComments').style.display='none';
   window.open('https://open.spotify.com/playlist/3NimH9q2tjkia3ocon5MsH', '_blank');
 });
 
