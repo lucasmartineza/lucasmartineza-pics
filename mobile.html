@@ -300,5 +300,71 @@ document.getElementById('lightbox').addEventListener('click',function(e){if(e.ta
 
 </script>
 
+<script>
+var JSONBIN_URL = 'https://api.jsonbin.io/v3/b/69ed3173aaba88219739827f';
+var JSONBIN_KEY = '$2a$10$zJd2PlMExizSpNpIxFFCJ.SqmP9bUzh5Cc2wPY1AGL3de/EFMNV16';
+
+function mRenderComments(comments) {
+  var list = document.getElementById('mCmtList');
+  if (!list) return;
+  if (!comments || comments.length === 0) {
+    list.innerHTML = '<p style="color:rgba(255,255,255,0.3);font-size:0.8rem;letter-spacing:0.08em;">Sé el primero en comentar.</p>';
+    return;
+  }
+  list.innerHTML = comments.map(function(c) {
+    return '<div style="border-bottom:0.5px solid rgba(255,255,255,0.08);padding-bottom:12px;">' +
+      '<div style="color:#fff;font-size:0.8rem;font-weight:600;letter-spacing:0.06em;margin-bottom:4px;">' + c.instagram + '</div>' +
+      '<div style="color:rgba(255,255,255,0.65);font-size:0.85rem;line-height:1.5;">' + c.message + '</div>' +
+      '</div>';
+  }).join('');
+}
+
+function mLoadComments() {
+  fetch(JSONBIN_URL + '/latest', {headers:{'X-Master-Key': JSONBIN_KEY}})
+    .then(function(r){return r.json();})
+    .then(function(data){
+      var comments = data.record.comments || [];
+      mRenderComments(comments);
+    })
+    .catch(function(){ console.log('Error cargando comentarios'); });
+}
+
+function mSubmitComment() {
+  var ig = document.getElementById('mCmtIg').value.trim();
+  var msg = document.getElementById('mCmtMsg').value.trim();
+  var fb = document.getElementById('mCmtFeedback');
+  if (!ig) { fb.style.display='block'; fb.textContent='El @instagram es obligatorio.'; return; }
+  if (!msg) { fb.style.display='block'; fb.textContent='Escribí un comentario.'; return; }
+  document.getElementById('mCmtBtn').textContent = 'Enviando...';
+  fetch(JSONBIN_URL + '/latest', {headers:{'X-Master-Key': JSONBIN_KEY}})
+    .then(function(r){return r.json();})
+    .then(function(data){
+      var comments = data.record.comments || [];
+      comments.unshift({instagram: ig, message: msg});
+      return fetch(JSONBIN_URL, {
+        method: 'PUT',
+        headers: {'Content-Type':'application/json','X-Master-Key': JSONBIN_KEY},
+        body: JSON.stringify({comments: comments})
+      });
+    })
+    .then(function(){
+      document.getElementById('mCmtIg').value = '';
+      document.getElementById('mCmtMsg').value = '';
+      document.getElementById('mCmtBtn').textContent = 'ENVIAR';
+      fb.style.display='block'; fb.textContent='¡Comentario enviado!';
+      setTimeout(function(){ fb.style.display='none'; mLoadComments(); }, 1500);
+    })
+    .catch(function(){
+      document.getElementById('mCmtBtn').textContent = 'ENVIAR';
+      fb.style.display='block'; fb.textContent='Error al enviar. Intentá de nuevo.';
+    });
+}
+
+document.getElementById('tabComments').addEventListener('click', function(){
+  showPage('pageComments');
+  mLoadComments();
+  this.classList.add('active');
+});
+</script>
 </body>
 </html>
