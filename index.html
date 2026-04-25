@@ -470,6 +470,7 @@ document.getElementById('tabGallery').addEventListener('click', function() {
   openF(); setActiveTab('tabGallery');
 });
 document.getElementById('tabAbout').addEventListener('click', function() {
+  document.getElementById('sectionComments').style.display='none';
   closeF(); closeLB();
   setTimeout(function() { if(aboutSection) aboutSection.scrollIntoView({behavior:'smooth'}); }, 100);
   setActiveTab('tabAbout');
