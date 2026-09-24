@@ -629,6 +629,39 @@ document.getElementById('tabAbout').addEventListener('click', function() {
 document.getElementById('tabSpotify').addEventListener('click', function() {
   document.getElementById('sectionComments').style.display='none';
 });
+
+function startHomeTicker(comments) {
+  if (!comments || comments.length === 0) return;
+  var box = document.getElementById('homeTickerBox');
+  if (!box) return;
+  var idx = 0;
+  function showNext() {
+    var c = comments[idx % comments.length];
+    box.querySelector('.home-ticker-ig').textContent = c.instagram;
+    box.querySelector('.home-ticker-msg').textContent = c.message;
+    box.style.right = '-320px';
+    box.style.transition = 'none';
+    setTimeout(function() {
+      box.style.transition = 'right 0.8s ease';
+      box.style.right = '24px';
+      setTimeout(function() {
+        setTimeout(function() {
+          box.style.transition = 'right 0.8s ease';
+          box.style.right = '-320px';
+          setTimeout(function() { idx++; showNext(); }, 900);
+        }, 3000);
+      }, 900);
+    }, 50);
+  }
+  showNext();
+}
+
+fetch('https://api.jsonbin.io/v3/b/69ed3173aaba88219739827f/latest', {
+  headers: {'X-Master-Key': '$2a$10$zJd2PlMExizSpNpIxFFCJ.SqmP9bUzh5Cc2wPY1AGL3de/EFMNV16'}
+}).then(function(r){return r.json();})
+  .then(function(data){ startHomeTicker(data.record.comments || []); })
+  .catch(function(){});
+
 </script>
 </body>
 </html>
