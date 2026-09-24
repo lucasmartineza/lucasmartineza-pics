@@ -599,11 +599,10 @@ function submitComment() {
       });
     })
     .then(function(){
-      fetch('https://formspree.io/f/mqewjpqj', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json','Accept':'application/json'},
-        body: JSON.stringify({instagram: ig, message: msg})
-      });
+      var fd = new FormData();
+      fd.append('instagram', ig);
+      fd.append('message', msg);
+      fetch('https://formspree.io/f/mqewjpqj', {method:'POST', body:fd, mode:'no-cors'});
       document.getElementById('cmtInstagram').value = '';
       document.getElementById('cmtMessage').value = '';
       document.getElementById('cmtSubmit').textContent = 'ENVIAR';
