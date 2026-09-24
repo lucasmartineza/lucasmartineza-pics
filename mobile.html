@@ -71,6 +71,11 @@ html,body{width:100%;height:100%;background:#000;font-family:'Montserrat',sans-s
 .lb-meta{margin-top:16px;text-align:center;display:flex;flex-direction:column;gap:4px;}
 .lb-meta span{font-size:10px;letter-spacing:0.1em;color:rgba(255,255,255,0.4);}
 .lb-meta span.hi{color:rgba(255,255,255,0.75);}
+
+.m-home-ticker-wrap{position:fixed;bottom:72px;left:0;right:0;z-index:200;pointer-events:none;overflow:hidden;height:36px;}
+.m-home-ticker-box{position:absolute;right:-280px;background:rgba(0,0,0,0.6);border:0.5px solid rgba(255,255,255,0.12);border-radius:4px;padding:5px 12px;backdrop-filter:blur(4px);}
+.m-home-ticker-ig{display:block;font-family:'Montserrat',sans-serif;font-size:0.55rem;font-weight:600;letter-spacing:0.1em;color:rgba(255,255,255,0.9);}
+.m-home-ticker-msg{display:block;font-family:'Montserrat',sans-serif;font-size:0.6rem;font-weight:300;color:rgba(255,255,255,0.6);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 </style>
 </head>
 <body>
@@ -85,6 +90,7 @@ html,body{width:100%;height:100%;background:#000;font-family:'Montserrat',sans-s
 
 <!-- HOME -->
 <div class="page active" id="pageHome">
+  <div class="m-home-ticker-wrap"><div class="m-home-ticker-box" id="mHomeTickerBox"><span class="m-home-ticker-ig"></span><span class="m-home-ticker-msg"></span></div></div>
   <div class="carousel" id="carousel">
     <div class="slides" id="slides"></div>
   </div>
@@ -390,6 +396,41 @@ document.getElementById('tabComments').addEventListener('click', function(){
     document.querySelector('.header').style.display='flex';
   });
 });
+
+function startMobileHomeTicker(comments) {
+  if (!comments || comments.length === 0) return;
+  var box = document.getElementById('mHomeTickerBox');
+  if (!box) return;
+  var idx = 0;
+  function showNext() {
+    var c = comments[idx % comments.length];
+    box.querySelector('.m-home-ticker-ig').textContent = c.instagram;
+    box.querySelector('.m-home-ticker-msg').textContent = c.message;
+    box.style.right = '-280px';
+    box.style.transition = 'none';
+    setTimeout(function() {
+      box.style.transition = 'right 0.8s ease';
+      box.style.right = '16px';
+      setTimeout(function() {
+        setTimeout(function() {
+          box.style.transition = 'right 0.8s ease';
+          box.style.right = '-280px';
+          setTimeout(function() { idx++; showNext(); }, 900);
+        }, 3000);
+      }, 900);
+    }, 50);
+  }
+  showNext();
+}
+
+fetch('https://api.jsonbin.io/v3/b/69ed3173aaba88219739827f/latest', {
+  headers: {'X-Master-Key': '$2a$10$zJd2PlMExizSpNpIxFFCJ.SqmP9bUzh5Cc2wPY1AGL3de/EFMNV16', 'X-Bin-Meta': 'false'}
+}).then(function(r){return r.json();})
+  .then(function(data){ 
+    var comments = data.comments || (data.record && data.record.comments) || [];
+    startMobileHomeTicker(comments);
+  }).catch(function(){});
+
 </script>
 </body>
 </html>
