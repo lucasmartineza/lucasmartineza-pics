@@ -122,6 +122,7 @@ body{overflow-x:hidden;overflow-y:scroll;}
     <div class="tb-name">Lucas Martinez</div>
     <button class="tb-btn" id="btnGaleria">Gallery</button>
     <button class="tb-btn" id="btnAbout">About</button>
+    <button class="tb-btn" onclick="document.getElementById('sectionComments').style.display='block';loadComments();" >Comments</button>
   </div>
   <div class="tb-icons">
     <button class="lang-btn" id="langES" onclick="setLang('es')">ES</button>
@@ -153,6 +154,7 @@ body{overflow-x:hidden;overflow-y:scroll;}
 </nav>
 
 <section class="cf-section" id="cfSection">
+  <div style="position:fixed;bottom:72px;left:0;right:0;z-index:50;pointer-events:none;overflow:hidden;height:36px;"><div id="homeTickerBox" style="position:absolute;right:-320px;background:rgba(0,0,0,0.6);border:0.5px solid rgba(255,255,255,0.12);border-radius:4px;padding:6px 14px;backdrop-filter:blur(4px);"><span class="ht-ig" style="display:block;font-size:0.6rem;font-weight:600;letter-spacing:0.1em;color:rgba(255,255,255,0.9);"></span><span class="ht-msg" style="display:block;font-size:0.65rem;font-weight:300;color:rgba(255,255,255,0.6);max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></span></div></div>
   <div class="cf-stage" id="cfStage">
     <div class="cf-track" id="cfTrack"></div>
     <div class="cf-caption" id="cfCaption"></div>
@@ -505,5 +507,31 @@ function setLang(lang) {
   for (var i=0; i<paras.length; i++) { if(L.about_text[i]) paras[i].textContent = L.about_text[i]; }
 }
 </script>
+<!-- COMMENTS DESKTOP -->
+<div id="sectionComments" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#000;z-index:400;overflow-y:auto;padding:72px 24px 80px;">
+  <div style="max-width:480px;margin:0 auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;">
+      <h2 style="color:#fff;font-size:0.85rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;margin:0;">Comments</h2>
+      <button onclick="document.getElementById('sectionComments').style.display='none'" style="background:none;border:none;color:rgba(255,255,255,0.5);font-family:'Montserrat',sans-serif;font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;">Cerrar ✕</button>
+    </div>
+    <div id="commentsList" style="margin-bottom:32px;display:flex;flex-direction:column;gap:16px;"></div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <input id="cmtInstagram" type="text" placeholder="@tu_instagram (obligatorio)" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:12px 14px;color:#fff;font-size:0.9rem;outline:none;font-family:inherit;" />
+      <textarea id="cmtMessage" placeholder="Dejá tu comentario..." rows="4" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:12px 14px;color:#fff;font-size:0.9rem;outline:none;resize:none;font-family:inherit;"></textarea>
+      <button id="cmtSubmit" onclick="submitComment()" style="background:#fff;color:#000;border:none;border-radius:6px;padding:13px;font-size:0.85rem;font-weight:600;cursor:pointer;letter-spacing:0.06em;font-family:inherit;">ENVIAR</button>
+      <div id="cmtMsg" style="display:none;color:#fff;font-size:0.8rem;text-align:center;letter-spacing:0.08em;opacity:0.7;"></div>
+    </div>
+  </div>
+</div>
+<script>
+var DB='https://api.jsonbin.io/v3/b/69ed3173aaba88219739827f';
+var DK='$2a$10$zJd2PlMExizSpNpIxFFCJ.SqmP9bUzh5Cc2wPY1AGL3de/EFMNV16';
+function renderComments(c){var l=document.getElementById('commentsList');if(!l)return;if(!c||!c.length){l.innerHTML='<p style="color:rgba(255,255,255,0.3);font-size:0.8rem;letter-spacing:0.08em;">Se el primero en comentar.</p>';return;}l.innerHTML=c.map(function(x){return'<div style="border-bottom:0.5px solid rgba(255,255,255,0.08);padding-bottom:14px;"><div style="color:#fff;font-size:0.8rem;font-weight:600;letter-spacing:0.06em;margin-bottom:4px;">'+x.instagram+'</div><div style="color:rgba(255,255,255,0.65);font-size:0.85rem;line-height:1.5;">'+x.message+'</div></div>';}).join('');}
+function loadComments(){fetch(DB+'/latest',{headers:{'X-Master-Key':DK,'X-Bin-Meta':'false'}}).then(function(r){return r.json();}).then(function(d){renderComments(d.comments||(d.record&&d.record.comments)||[]);}).catch(function(){});}
+function submitComment(){var ig=document.getElementById('cmtInstagram').value.trim();var msg=document.getElementById('cmtMessage').value.trim();var msgEl=document.getElementById('cmtMsg');if(!ig){msgEl.style.display='block';msgEl.textContent='El @instagram es obligatorio.';return;}if(!msg){msgEl.style.display='block';msgEl.textContent='Escribi un comentario.';return;}document.getElementById('cmtSubmit').textContent='Enviando...';fetch(DB+'/latest',{headers:{'X-Master-Key':DK}}).then(function(r){return r.json();}).then(function(d){var c=d.record&&d.record.comments||[];c.unshift({instagram:ig,message:msg});return fetch(DB,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':DK},body:JSON.stringify({comments:c})});}).then(function(){var fd=new FormData();fd.append('instagram',ig);fd.append('message',msg);fetch('https://formspree.io/f/mqewjpqj',{method:'POST',body:fd,mode:'no-cors'});document.getElementById('cmtInstagram').value='';document.getElementById('cmtMessage').value='';document.getElementById('cmtSubmit').textContent='ENVIAR';msgEl.style.display='block';msgEl.textContent='Comentario enviado!';setTimeout(function(){msgEl.style.display='none';loadComments();},1500);}).catch(function(){document.getElementById('cmtSubmit').textContent='ENVIAR';msgEl.style.display='block';msgEl.textContent='Error al enviar.';});}
+function startHomeTicker(c){if(!c||!c.length)return;var box=document.getElementById('homeTickerBox');if(!box)return;var idx=0;function show(){var x=c[idx%c.length];box.querySelector('.ht-ig').textContent=x.instagram;box.querySelector('.ht-msg').textContent=x.message;box.style.right='-320px';box.style.transition='none';setTimeout(function(){box.style.transition='right 0.8s ease';box.style.right='24px';setTimeout(function(){setTimeout(function(){box.style.transition='right 0.8s ease';box.style.right='-320px';setTimeout(function(){idx++;show();},900);},3000);},900);},50);}show();}
+fetch(DB+'/latest',{headers:{'X-Master-Key':DK,'X-Bin-Meta':'false'}}).then(function(r){return r.json();}).then(function(d){var c=d.comments||(d.record&&d.record.comments)||[];startHomeTicker(c);}).catch(function(){});
+</script>
+
 </body>
 </html>
