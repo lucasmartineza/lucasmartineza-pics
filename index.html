@@ -224,19 +224,7 @@ var aboutInner   = document.getElementById('aboutInner');
 
 var cur = 0, isAnimating = false, lbCur = 0, items = [];
 
-// shuffle hero keeping first fixed
-(function() {
-  if (NH < 2) return;
-  var first = HERO[0];
-  var rest = HERO.slice(1);
-  for (var i = rest.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i+1));
-    var t = rest[i]; rest[i] = rest[j]; rest[j] = t;
-  }
-  HERO.length = 0;
-  HERO.push(first);
-  for (var k = 0; k < rest.length; k++) HERO.push(rest[k]);
-})();
+// hero order: by date added
 
 // build coverflow items
 HERO.forEach(function(d, i) {
