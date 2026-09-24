@@ -329,10 +329,15 @@ function mRenderComments(comments) {
 }
 
 function mLoadComments() {
-  fetch(M_BIN_URL + '/latest', {headers: M_HEADERS})
+  fetch(M_BIN_URL + '/latest', {
+    headers: {'X-Master-Key': M_API_KEY, 'X-Bin-Meta': 'false'}
+  })
     .then(function(r){return r.json();})
-    .then(function(data){ mRenderComments(data.record.comments || []); })
-    .catch(function(){ console.log('Error cargando comentarios'); });
+    .then(function(data){ 
+      var comments = data.comments || (data.record && data.record.comments) || [];
+      mRenderComments(comments); 
+    })
+    .catch(function(e){ console.log('Error:', e); });
 }
 
 function mSubmitComment() {
