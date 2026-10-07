@@ -13,13 +13,8 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
     const { items, payer, shippingCost } = req.body;
@@ -28,7 +23,7 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: 'No items in cart' });
     }
 
-    // Build MP items array
+    // ── Mercado Pago ──────────────────────────────────────
     const mpItems = items.map((item) => ({
       id: item.file,
       title: `${item.typeLabel} – ${item.dim}`,
@@ -38,7 +33,6 @@ module.exports = async function handler(req, res) {
       currency_id: 'ARS',
     }));
 
-    // Add shipping as a separate item if present
     if (shippingCost && shippingCost > 0) {
       mpItems.push({
         id: 'envio-andreani',
@@ -50,7 +44,6 @@ module.exports = async function handler(req, res) {
     }
 
     const preference = new Preference(client);
-
     const result = await preference.create({
       body: {
         items: mpItems,
@@ -71,20 +64,29 @@ module.exports = async function handler(req, res) {
       },
     });
 
-    // ── MAIL DE NOTIFICACIÓN ──────────────────────────────
+    // ── Mail + WhatsApp ───────────────────────────────────
     try {
+      const totalItems = items.reduce((s, i) => s + i.price, 0);
+      const total = totalItems + (shippingCost || 0);
+
+      // Filas de la tabla de fotos en el mail
       const itemsHtml = items.map((item) => `
         <tr>
           <td style="padding:10px;border-bottom:1px solid #222;">
-            <img src="https://lucasmartineza.pics/fotos-m/${item.file}"
-                 width="80" height="80"
-                 style="object-fit:cover;display:block;border-radius:4px;"
-                 alt="${item.file}"/>
+            <a href="https://lucasmartineza.pics/fotos-m/${item.file}" target="_blank">
+              <img src="https://lucasmartineza.pics/fotos-m/${item.file}"
+                   width="90" height="90"
+                   style="object-fit:cover;display:block;border-radius:4px;"
+                   alt="${item.file}"/>
+            </a>
           </td>
           <td style="padding:10px;border-bottom:1px solid #222;vertical-align:top;color:#ccc;font-family:sans-serif;font-size:13px;">
             <b style="color:#fff;">${item.typeLabel}</b><br/>
             ${item.dim}<br/>
-            <span style="color:#888;font-size:11px;">${item.file}</span>
+            <a href="https://lucasmartineza.pics/fotos-m/${item.file}"
+               style="color:#6af;font-size:11px;text-decoration:none;" target="_blank">
+              ver foto →
+            </a>
           </td>
           <td style="padding:10px;border-bottom:1px solid #222;vertical-align:top;text-align:right;color:#fff;font-family:sans-serif;font-size:13px;white-space:nowrap;">
             $${item.price.toLocaleString('es-AR')}
@@ -92,8 +94,13 @@ module.exports = async function handler(req, res) {
         </tr>
       `).join('');
 
-      const totalItems = items.reduce((s, i) => s + i.price, 0);
-      const total = totalItems + (shippingCost || 0);
+      // Mensaje de WhatsApp con links a cada foto
+      const fotosWa = items.map((item) =>
+        `• ${item.typeLabel} ${item.dim}\n  ${encodeURIComponent('→')} https://lucasmartineza.pics/fotos-m/${item.file}`
+      ).join('\n');
+
+      const waMsg = `Hola ${payer.nombre}! Recibí tu pedido 🎉\n\n${fotosWa}\n\nTotal: $${total.toLocaleString('es-AR')}\n\nTe escribo para coordinar el envío 📦`;
+      const waUrl = `https://wa.me/5493513020815?text=${encodeURIComponent(waMsg)}`;
 
       const html = `
         <div style="background:#000;padding:32px;font-family:sans-serif;max-width:560px;margin:0 auto;">
@@ -125,7 +132,7 @@ module.exports = async function handler(req, res) {
             </table>
           </div>
 
-          <a href="https://wa.me/5493513020815?text=${encodeURIComponent(`Hola ${payer.nombre}! Vi tu pedido en la tienda. Te escribo para coordinar el envío 📦`)}"
+          <a href="${waUrl}"
              style="display:block;background:#25D366;color:#fff;text-align:center;padding:14px;border-radius:6px;text-decoration:none;font-family:sans-serif;font-size:13px;letter-spacing:0.1em;">
             💬 Escribirle por WhatsApp
           </a>
@@ -138,15 +145,16 @@ module.exports = async function handler(req, res) {
         subject: `Nuevo pedido de ${payer.nombre}`,
         html,
       });
+
     } catch (mailErr) {
       console.error('Mail error (non-fatal):', mailErr);
-      // No falla el pago si el mail falla
     }
 
     return res.status(200).json({
       init_point: result.init_point,
       preference_id: result.id,
     });
+
   } catch (err) {
     console.error('MP Error:', err);
     return res.status(500).json({ error: 'Error creando preferencia de pago', detail: err.message });
