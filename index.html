@@ -19,6 +19,8 @@ body{overflow-x:hidden;overflow-y:scroll;}
 .tb-name{font-weight:300;font-size:0.85rem;letter-spacing:0.32em;text-transform:uppercase;color:#fff;white-space:nowrap;cursor:pointer;}
 .tb-btn{font-family:'Montserrat',sans-serif;font-weight:300;font-size:0.65rem;letter-spacing:0.28em;text-transform:uppercase;color:rgba(255,255,255,0.45);background:none;border:none;cursor:pointer;padding:0;transition:color 0.2s;}
 .tb-btn:hover,.tb-btn.active{color:#fff;}
+.tb-btn-tienda{color:#fff;border:0.5px solid rgba(255,255,255,0.7);padding:5px 12px;border-radius:2px;box-shadow:0 0 8px rgba(255,255,255,0.18),0 0 20px rgba(255,255,255,0.08);transition:box-shadow 0.2s,color 0.2s;}
+.tb-btn-tienda:hover{box-shadow:0 0 12px rgba(255,255,255,0.35),0 0 28px rgba(255,255,255,0.15);}
 .tb-icons{display:flex;gap:18px;align-items:center;}
 .tb-icon{color:rgba(255,255,255,0.55);text-decoration:none;display:flex;align-items:center;transition:color 0.2s;}
 .tb-icon:hover{color:#fff;}
@@ -92,6 +94,9 @@ body{overflow-x:hidden;overflow-y:scroll;}
 .tab-item span{font-family:'Montserrat',sans-serif;font-size:8px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.35);}
 .tab-item.active svg{stroke:#fff;}
 .tab-item.active span{color:#fff;}
+.tab-item-tienda{border:0.5px solid rgba(255,255,255,0.55);border-radius:6px;padding:4px 12px;box-shadow:0 0 8px rgba(255,255,255,0.15),0 0 18px rgba(255,255,255,0.07);}
+.tab-item-tienda svg{stroke:rgba(255,255,255,0.8);}
+.tab-item-tienda span{color:rgba(255,255,255,0.8);}
 
 /* ── MOBILE CAPTION ── */
 .cf-caption-m{position:absolute;left:16px;display:none;flex-direction:column;gap:2px;pointer-events:none;opacity:0;transition:opacity 0.4s ease;}
@@ -123,7 +128,7 @@ body{overflow-x:hidden;overflow-y:scroll;}
     <button class="tb-btn" id="btnGaleria">Gallery</button>
     <button class="tb-btn" id="btnAbout">About</button>
     <button class="tb-btn" onclick="document.getElementById('sectionComments').style.display='block';loadComments();" >Comments</button>
-    <a class="tb-btn" href="/tienda" style="text-decoration:none">Tienda</a>
+    <a class="tb-btn tb-btn-tienda" href="/tienda" style="text-decoration:none">Tienda</a>
   </div>
   <div class="tb-icons">
     <button class="lang-btn" id="langES" onclick="setLang('es')">ES</button>
@@ -148,7 +153,7 @@ body{overflow-x:hidden;overflow-y:scroll;}
     <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
     <span>About</span>
   </button>
-  <a class="tab-item" href="/tienda" style="text-decoration:none">
+  <a class="tab-item tab-item-tienda" href="/tienda" style="text-decoration:none">
     <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
     <span>Tienda</span>
   </a>
