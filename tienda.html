@@ -565,8 +565,8 @@ function doOrder(){
   lines.push('');
   lines.push('🖼️ PEDIDO ('+cart.length+' item'+(cart.length>1?'s':'')+')');
   cart.forEach(function(c,i){
-    lines.push((i+1)+'. '+c.file);
-    lines.push('   '+c.typeLabel+' · '+c.dim+' · '+fmt(c.price));
+    lines.push((i+1)+'. '+c.typeLabel+' · '+c.dim+' · '+fmt(c.price));
+    lines.push('   Ver foto: https://lucasmartineza.pics/fotos-m/'+c.file);
   });
   lines.push('');
   lines.push('💰 Subtotal: '+fmt(sub));
