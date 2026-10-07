@@ -29,7 +29,7 @@ html,body{background:var(--bg);color:var(--fg);font-family:'Montserrat',sans-ser
 .cart-badge.show{display:flex}
 
 /* ── CONTENT WRAPPER ─────────────────────────────────── */
-.content{padding-top:calc(52px + env(safe-area-inset-top,0px));padding-bottom:calc(60px + env(safe-area-inset-bottom,0px));max-width:480px;margin:0 auto}
+.content{padding-top:calc(52px + env(safe-area-inset-top,0px));padding-bottom:calc(60px + env(safe-area-inset-bottom,0px));max-width:1400px;margin:0 auto}
 
 /* ── VIEW TABS ───────────────────────────────────────── */
 .view-switcher{display:flex;border-bottom:0.5px solid var(--border)}
@@ -37,11 +37,11 @@ html,body{background:var(--bg);color:var(--fg);font-family:'Montserrat',sans-ser
 .view-btn.active{color:var(--fg);border-bottom-color:var(--fg)}
 
 /* ── CAROUSEL ────────────────────────────────────────── */
-.carousel-wrap{overflow:hidden;border-bottom:0.5px solid var(--border)}
+.carousel-wrap{overflow:hidden;border-bottom:0.5px solid var(--border);width:100%}
 .carousel-track{display:flex;transition:transform 0.55s cubic-bezier(.4,0,.2,1)}
 .carousel-slide{min-width:100%}
 .carousel-slide img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
-.carousel-caption{text-align:center;padding:10px 16px 10px;font-size:8px;letter-spacing:0.16em;text-transform:uppercase;color:var(--fg2)}
+.carousel-caption{display:none}
 .carousel-dots{display:flex;justify-content:center;gap:6px;padding-bottom:12px}
 .dot{width:4px;height:4px;border-radius:50%;background:var(--fg3);cursor:pointer;transition:background 0.3s}
 .dot.active{background:rgba(255,255,255,0.9)}
@@ -52,7 +52,7 @@ html,body{background:var(--bg);color:var(--fg);font-family:'Montserrat',sans-ser
 .sec-count{font-size:8px;letter-spacing:0.1em;color:var(--fg4);margin-top:2px}
 
 /* ── GALLERY GRID ────────────────────────────────────── */
-.gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5px;padding:0 0 1.5px}
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1.5px;padding:0 0 1.5px}
 .gal-item{aspect-ratio:1;overflow:hidden;cursor:pointer;position:relative;background:#111}
 .gal-item img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity 0.2s}
 .gal-item.selected::after{content:'✓';position:absolute;inset:0;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff}
@@ -63,7 +63,7 @@ html,body{background:var(--bg);color:var(--fg);font-family:'Montserrat',sans-ser
 .overlay.show{display:block}
 
 /* ── DETAIL PANEL (slide-up sheet) ──────────────────── */
-.detail-panel{position:fixed;bottom:0;left:0;right:0;background:#0c0c0c;border-top:0.5px solid var(--border2);z-index:150;transform:translateY(100%);transition:transform 0.35s cubic-bezier(.4,0,.2,1);max-height:82vh;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom,0)}
+.detail-panel{position:fixed;bottom:0;left:0;right:0;background:#0c0c0c;border-top:0.5px solid var(--border2);z-index:150;transform:translateY(100%);transition:transform 0.35s cubic-bezier(.4,0,.2,1);max-height:82vh;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom,0);max-width:680px;margin:0 auto}
 .detail-panel.open{transform:translateY(0)}
 .dp-handle{width:32px;height:3px;background:rgba(255,255,255,0.18);border-radius:2px;margin:10px auto 0}
 .dp-photo{display:flex;align-items:center;gap:12px;padding:14px 16px 0}
@@ -153,6 +153,28 @@ html,body{background:var(--bg);color:var(--fg);font-family:'Montserrat',sans-ser
 /* ── TOAST ───────────────────────────────────────────── */
 .toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(16px);background:rgba(20,20,20,0.95);border:0.5px solid var(--border2);backdrop-filter:blur(8px);color:var(--fg);padding:8px 18px;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;opacity:0;transition:all 0.28s;pointer-events:none;white-space:nowrap;z-index:300}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── RESPONSIVE ──────────────────────────────────────── */
+@media(min-width:600px){
+  .gallery-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+  .size-grid{grid-template-columns:repeat(4,1fr)}
+  .dp-types{gap:12px}
+  .sec-hdr{padding:18px 24px 10px}
+}
+@media(min-width:900px){
+  .gallery-grid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+  .content{padding-left:0;padding-right:0}
+  .carousel-wrap{max-height:560px}
+  .carousel-slide img{aspect-ratio:21/9;max-height:560px}
+  .view-switcher{padding:0 24px}
+  .sec-hdr{padding:20px 32px 10px}
+}
+@media(min-width:1200px){
+  .gallery-grid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+}
+@media(max-width:400px){
+  .gallery-grid{grid-template-columns:repeat(2,1fr)}
+}
 </style>
 
 <div class="hdr">
@@ -174,12 +196,12 @@ html,body{background:var(--bg);color:var(--fg);font-family:'Montserrat',sans-ser
   <div id="galleryView">
     <div class="carousel-wrap">
       <div class="carousel-track" id="cTrack">
-        <div class="carousel-slide"><img src="/tienda/mockups/mockup-1.png" loading="lazy" alt="mockup 1"><div class="carousel-caption">lámina enrollada · lista para enmarcar</div></div>
-        <div class="carousel-slide"><img src="/tienda/mockups/mockup-2.png" loading="lazy" alt="mockup 2"><div class="carousel-caption">soporte rígido · para colgar directo</div></div>
-        <div class="carousel-slide"><img src="/tienda/mockups/mockup-3.png" loading="lazy" alt="mockup 3"><div class="carousel-caption">soporte rígido · detalle de textura</div></div>
-        <div class="carousel-slide"><img src="/tienda/mockups/mockup-4.png" loading="lazy" alt="mockup 4"><div class="carousel-caption">lámina enrollada · presentación premium</div></div>
-        <div class="carousel-slide"><img src="/tienda/mockups/mockup-5.png" loading="lazy" alt="mockup 5"><div class="carousel-caption">soporte rígido · en ambiente real</div></div>
-        <div class="carousel-slide"><img src="/tienda/mockups/mockup-6.png" loading="lazy" alt="mockup 6"><div class="carousel-caption">lámina enrollada · acabado profesional</div></div>
+        <div class="carousel-slide"><img src="/tienda/mockups/mockup-1.jpg" loading="lazy" alt="mockup 1"><div class="carousel-caption">lámina enrollada · lista para enmarcar</div></div>
+        <div class="carousel-slide"><img src="/tienda/mockups/mockup-2.jpg" loading="lazy" alt="mockup 2"><div class="carousel-caption">soporte rígido · para colgar directo</div></div>
+        <div class="carousel-slide"><img src="/tienda/mockups/mockup-3.jpg" loading="lazy" alt="mockup 3"><div class="carousel-caption">soporte rígido · detalle de textura</div></div>
+        <div class="carousel-slide"><img src="/tienda/mockups/mockup-4.jpg" loading="lazy" alt="mockup 4"><div class="carousel-caption">lámina enrollada · presentación premium</div></div>
+        <div class="carousel-slide"><img src="/tienda/mockups/mockup-5.jpg" loading="lazy" alt="mockup 5"><div class="carousel-caption">soporte rígido · en ambiente real</div></div>
+        <div class="carousel-slide"><img src="/tienda/mockups/mockup-6.jpg" loading="lazy" alt="mockup 6"><div class="carousel-caption">lámina enrollada · acabado profesional</div></div>
       </div>
       <div class="carousel-dots">
         <div class="dot active" onclick="cGoTo(0)"></div>
