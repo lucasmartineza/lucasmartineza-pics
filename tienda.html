@@ -92,7 +92,20 @@ html,body{background:var(--bg);color:var(--fg);font-family:'Montserrat',sans-ser
 
 /* ── CART VIEW ───────────────────────────────────────── */
 .cart-view{display:none}
-.cart-view.show{display:flex;flex-direction:column;min-height:calc(100vh - 64px - env(safe-area-inset-top,0px) - 60px)}
+.cart-view.show{
+  display:flex;
+  flex-direction:column;
+  position:fixed;
+  top:calc(64px + env(safe-area-inset-top,0px));
+  left:0;
+  right:0;
+  bottom:calc(60px + env(safe-area-inset-bottom,0px));
+  overflow-y:auto;
+  background:var(--bg);
+  z-index:90;
+  /* padding so content isn't hidden behind the payment buttons bar (~130px) */
+  padding-bottom:140px;
+}
 .cart-empty{padding:52px 20px;text-align:center;font-size:16px;letter-spacing:0.1em;text-transform:uppercase;color:var(--fg2);line-height:1.8}
 .cart-item{display:flex;align-items:flex-start;gap:14px;padding:16px 16px;border-bottom:0.5px solid var(--border)}
 .ci-thumb{width:60px;height:60px;object-fit:cover;flex-shrink:0;border:0.5px solid var(--border)}
@@ -114,12 +127,12 @@ html,body{background:var(--bg);color:var(--fg);font-family:'Montserrat',sans-ser
 
 /* ── CHECKOUT FORM ───────────────────────────────────── */
 .checkout-form{padding:0 16px 4px;border-top:0.5px solid var(--border)}
-.cf-title{font-size:17px;letter-spacing:0.18em;text-transform:uppercase;color:var(--fg2);padding:20px 0 16px}
-.cf-row{display:flex;flex-direction:column;gap:14px;margin-bottom:14px}
-.cf-row-2{display:flex;flex-direction:row;gap:12px;margin-bottom:14px}
-.cf-field{flex:1;display:flex;flex-direction:column;gap:8px}
+.cf-title{font-size:17px;letter-spacing:0.18em;text-transform:uppercase;color:var(--fg2);padding:24px 0 20px}
+.cf-row{display:flex;flex-direction:column;gap:0;margin-bottom:20px}
+.cf-row-2{display:flex;flex-direction:row;gap:12px;margin-bottom:20px}
+.cf-field{flex:1;display:flex;flex-direction:column;gap:10px}
 .cf-label{font-size:13px;letter-spacing:0.15em;text-transform:uppercase;color:var(--fg3)}
-.cf-input{background:rgba(255,255,255,0.04);border:0.5px solid var(--border);color:var(--fg);font-family:'Montserrat',sans-serif;font-size:18px;font-weight:300;padding:18px 14px;outline:none;width:100%;transition:border-color 0.2s;-webkit-appearance:none;border-radius:0}
+.cf-input{background:rgba(255,255,255,0.04);border:0.5px solid var(--border);color:var(--fg);font-family:'Montserrat',sans-serif;font-size:20px;font-weight:300;padding:20px 14px;outline:none;width:100%;transition:border-color 0.2s;-webkit-appearance:none;border-radius:0}
 .cf-input:focus{border-color:rgba(255,255,255,0.5)}
 .cf-input::placeholder{color:var(--fg3)}
 .cf-input.error{border-color:rgba(255,80,80,0.7)}
@@ -146,9 +159,22 @@ html,body{background:var(--bg);color:var(--fg);font-family:'Montserrat',sans-ser
 .tab-icon{font-size:21px;line-height:1}
 .tab-label{font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:var(--fg)}
 
-/* ── ORDER BUTTONS ───────────────────────────────────── */
-.order-btns{display:flex;flex-direction:column;gap:10px;padding:16px 16px;margin-top:auto}
-.order-btn{width:100%;padding:20px;background:transparent;border:0.5px solid rgba(255,255,255,0.4);color:var(--fg);font-family:'Montserrat',sans-serif;font-size:17px;letter-spacing:0.15em;text-transform:uppercase;cursor:pointer;transition:all 0.2s}
+/* ── ORDER BUTTONS (sticky bottom bar) ───────────────── */
+.order-btns{
+  display:none;
+  flex-direction:column;
+  gap:10px;
+  padding:12px 16px;
+  position:fixed;
+  left:0;right:0;
+  bottom:calc(60px + env(safe-area-inset-bottom,0px));
+  background:rgba(0,0,0,0.96);
+  border-top:0.5px solid var(--border2);
+  z-index:95;
+  backdrop-filter:blur(8px);
+}
+.order-btns.show{display:flex}
+.order-btn{width:100%;padding:18px;background:transparent;border:0.5px solid rgba(255,255,255,0.4);color:var(--fg);font-family:'Montserrat',sans-serif;font-size:17px;letter-spacing:0.15em;text-transform:uppercase;cursor:pointer;transition:all 0.2s}
 .order-btn:active{background:rgba(255,255,255,0.06)}
 .order-btn:disabled{opacity:0.22;cursor:default}
 .order-btn-mp{border-color:rgba(0,158,227,0.6);color:#009EE3}
@@ -289,12 +315,14 @@ html,body{background:var(--bg);color:var(--fg);font-family:'Montserrat',sans-ser
       </div>
     </div>
 
-    <div class="order-btns" id="orderBtns" style="display:none">
-      <button class="order-btn order-btn-mp" id="orderBtnMP" onclick="doOrderMP()">pagar con mercado pago →</button>
-      <button class="order-btn order-btn-wa" id="orderBtnWA" onclick="doOrder()">coordinar por whatsapp →</button>
-    </div>
     <div id="mpLoading" style="display:none;text-align:center;padding:16px 16px;font-size:16px;letter-spacing:0.1em;text-transform:uppercase;color:var(--fg3)">Redirigiendo a Mercado Pago…</div>
   </div>
+</div>
+
+<!-- ORDER BUTTONS: fixed bar above tabbar, shown only in cart view -->
+<div class="order-btns" id="orderBtns">
+  <button class="order-btn order-btn-mp" id="orderBtnMP" onclick="doOrderMP()">pagar con mercado pago →</button>
+  <button class="order-btn order-btn-wa" id="orderBtnWA" onclick="doOrder()">coordinar por whatsapp →</button>
 </div>
 
 <!-- DETAIL PANEL -->
@@ -463,13 +491,13 @@ function renderCartView(){
     empty.style.display='block';
     totalRow.classList.remove('show');
     form.style.display='none';
-    orderBtns.style.display='none';
+    orderBtns.classList.remove('show');
     return;
   }
   empty.style.display='none';
   totalRow.classList.add('show');
   form.style.display='block';
-  orderBtns.style.display='flex';
+  orderBtns.classList.add('show');
   el.innerHTML='';
   var sub=0;
   cart.forEach(function(c,i){
@@ -659,6 +687,8 @@ function switchView(v){
   document.getElementById('vBtnCart').classList.toggle('active',v==='cart');
   document.getElementById('galleryView').style.display=v==='gallery'?'block':'none';
   document.getElementById('cartView').classList.toggle('show',v==='cart');
+  // hide order buttons when leaving cart view; renderCartView will show them if cart has items
+  if(v!=='cart') document.getElementById('orderBtns').classList.remove('show');
   if(v==='cart')renderCartView();
 }
 
