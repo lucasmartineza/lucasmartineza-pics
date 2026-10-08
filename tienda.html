@@ -23,9 +23,10 @@ html,body{background:var(--bg);color:var(--fg);font-family:'Montserrat',sans-ser
 
 /* ── HEADER ─────────────────────────────────────────── */
 .hdr{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;height:64px;background:var(--header);border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;z-index:200;padding:0 16px}
-.hdr-title{font-size:21px;letter-spacing:0.2em;text-transform:uppercase;opacity:0.9}
-.cart-btn{position:absolute;right:16px;background:none;border:0.5px solid var(--border2);color:var(--fg);padding:10px 16px;font-family:'Montserrat',sans-serif;font-size:17px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;gap:8px}
-.cart-badge{background:var(--fg);color:var(--bg);border-radius:50%;width:22px;height:22px;font-size:15px;display:none;align-items:center;justify-content:center;font-weight:400}
+.hdr-title{font-size:21px;letter-spacing:0.2em;text-transform:uppercase;opacity:0.9;border:0.5px solid rgba(255,255,255,0.5);padding:6px 18px}
+.cart-btn{position:absolute;right:16px;background:none;border:none;color:var(--fg);padding:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative}
+.cart-btn svg{width:28px;height:28px;stroke:rgba(255,255,255,0.85);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.cart-badge{position:absolute;top:-4px;right:-4px;background:var(--fg);color:var(--bg);border-radius:50%;width:20px;height:20px;font-size:12px;display:none;align-items:center;justify-content:center;font-weight:600}
 .cart-badge.show{display:flex}
 
 /* ── CONTENT WRAPPER ─────────────────────────────────── */
@@ -112,15 +113,16 @@ html,body{background:var(--bg);color:var(--fg);font-family:'Montserrat',sans-ser
 
 /* ── CHECKOUT FORM ───────────────────────────────────── */
 .checkout-form{padding:0 16px 4px;border-top:0.5px solid var(--border)}
-.cf-title{font-size:14px;letter-spacing:0.18em;text-transform:uppercase;color:var(--fg2);padding:16px 0 12px}
-.cf-row{display:flex;gap:10px;margin-bottom:10px}
-.cf-field{flex:1;display:flex;flex-direction:column;gap:6px}
-.cf-label{font-size:14px;letter-spacing:0.1em;text-transform:uppercase;color:var(--fg2)}
-.cf-input{background:rgba(255,255,255,0.03);border:0.5px solid var(--border);color:var(--fg);font-family:'Montserrat',sans-serif;font-size:18px;font-weight:300;padding:13px 12px;outline:none;width:100%;transition:border-color 0.2s;-webkit-appearance:none}
+.cf-title{font-size:17px;letter-spacing:0.18em;text-transform:uppercase;color:var(--fg2);padding:20px 0 16px}
+.cf-row{display:flex;flex-direction:column;gap:14px;margin-bottom:14px}
+.cf-row-2{display:flex;flex-direction:row;gap:12px;margin-bottom:14px}
+.cf-field{flex:1;display:flex;flex-direction:column;gap:8px}
+.cf-label{font-size:13px;letter-spacing:0.15em;text-transform:uppercase;color:var(--fg3)}
+.cf-input{background:rgba(255,255,255,0.04);border:0.5px solid var(--border);color:var(--fg);font-family:'Montserrat',sans-serif;font-size:18px;font-weight:300;padding:18px 14px;outline:none;width:100%;transition:border-color 0.2s;-webkit-appearance:none;border-radius:0}
 .cf-input:focus{border-color:rgba(255,255,255,0.5)}
 .cf-input::placeholder{color:var(--fg3)}
 .cf-input.error{border-color:rgba(255,80,80,0.7)}
-.shipping-box{margin-top:4px;padding:14px;background:rgba(255,255,255,0.04);border:0.5px solid var(--border2)}
+.shipping-box{margin-top:4px;padding:18px;background:rgba(255,255,255,0.04);border:0.5px solid var(--border2)}
 .sb-label{font-size:14px;letter-spacing:0.1em;text-transform:uppercase;color:var(--fg2);margin-bottom:8px}
 .sb-val{font-size:19px;letter-spacing:0.01em;font-variant-numeric:tabular-nums}
 .sb-val.loading{font-size:14px;color:var(--fg2);animation:pulse 1s infinite;letter-spacing:0.08em;text-transform:uppercase}
@@ -144,8 +146,8 @@ html,body{background:var(--bg);color:var(--fg);font-family:'Montserrat',sans-ser
 .tab-label{font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:var(--fg)}
 
 /* ── ORDER BUTTONS ───────────────────────────────────── */
-.order-btns{display:flex;flex-direction:column;gap:8px;padding:14px 16px}
-.order-btn{width:100%;padding:16px;background:transparent;border:0.5px solid rgba(255,255,255,0.4);color:var(--fg);font-family:'Montserrat',sans-serif;font-size:16px;letter-spacing:0.15em;text-transform:uppercase;cursor:pointer;transition:all 0.2s}
+.order-btns{display:flex;flex-direction:column;gap:10px;padding:16px 16px}
+.order-btn{width:100%;padding:20px;background:transparent;border:0.5px solid rgba(255,255,255,0.4);color:var(--fg);font-family:'Montserrat',sans-serif;font-size:17px;letter-spacing:0.15em;text-transform:uppercase;cursor:pointer;transition:all 0.2s}
 .order-btn:active{background:rgba(255,255,255,0.06)}
 .order-btn:disabled{opacity:0.22;cursor:default}
 .order-btn-mp{border-color:rgba(0,158,227,0.6);color:#009EE3}
@@ -180,8 +182,9 @@ html,body{background:var(--bg);color:var(--fg);font-family:'Montserrat',sans-ser
 
 <div class="hdr">
   <span class="hdr-title">tienda</span>
-  <button class="cart-btn" id="cartBtn" onclick="switchView('cart')">
-    carrito <span class="cart-badge" id="cartBadge">0</span>
+  <button class="cart-btn" id="cartBtn" onclick="switchView('cart')" style="position:absolute;right:16px;">
+    <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    <span class="cart-badge" id="cartBadge">0</span>
   </button>
 </div>
 
@@ -254,7 +257,7 @@ html,body{background:var(--bg);color:var(--fg);font-family:'Montserrat',sans-ser
           <input class="cf-input" id="cfNombre" type="text" placeholder="Juan García" autocomplete="name">
         </div>
       </div>
-      <div class="cf-row">
+      <div class="cf-row-2">
         <div class="cf-field">
           <label class="cf-label" for="cfTel">teléfono</label>
           <input class="cf-input" id="cfTel" type="tel" placeholder="351 123 4567" autocomplete="tel">
@@ -264,7 +267,7 @@ html,body{background:var(--bg);color:var(--fg);font-family:'Montserrat',sans-ser
           <input class="cf-input" id="cfMail" type="email" placeholder="juan@mail.com" autocomplete="email">
         </div>
       </div>
-      <div class="cf-row">
+      <div class="cf-row-2">
         <div class="cf-field">
           <label class="cf-label" for="cfCP">código postal</label>
           <input class="cf-input" id="cfCP" type="text" inputmode="numeric" maxlength="4" placeholder="5000" autocomplete="postal-code" oninput="onCPInput(this.value)">
