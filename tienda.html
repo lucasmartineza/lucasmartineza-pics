@@ -92,7 +92,7 @@ html,body{background:var(--bg);color:var(--fg);font-family:'Montserrat',sans-ser
 
 /* ── CART VIEW ───────────────────────────────────────── */
 .cart-view{display:none}
-.cart-view.show{display:block}
+.cart-view.show{display:flex;flex-direction:column;min-height:calc(100vh - 64px - env(safe-area-inset-top,0px) - 60px)}
 .cart-empty{padding:52px 20px;text-align:center;font-size:16px;letter-spacing:0.1em;text-transform:uppercase;color:var(--fg2);line-height:1.8}
 .cart-item{display:flex;align-items:flex-start;gap:14px;padding:16px 16px;border-bottom:0.5px solid var(--border)}
 .ci-thumb{width:60px;height:60px;object-fit:cover;flex-shrink:0;border:0.5px solid var(--border)}
@@ -147,7 +147,7 @@ html,body{background:var(--bg);color:var(--fg);font-family:'Montserrat',sans-ser
 .tab-label{font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:var(--fg)}
 
 /* ── ORDER BUTTONS ───────────────────────────────────── */
-.order-btns{display:flex;flex-direction:column;gap:10px;padding:16px 16px}
+.order-btns{display:flex;flex-direction:column;gap:10px;padding:16px 16px;margin-top:auto}
 .order-btn{width:100%;padding:20px;background:transparent;border:0.5px solid rgba(255,255,255,0.4);color:var(--fg);font-family:'Montserrat',sans-serif;font-size:17px;letter-spacing:0.15em;text-transform:uppercase;cursor:pointer;transition:all 0.2s}
 .order-btn:active{background:rgba(255,255,255,0.06)}
 .order-btn:disabled{opacity:0.22;cursor:default}
