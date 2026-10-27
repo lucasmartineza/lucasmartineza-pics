@@ -141,6 +141,22 @@ h1{margin:14px 0 0;font-size:34px;font-weight:300;letter-spacing:.04em;color:var
 .btn:disabled{background:none;border:1px solid var(--line-2);color:rgba(255,255,255,.45);cursor:default}
 .btn.ghost{background:none;border:1px solid rgba(255,255,255,.35);color:#fff;height:42px;font-size:9.5px;font-weight:400}
 .fine{margin:0;font-size:10.5px;line-height:1.7;color:var(--muted)}
+.tr-btn{height:50px;padding:0 18px;background:none;border:1px solid rgba(255,255,255,.55);color:#fff;font-size:10px;font-weight:500;letter-spacing:.18em;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:10px;white-space:nowrap;transition:border-color .2s,background .2s}
+.tr-btn:hover{border-color:#fff;background:rgba(255,255,255,.06)}
+.tr-btn:disabled{opacity:.45;cursor:default}
+.off{background:#fff;color:#000;padding:3px 6px;font-size:9px;letter-spacing:.08em}
+.or{display:flex;align-items:center;gap:12px;font-size:9px;letter-spacing:.3em;color:var(--muted)}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.tbox{border:1px solid var(--line-2);display:flex;flex-direction:column}
+.tline{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.tline:last-child{border-bottom:0}
+.tline .k{font-size:9.5px;letter-spacing:.26em;color:var(--muted);flex:none}
+.tline .v{font-size:14px;color:#fff;letter-spacing:.04em;text-align:right;word-break:break-all;flex:1}
+.tline .v.big{font-size:26px;font-weight:300}
+.copy{flex:none;height:32px;padding:0 10px;background:none;border:1px solid rgba(255,255,255,.3);color:#fff;font-size:9px;letter-spacing:.2em;cursor:pointer}
+.copy:hover{border-color:#fff}
+.state .btn{text-align:center;line-height:1.5;height:auto;min-height:52px;padding:12px 24px}
+.steps{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:8px;font-size:12.5px;line-height:1.7;color:rgba(255,255,255,.75)}
 .err{margin:0;font-size:11.5px;line-height:1.6;color:#ffb4a8}
 .close-sheet{display:none}
 
@@ -153,7 +169,10 @@ h1{margin:14px 0 0;font-size:34px;font-weight:300;letter-spacing:.04em;color:var
   .photos{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
   .ph .num{display:none}
   .cart{position:fixed;left:0;right:0;bottom:0;max-width:none;max-height:88vh;overflow-y:auto;background:#000;border:0;border-top:1px solid var(--line-2);transform:translateY(105%);transition:transform .3s ease;z-index:40;padding:24px 20px 32px}
-  .cart.open{transform:none}
+  .cart>*{flex-shrink:0}
+  .cart>.row:first-of-type{padding-right:40px}
+  .cart{top:auto;visibility:hidden;transition:transform .3s ease,visibility 0s linear .3s}
+  .cart.open{transform:none;visibility:visible;transition:transform .3s ease,visibility 0s}
   .close-sheet{display:block;position:absolute;top:12px;right:12px;width:40px;height:40px;background:none;border:0;font-size:20px;color:var(--muted);cursor:pointer}
   .bar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:30;background:#000;border-top:1px solid var(--line-2);padding:12px 20px calc(14px + env(safe-area-inset-bottom));align-items:center;justify-content:space-between;gap:14px}
   .bar .b1{display:flex;flex-direction:column;gap:4px}
@@ -228,6 +247,7 @@ h1{margin:14px 0 0;font-size:34px;font-weight:300;letter-spacing:.04em;color:var
   <div class="sum">
     <div class="row"><span style="color:var(--muted)">Precio por foto</span><span style="color:#fff" id="cUnit">—</span></div>
     <div class="row" style="margin-top:6px"><span style="font-size:10px;letter-spacing:.3em;color:rgba(255,255,255,.75)">TOTAL</span><span class="total" id="cTotal">$0</span></div>
+    <div class="row" id="cTrRow" hidden><span style="color:var(--muted)">Pagando con transferencia</span><span style="color:#fff" id="cTr"></span></div>
   </div>
   <p class="nudge" id="cNudge"></p>
   <div class="tiers" id="cTiers"><span style="font-size:9.5px;letter-spacing:.3em;color:var(--muted);margin-bottom:4px">PROMO POR CANTIDAD</span></div>
@@ -238,8 +258,12 @@ h1{margin:14px 0 0;font-size:34px;font-weight:300;letter-spacing:.04em;color:var
     </div>
     <p class="err" id="cErr" hidden></p>
     <button class="btn glow" id="payBtn" type="submit" disabled>PAGAR CON MERCADO PAGO</button>
+    <div id="trWrap" hidden style="display:flex;flex-direction:column;gap:14px">
+      <span class="or">O</span>
+      <button class="tr-btn" id="trBtn" type="button" disabled>PAGAR CON TRANSFERENCIA <span class="off" id="trOff" hidden></span></button>
+    </div>
   </form>
-  <p class="fine">Tarjeta, débito, transferencia o dinero en cuenta. Al aprobarse el pago descargás cada foto en alta calidad y sin marca de agua.</p>
+  <p class="fine">Mercado Pago: tarjeta, débito, dinero en cuenta o efectivo, y descargás al instante. Transferencia: te mandamos las fotos apenas confirmamos el pago. Siempre en alta calidad y sin marca de agua.</p>
 </aside>
 
 <div class="bar" id="bar" hidden>
@@ -305,6 +329,7 @@ h1{margin:14px 0 0;font-size:34px;font-weight:300;letter-spacing:.04em;color:var
   function clean(name) { return String(name).replace(/^\s*\d+\s*[-_.)]?\s+/, '').trim(); }
   function num(n) { var m = String(n).match(/(\d+)\s*$/); return m ? m[1] : n; }
   function img(id, w) { return 'https://lh3.googleusercontent.com/d/' + id + '=w' + w; }
+  function pct(d) { return String(Math.round(d * 10) / 10).replace('.', ',') + '%'; }
   function money(v) { return '$' + Number(v).toLocaleString('es-AR'); }
   function unitFor(n) { if (n <= 1) return 10000; if (n === 2) return 8000; if (n === 3) return 7000; return 6000; }
   function plural(n) { return n === 1 ? '1 FOTO' : n + ' FOTOS'; }
@@ -457,6 +482,16 @@ h1{margin:14px 0 0;font-size:34px;font-weight:300;letter-spacing:.04em;color:var
     });
 
     $('payBtn').disabled = n === 0;
+    var tr = catalog && catalog.pay && catalog.pay.transfer;
+    $('trWrap').hidden = !tr;
+    if (tr) {
+      var d = Number(tr.discount) || 0;
+      $('trBtn').disabled = n === 0;
+      $('trOff').hidden = !d;
+      $('trOff').textContent = pct(d) + ' OFF';
+      $('cTrRow').hidden = !(n && d);
+      $('cTr').textContent = money(Math.round(total * (1 - d / 100)));
+    }
     $('bCount').textContent = plural(n) + (n ? ' · ' + money(unit) + ' C/U' : '');
     $('bTotal').textContent = money(total);
   }
@@ -494,8 +529,9 @@ h1{margin:14px 0 0;font-size:34px;font-weight:300;letter-spacing:.04em;color:var
   function closeSheet() { $('cart').classList.remove('open'); $('shade').classList.remove('on'); }
 
   // ---------- pago ----------
-  function onPay(e) {
-    e.preventDefault();
+  function onPay(e, method) {
+    if (e) e.preventDefault();
+    var transfer = method === 'transfer';
     var ids = Object.keys(cart);
     var email = $('mail').value.trim();
     var err = $('cErr');
@@ -503,38 +539,85 @@ h1{margin:14px 0 0;font-size:34px;font-weight:300;letter-spacing:.04em;color:var
     if (!ids.length) return;
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Revisá el mail: ahí te enviamos las fotos.'; err.hidden = false; $('mail').focus(); return; }
     try { localStorage.setItem('lma_mail', email); } catch (x) {}
-    var btn = $('payBtn');
-    btn.disabled = true; btn.textContent = 'CONECTANDO CON MERCADO PAGO…';
-    apiPost({ action: 'checkout', ids: ids, email: email }).then(function (res) {
-      if (res.error || !res.url) throw new Error(res.error || 'No se pudo iniciar el pago.');
+    var btn = transfer ? $('trBtn') : $('payBtn');
+    var label = btn.innerHTML;
+    $('payBtn').disabled = true; $('trBtn').disabled = true;
+    btn.textContent = transfer ? 'GENERANDO PEDIDO…' : 'CONECTANDO CON MERCADO PAGO…';
+    apiPost({ action: 'checkout', ids: ids, email: email, method: transfer ? 'transfer' : 'mp' }).then(function (res) {
+      if (res.error) throw new Error(res.error);
+      if (transfer) {
+        if (!res.orderId) throw new Error('No se pudo generar el pedido.');
+        cart = {}; saveCart();
+        history.replaceState(null, '', location.pathname + '?pedido=' + res.orderId);
+        renderOrder(res.orderId, res);
+        return;
+      }
+      if (!res.url) throw new Error('No se pudo iniciar el pago.');
       location.href = res.url;
     }).catch(function (x) {
       err.textContent = x.message || 'No se pudo iniciar el pago. Probá de nuevo.';
       err.hidden = false;
-      btn.disabled = false; btn.textContent = 'PAGAR CON MERCADO PAGO';
+      btn.innerHTML = label;
+      $('payBtn').disabled = false; $('trBtn').disabled = false;
     });
   }
 
   // ---------- pedido (vuelta de Mercado Pago) ----------
-  function renderOrder(orderId) {
+  function renderOrder(orderId, initial) {
     orderMode = true;
     parkCart();
     showCart(false);
     $('strip').hidden = true;
-    var tries = 0;
+    var tries = 0, isTransfer = false;
     view.innerHTML = '<section class="state"><span class="ring"><span class="spin"></span></span>' +
-      '<div><p class="kicker">CONFIRMANDO TU PAGO</p><h1 style="font-size:28px">Un momento…</h1>' +
-      '<p class="lead">Estamos esperando la confirmación de Mercado Pago. No cierres esta página.</p></div></section>';
+      '<div><p class="kicker">CONSULTANDO TU PEDIDO</p><h1 style="font-size:28px">Un momento…</h1>' +
+      '<p class="lead">Estamos confirmando tu pago. No cierres esta página.</p></div></section>';
+    if (initial) { isTransfer = true; transferView(initial); }
 
     (function poll() {
+      if (initial && tries === 0) { tries++; return setTimeout(poll, 15000); }
       api({ action: 'order', id: orderId }).then(function (o) {
         if (o.status === 'pagado') return done(o);
         if (o.error) return fail(o.error);
+        if (o.status === 'cancelado') return fail('Este pedido se canceló porque no recibimos la transferencia a tiempo.');
+        if (o.status === 'transferencia') {
+          if (!isTransfer) { isTransfer = true; transferView(o); }
+          if (++tries < 240) setTimeout(poll, 15000);
+          return;
+        }
         if (o.mp === 'rejected' || o.mp === 'cancelled') return fail('El pago no se aprobó. Podés volver a intentarlo con otro medio.');
         if (++tries < 40) setTimeout(poll, 4000);
         else pending();
       }).catch(function () { if (++tries < 40) setTimeout(poll, 4000); else pending(); });
     })();
+
+    function transferView(o) {
+      var lines = [
+        ['MONTO', money(o.total), String(o.total), true],
+        ['ALIAS', o.alias, o.alias],
+        o.titular ? ['TITULAR', o.titular, null] : null,
+        o.cbu ? ['CBU / CVU', o.cbu, o.cbu] : null,
+        ['CÓDIGO', o.code, o.code]
+      ].filter(Boolean);
+      var wa = o.whatsapp ? 'https://wa.me/' + o.whatsapp + '?text=' + encodeURIComponent(
+        'Hola Lucas! Hice la transferencia del pedido ' + o.code + ' por ' + money(o.total) +
+        ' (' + o.count + (o.count === 1 ? ' foto' : ' fotos') + '). Te adjunto el comprobante.') : '';
+      view.innerHTML = '<section class="state">' +
+        '<div><p class="kicker">PEDIDO ' + esc(o.code) + ' · PAGO POR TRANSFERENCIA</p>' +
+        '<h1 style="font-size:28px">Transferí ' + esc(money(o.total)) + ' y te mandamos tus fotos.</h1>' +
+        (o.discount ? '<p class="lead">Ya tiene aplicado el ' + pct(o.discount) + ' de descuento por pagar con transferencia.</p>' : '') + '</div>' +
+        '<div class="tbox">' + lines.map(function (l) {
+          return '<div class="tline"><span class="k">' + l[0] + '</span><span class="v' + (l[3] ? ' big' : '') + '">' + esc(l[1]) + '</span>' +
+            (l[2] ? '<button class="copy" type="button" data-copy="' + esc(l[2]) + '">COPIAR</button>' : '') + '</div>';
+        }).join('') + '</div>' +
+        '<ol class="steps">' +
+        '<li>Transferí el <b style="color:#fff;font-weight:400">monto exacto</b> al alias. Si podés, poné el código <b style="color:#fff;font-weight:400">' + esc(o.code) + '</b> en el concepto.</li>' +
+        '<li>Mandanos el comprobante por WhatsApp con el botón de abajo.</li>' +
+        '<li>Apenas lo confirmamos, te llegan las fotos en alta calidad al mail y también aparecen en esta página.</li></ol>' +
+        (wa ? '<a class="btn glow" style="align-self:flex-start" href="' + wa + '" target="_blank" rel="noopener">YA TRANSFERÍ · ENVIAR COMPROBANTE</a>' : '') +
+        '<p class="fine">Tenés 48 horas para transferir. Guardá el link de esta página: te sirve para ver el estado de tu pedido.</p>' +
+        '</section>';
+    }
 
     function done(o) {
       cart = {}; saveCart();
@@ -586,6 +669,14 @@ h1{margin:14px 0 0;font-size:34px;font-weight:300;letter-spacing:.04em;color:var
 
   // ---------- eventos de la página ----------
   document.addEventListener('click', function (e) {
+    var cp = e.target.closest('[data-copy]');
+    if (cp) {
+      var val = cp.dataset.copy;
+      var ok = function () { cp.textContent = 'COPIADO'; setTimeout(function () { cp.textContent = 'COPIAR'; }, 1600); };
+      if (navigator.clipboard) navigator.clipboard.writeText(val).then(ok, function () {});
+      else { var ta = document.createElement('textarea'); ta.value = val; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); ok(); } catch (x) {} ta.remove(); }
+      return;
+    }
     if (e.target.closest('[data-clear]')) { cart = {}; return afterBulk(); }
     if (e.target.closest('[data-clear-folder]')) { currentPhotos.forEach(function (p) { delete cart[p.id]; }); return afterBulk(); }
     var t = e.target.closest('[data-pick],[data-zoom],[data-remove],[data-go]');
@@ -595,7 +686,8 @@ h1{margin:14px 0 0;font-size:34px;font-weight:300;letter-spacing:.04em;color:var
     else if (t.dataset.remove) { delete cart[t.dataset.remove]; saveCart(); var el = document.querySelector('.ph[data-id="' + t.dataset.remove + '"]'); if (el) el.classList.remove('sel'); renderCart(); }
     else if (t.dataset.go) location.hash = '#/f/' + t.dataset.go;
   });
-  $('payForm').addEventListener('submit', onPay);
+  $('payForm').addEventListener('submit', function (e) { onPay(e, 'mp'); });
+  $('trBtn').addEventListener('click', function () { onPay(null, 'transfer'); });
   $('bOpen').addEventListener('click', openSheet);
   $('closeSheet').addEventListener('click', closeSheet);
   $('shade').addEventListener('click', closeSheet);

@@ -1,739 +1,562 @@
-<!doctype html>
-<html lang="es">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Eventos · Lucas Martinez</title>
-<meta name="description" content="Encontrá tus fotos de rally, elegilas y descargalas en alta calidad.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='black'/%3E%3Ctext x='16' y='21' font-family='Montserrat,sans-serif' font-size='11' font-weight='300' fill='white' text-anchor='middle' letter-spacing='2'%3ELM%3C/text%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lucas Martinez - Rally Photography</title>
+<script>if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){window.location.replace('mobile.html');}</script>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='black'/%3E%3Ctext x='16' y='21' font-family='Montserrat,sans-serif' font-size='11' font-weight='300' fill='white' text-anchor='middle' letter-spacing='2'%3ELM%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#000; --panel:#0b0b0b; --line:rgba(255,255,255,.12); --line-2:rgba(255,255,255,.25);
-  --text:rgba(255,255,255,.86); --muted:rgba(255,255,255,.58); --white:#fff;
-  --gutter:40px;
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;background:#000;font-family:'Montserrat',sans-serif;}
+body{overflow-x:hidden;overflow-y:scroll;}
+
+/* ── TOPBAR (desktop) ── */
+.topbar{position:fixed;top:0;z-index:200;display:flex;justify-content:space-between;align-items:center;padding:18px 0;pointer-events:none;}
+.topbar>*{pointer-events:all;}
+.tb-left{display:flex;align-items:center;gap:28px;}
+.tb-name{font-weight:300;font-size:0.85rem;letter-spacing:0.32em;text-transform:uppercase;color:#fff;white-space:nowrap;cursor:pointer;}
+.tb-btn{font-family:'Montserrat',sans-serif;font-weight:300;font-size:0.65rem;letter-spacing:0.28em;text-transform:uppercase;color:rgba(255,255,255,0.45);background:none;border:none;cursor:pointer;padding:0;transition:color 0.2s;}
+.tb-btn:hover,.tb-btn.active{color:#fff;}
+.tb-btn-tienda{color:#fff;border:0.5px solid rgba(255,255,255,0.7);padding:5px 12px;border-radius:2px;box-shadow:0 0 8px rgba(255,255,255,0.18),0 0 20px rgba(255,255,255,0.08);transition:box-shadow 0.2s,color 0.2s;}
+.tb-btn-tienda:hover{box-shadow:0 0 12px rgba(255,255,255,0.35),0 0 28px rgba(255,255,255,0.15);}
+/* Tienda + Eventos: un solo botón partido. La barra se estira hasta el borde derecho para que no se tape el selector de idioma */
+.topbar{right:32px!important;gap:32px;}
+.tb-shop{display:flex;align-items:center;border:0.5px solid rgba(255,255,255,0.7);border-radius:2px;box-shadow:0 0 8px rgba(255,255,255,0.18),0 0 20px rgba(255,255,255,0.08);transition:box-shadow 0.2s;}
+.tb-shop:hover{box-shadow:0 0 12px rgba(255,255,255,0.35),0 0 28px rgba(255,255,255,0.15);}
+.tb-shop-link{color:#fff;padding:5px 12px;transition:background 0.2s;}
+.tb-shop-link+.tb-shop-link{border-left:0.5px solid rgba(255,255,255,0.45);}
+.tb-shop-link:hover{background:rgba(255,255,255,0.08);}
+.tb-icons{display:flex;gap:18px;align-items:center;}
+.tb-icon{color:rgba(255,255,255,0.55);text-decoration:none;display:flex;align-items:center;transition:color 0.2s;}
+.tb-icon:hover{color:#fff;}
+.tb-icon svg{width:18px;height:18px;display:block;}
+.lang-btn{font-family:'Montserrat',sans-serif;font-weight:300;font-size:0.6rem;letter-spacing:0.2em;color:rgba(255,255,255,0.35);background:none;border:none;cursor:pointer;padding:0;transition:color 0.2s;}
+.lang-btn.active{color:rgba(255,255,255,0.85);}
+.lang-sep{color:rgba(255,255,255,0.15);font-size:0.6rem;}
+
+/* ── COVERFLOW (desktop) ── */
+.cf-section{width:100vw;height:100vh;display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;background:#000;}
+.cf-stage{flex:1;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.cf-track{position:absolute;display:flex;align-items:center;justify-content:center;width:100%;height:100%;}
+.cf-item{position:absolute;cursor:pointer;transition:all 0.5s cubic-bezier(0.25,0.46,0.45,0.94);transform-origin:center center;will-change:transform,filter,opacity;background:#111;}
+.cf-item img{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;border-radius:2px;opacity:0;transition:opacity 0.4s ease;}
+.cf-item img.loaded{opacity:1;}
+.cf-caption{position:absolute;display:flex;flex-direction:column;gap:3px;pointer-events:none;opacity:0;transition:opacity 0.4s ease;text-align:left;}
+.cf-caption.visible{opacity:1;}
+.cf-caption span{font-family:'Montserrat',sans-serif;font-weight:300;font-size:0.58rem;letter-spacing:0.1em;color:rgba(255,255,255,0.55);white-space:nowrap;line-height:1.6;display:block;}
+.cf-caption span.hi{color:rgba(255,255,255,0.85);}
+.cf-counter{position:absolute;bottom:16px;right:90px;font-size:0.6rem;letter-spacing:0.2em;color:rgba(255,255,255,0.3);font-weight:300;z-index:10;}
+.cf-arrows{position:absolute;bottom:12px;right:16px;display:flex;gap:2px;z-index:10;}
+.cf-arr{background:rgba(0,0,0,0.5);border:0.5px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.75);width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.9rem;transition:background 0.2s,color 0.2s;user-select:none;}
+.cf-arr:hover{background:rgba(255,255,255,0.15);color:#fff;}
+.scroll-hint{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);font-size:0.55rem;letter-spacing:0.25em;text-transform:uppercase;color:rgba(255,255,255,0.2);animation:fud 2s ease-in-out infinite;white-space:nowrap;pointer-events:none;z-index:10;}
+@keyframes fud{0%,100%{opacity:0.2;transform:translateX(-50%) translateY(0);}50%{opacity:0.6;transform:translateX(-50%) translateY(-4px);}}
+
+/* ── SPOTIFY ── */
+.sp-wrap{width:100%;background:#000;padding:48px 20px;display:flex;justify-content:center;align-items:center;}
+.sp-wrap iframe{width:100%;max-width:380px;border-radius:10px;display:block;}
+
+/* ── FOTOTECA ── */
+.fototeca{position:fixed;inset:0;background:#000;z-index:150;display:none;flex-direction:column;opacity:0;transition:opacity 0.35s ease;}
+.fototeca.open{display:flex;}
+.fototeca.visible{opacity:1;}
+.fototeca-header{flex-shrink:0;height:56px;display:flex;align-items:center;justify-content:flex-end;padding:0 24px;border-bottom:0.5px solid rgba(255,255,255,0.07);}
+.fototeca-close{font-family:'Montserrat',sans-serif;font-weight:300;font-size:0.65rem;letter-spacing:0.28em;text-transform:uppercase;color:rgba(255,255,255,0.5);background:none;border:none;cursor:pointer;transition:color 0.2s;}
+.fototeca-close:hover{color:#fff;}
+.fototeca-grid{flex:1;overflow-y:auto;padding:3px;-webkit-overflow-scrolling:touch;}
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;}
+.grid-item{position:relative;aspect-ratio:1/1;overflow:hidden;cursor:pointer;background:#111;}
+.grid-item img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity 0.2s;pointer-events:none;}
+.grid-item:hover img{opacity:0.85;}
+
+/* ── LIGHTBOX ── */
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,0.97);z-index:300;display:none;flex-direction:column;align-items:center;justify-content:center;}
+.lightbox.open{display:flex;}
+.lb-img-wrap{position:relative;max-width:90vw;max-height:75vh;display:flex;align-items:center;justify-content:center;}
+.lb-img-wrap img{max-width:90vw;max-height:75vh;width:auto;height:auto;display:block;object-fit:contain;}
+.lb-close{position:absolute;top:18px;right:20px;font-size:1.4rem;color:rgba(255,255,255,0.5);cursor:pointer;background:none;border:none;line-height:1;transition:color 0.2s;z-index:10;}
+.lb-close:hover{color:#fff;}
+.lb-nav{position:absolute;top:50%;transform:translateY(-50%);display:flex;justify-content:space-between;width:100%;padding:0 10px;pointer-events:none;}
+.lb-arr{pointer-events:all;background:rgba(0,0,0,0.5);border:0.5px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.1rem;transition:background 0.2s,color 0.2s;}
+.lb-arr:hover{background:rgba(255,255,255,0.15);color:#fff;}
+.lb-meta{margin-top:16px;display:flex;flex-direction:column;align-items:center;gap:5px;}
+.lb-meta-row{font-family:'Montserrat',sans-serif;font-weight:300;font-size:0.62rem;letter-spacing:0.14em;color:rgba(255,255,255,0.4);text-align:center;}
+.lb-meta-row.hi{color:rgba(255,255,255,0.75);}
+
+/* ── ABOUT ── */
+.about-section{width:100%;background:#000;padding:80px 20px 100px;display:flex;flex-direction:column;align-items:center;}
+.about-inner{width:100%;display:flex;flex-direction:column;align-items:center;gap:40px;}
+.about-label{font-weight:300;font-size:0.65rem;letter-spacing:0.4em;text-transform:uppercase;color:rgba(255,255,255,0.3);text-align:center;}
+.about-photo{width:180px;height:180px;border-radius:50%;overflow:hidden;flex-shrink:0;filter:grayscale(30%) brightness(0.9);}
+.about-photo img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;}
+.about-text p{font-weight:300;font-size:0.82rem;line-height:2;letter-spacing:0.03em;color:rgba(255,255,255,0.6);margin-bottom:1.6em;text-align:justify;text-align-last:center;}
+.about-text p:last-child{margin-bottom:0;}
+
+/* ── MOBILE TAB BAR ── */
+.tab-bar{position:fixed;bottom:0;left:0;right:0;z-index:500;height:56px;background:rgba(0,0,0,0.95);border-top:0.5px solid rgba(255,255,255,0.1);display:none;align-items:center;justify-content:space-around;padding-bottom:env(safe-area-inset-bottom,0px);}
+.tab-item{display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;cursor:pointer;padding:6px 16px;}
+.tab-item svg{width:20px;height:20px;stroke:rgba(255,255,255,0.35);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
+.tab-item span{font-family:'Montserrat',sans-serif;font-size:8px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.35);}
+.tab-item.active svg{stroke:#fff;}
+.tab-item.active span{color:#fff;}
+.tab-item-tienda{border:0.5px solid rgba(255,255,255,0.55);border-radius:6px;padding:4px 12px;box-shadow:0 0 8px rgba(255,255,255,0.15),0 0 18px rgba(255,255,255,0.07);}
+.tab-item-tienda svg{stroke:rgba(255,255,255,0.8);}
+.tab-item-tienda span{color:rgba(255,255,255,0.8);}
+@media(max-width:420px){.tab-item{padding:6px 10px;}.tab-item-tienda{padding:4px 9px;}}
+
+/* ── MOBILE CAPTION ── */
+.cf-caption-m{position:absolute;left:16px;display:none;flex-direction:column;gap:2px;pointer-events:none;opacity:0;transition:opacity 0.4s ease;}
+.cf-caption-m.visible{opacity:1;}
+.cf-caption-m span{font-family:'Montserrat',sans-serif;font-weight:300;font-size:0.32rem;letter-spacing:0.1em;color:rgba(255,255,255,0.5);white-space:nowrap;line-height:1.6;display:block;}
+.cf-caption-m span.hi{color:rgba(255,255,255,0.8);}
+
+/* ── MOBILE OVERRIDES ── */
+@media (max-width: 768px) {
+  .topbar { display: none; }
+  .tab-bar { display: flex; }
+  .cf-arrows { display: none; }
+  .scroll-hint { display: none; }
+  .cf-counter { right: 12px; bottom: 68px; font-size: 0.5rem; }
+  .cf-caption { display: none !important; }
+  .cf-caption-m { display: flex; }
+  .sp-wrap { padding: 24px 16px; }
+  .about-section { padding: 48px 16px 80px; }
+  .photo-grid { grid-template-columns: repeat(2,1fr); }
+  body { padding-bottom: 56px; }
 }
-*{box-sizing:border-box}
-[hidden]{display:none!important}
-html,body{margin:0;background:var(--bg);color:var(--text);font-family:Montserrat,sans-serif;font-weight:300;-webkit-font-smoothing:antialiased}
-a{color:var(--muted);text-decoration:none}a:hover{color:var(--white)}
-button{font-family:inherit;color:inherit}
-.caps{text-transform:uppercase;letter-spacing:.26em}
-.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-
-/* Header */
-.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px 32px;padding:26px var(--gutter)}
-.logo{font-size:13px;font-weight:400;letter-spacing:.36em;color:var(--white)}
-.nav{display:flex;flex-wrap:wrap;align-items:center;gap:8px 28px;font-size:10.5px;letter-spacing:.28em;text-transform:uppercase}
-.nav .on{color:var(--white);border:1px solid rgba(255,255,255,.7);padding:7px 13px}
-
-/* Events strip */
-.strip{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.strip-in{display:flex;align-items:center;gap:34px;padding:0 var(--gutter);overflow-x:auto;scrollbar-width:none}
-.strip-in::-webkit-scrollbar{display:none}
-.strip .label{flex:none;font-size:9.5px;letter-spacing:.3em;color:var(--muted)}
-.strip-in{gap:12px;padding-top:14px;padding-bottom:14px}
-.strip .label{margin-right:12px}
-.strip button{flex:none;min-height:40px;padding:0 18px;background:#0d0d0d;border:1px solid rgba(255,255,255,.28);color:rgba(255,255,255,.8);font-size:10px;letter-spacing:.22em;text-transform:uppercase;cursor:pointer;transition:background .2s,border-color .2s,color .2s}
-.strip button:hover{border-color:#fff;color:#fff;background:#161616}
-.strip button[aria-current]{background:#fff;border-color:#fff;color:#000;font-weight:500}
-
-/* Layout */
-.wrap{max-width:1440px;margin:0 auto;padding:36px var(--gutter) 110px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:40px}
-.main{flex:999 1 560px;min-width:0}
-.intro{max-width:1360px;margin:0 auto;padding:72px var(--gutter) 24px}
-.kicker{margin:0;font-size:10px;letter-spacing:.34em;color:var(--muted)}
-h1{margin:14px 0 0;font-size:34px;font-weight:300;letter-spacing:.04em;color:var(--white);line-height:1.25;max-width:680px}
-.lead{margin:18px 0 0;font-size:13px;line-height:1.8;color:var(--muted);max-width:560px}
-.h2{margin:26px 0 0;font-size:26px;font-weight:300;letter-spacing:.06em;color:var(--white)}
-
-/* Breadcrumb */
-.crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:10px;font-size:10px;letter-spacing:.26em;text-transform:uppercase}
-.crumbs a{color:var(--muted)}.crumbs a:hover{color:var(--white)}
-.crumbs .sep{color:rgba(255,255,255,.3)}
-.crumbs .here{color:var(--white)}
-
-/* Event cards */
-.events{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:26px;margin-top:40px}
-.event{display:flex;flex-direction:column;gap:16px;color:inherit}
-.event .cover{position:relative;aspect-ratio:3/2;background:#151515;overflow:hidden}
-.event .cover img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s ease,opacity .4s}
-.event:hover .cover img{transform:scale(1.03)}
-.event .meta{display:flex;justify-content:space-between;align-items:baseline;gap:16px}
-.event .name{font-size:12px;font-weight:400;letter-spacing:.22em;text-transform:uppercase;color:var(--white)}
-.event .go{flex:none;font-size:9.5px;letter-spacing:.28em;color:var(--muted)}
-.event .count{position:absolute;left:16px;bottom:14px;font-size:9.5px;letter-spacing:.28em;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.6)}
-
-/* Watermark overlay */
-.wm{position:relative;overflow:hidden;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
-.wm img{pointer-events:none;-webkit-user-drag:none}
-.wm::after{content:"";position:absolute;inset:0;pointer-events:none;
-  background-image:var(--wm-big),var(--wm);
-  background-repeat:no-repeat,repeat;
-  background-position:center,center;
-  background-size:92% auto,200px 90px;
-  -webkit-mask-image:radial-gradient(ellipse 75% 70% at center,#000 45%,rgba(0,0,0,.55) 100%);
-          mask-image:radial-gradient(ellipse 75% 70% at center,#000 45%,rgba(0,0,0,.55) 100%)}
-.folder .th.wm::after,.list .mini.wm::after{background-image:var(--wm);background-size:110px 50px}
-
-/* Folders */
-.folders{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-top:30px}
-.folder{display:flex;align-items:center;gap:16px;min-height:92px;padding:12px 20px 12px 12px;background:var(--panel);border:1px solid var(--line);color:inherit;text-align:left;cursor:pointer}
-.folder:hover{border-color:var(--line-2)}
-.folder .th{flex:none;width:96px;aspect-ratio:3/2;background:#151515;overflow:hidden}
-.folder .th img{width:100%;height:100%;object-fit:cover;display:block}
-.folder .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
-.folder .fn{font-size:11.5px;font-weight:400;letter-spacing:.2em;text-transform:uppercase;color:var(--white)}
-.folder .fc{font-size:10px;letter-spacing:.2em;color:var(--muted)}
-
-/* Grid */
-.gridhead{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:12px}
-.hint{font-size:10px;letter-spacing:.24em;color:var(--muted)}
-.photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;margin-top:28px}
-.ph{position:relative;aspect-ratio:3/2;background:#141414}
-.ph .pick{position:absolute;inset:0;width:100%;height:100%;padding:0;border:0;background:none;cursor:pointer}
-.ph img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .35s}
-.ph img.ok{opacity:1}
-.ph .num{position:absolute;left:10px;bottom:9px;font-size:9px;letter-spacing:.18em;color:rgba(255,255,255,.85);text-shadow:0 1px 4px rgba(0,0,0,.7);z-index:2;pointer-events:none}
-.ph .dot{position:absolute;top:10px;right:10px;width:24px;height:24px;border-radius:50%;border:1.5px solid rgba(255,255,255,.85);background:rgba(0,0,0,.3);z-index:2;pointer-events:none;display:flex;align-items:center;justify-content:center}
-.ph .zoom{position:absolute;right:6px;bottom:6px;width:36px;height:36px;border:0;background:none;z-index:3;cursor:zoom-in;display:flex;align-items:center;justify-content:center;opacity:.8}
-.ph .zoom:hover{opacity:1}
-.ph.sel{box-shadow:inset 0 0 0 2px #fff}
-.ph.sel::before{content:"";position:absolute;inset:0;background:rgba(0,0,0,.28);z-index:1;pointer-events:none}
-.ph.sel .dot{background:#fff;border-color:#fff}
-.ph.sel{outline:2px solid #fff;outline-offset:-2px}
-.check{display:none}
-.ph.sel .check{display:block}
-
-/* Cart */
-.cart{flex:1 1 300px;max-width:380px;border:1px solid var(--line);padding:28px;display:flex;flex-direction:column;gap:22px;position:sticky;top:20px}
-.cart h2{margin:0;font-size:11px;font-weight:400;letter-spacing:.3em;color:var(--white)}
-.row{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
-.list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;max-height:220px;overflow-y:auto}
-.list li{display:flex;align-items:center;gap:12px}
-.list .mini{flex:none;width:54px;aspect-ratio:3/2;background:#151515;overflow:hidden}
-.list .mini img{width:100%;height:100%;object-fit:cover;display:block}
-.list .t{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
-.list .t b{font-weight:400;font-size:10.5px;letter-spacing:.12em;color:var(--white)}
-.list .t span{font-size:9px;letter-spacing:.14em;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:uppercase}
-.list .x{flex:none;width:34px;height:34px;background:none;border:0;color:var(--muted);font-size:17px;cursor:pointer}
-.list .x:hover{color:#fff}
-.sum{border-top:1px solid var(--line);padding-top:20px;display:flex;flex-direction:column;gap:10px;font-size:11.5px;letter-spacing:.08em}
-.total{font-size:30px;font-weight:300;color:var(--white)}
-.nudge{margin:0;padding:12px 14px;border:1px solid var(--line);font-size:11.5px;line-height:1.6;color:rgba(255,255,255,.8)}
-.tiers{display:flex;flex-direction:column;gap:4px}
-.tier{display:flex;justify-content:space-between;padding:7px 10px;color:var(--muted);font-size:11px;letter-spacing:.1em}
-.tier.on{background:#fff;color:#000;font-weight:500}
-.field{display:flex;flex-direction:column;gap:8px}
-.field label{font-size:9.5px;letter-spacing:.3em;color:var(--muted)}
-.field input{height:46px;padding:0 14px;background:var(--panel);border:1px solid var(--line-2);color:#fff;font:inherit;font-size:14px;outline:none;border-radius:0}
-.field input:focus{border-color:#fff}
-.btn{height:52px;padding:0 24px;background:#fff;border:0;color:#000;font-size:11px;font-weight:500;letter-spacing:.26em;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
-#payBtn{white-space:nowrap;letter-spacing:.2em;font-size:10.5px}
-.btn.glow:not(:disabled){box-shadow:0 0 0 1px #fff,0 0 14px rgba(255,255,255,.55),0 0 38px rgba(255,255,255,.28);animation:neon 2.4s ease-in-out infinite;transition:box-shadow .2s,transform .2s}
-.btn.glow:not(:disabled):hover{box-shadow:0 0 0 1px #fff,0 0 20px rgba(255,255,255,.8),0 0 60px rgba(255,255,255,.4);transform:translateY(-1px)}
-@keyframes neon{0%,100%{box-shadow:0 0 0 1px #fff,0 0 12px rgba(255,255,255,.45),0 0 30px rgba(255,255,255,.2)}50%{box-shadow:0 0 0 1px #fff,0 0 22px rgba(255,255,255,.75),0 0 54px rgba(255,255,255,.35)}}
-@media (prefers-reduced-motion:reduce){.btn.glow{animation:none!important}}
-.clear{background:none;border:0;padding:6px 0;color:var(--muted);font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;cursor:pointer;text-decoration:underline;text-underline-offset:4px}
-.clear:hover{color:#fff}
-.btn:disabled{background:none;border:1px solid var(--line-2);color:rgba(255,255,255,.45);cursor:default}
-.btn.ghost{background:none;border:1px solid rgba(255,255,255,.35);color:#fff;height:42px;font-size:9.5px;font-weight:400}
-.fine{margin:0;font-size:10.5px;line-height:1.7;color:var(--muted)}
-.tr-btn{height:50px;padding:0 18px;background:none;border:1px solid rgba(255,255,255,.55);color:#fff;font-size:10px;font-weight:500;letter-spacing:.18em;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:10px;white-space:nowrap;transition:border-color .2s,background .2s}
-.tr-btn:hover{border-color:#fff;background:rgba(255,255,255,.06)}
-.tr-btn:disabled{opacity:.45;cursor:default}
-.off{background:#fff;color:#000;padding:3px 6px;font-size:9px;letter-spacing:.08em}
-.or{display:flex;align-items:center;gap:12px;font-size:9px;letter-spacing:.3em;color:var(--muted)}
-.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
-.tbox{border:1px solid var(--line-2);display:flex;flex-direction:column}
-.tline{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 18px;border-bottom:1px solid var(--line)}
-.tline:last-child{border-bottom:0}
-.tline .k{font-size:9.5px;letter-spacing:.26em;color:var(--muted);flex:none}
-.tline .v{font-size:14px;color:#fff;letter-spacing:.04em;text-align:right;word-break:break-all;flex:1}
-.tline .v.big{font-size:26px;font-weight:300}
-.copy{flex:none;height:32px;padding:0 10px;background:none;border:1px solid rgba(255,255,255,.3);color:#fff;font-size:9px;letter-spacing:.2em;cursor:pointer}
-.copy:hover{border-color:#fff}
-.state .btn{text-align:center;line-height:1.5;height:auto;min-height:52px;padding:12px 24px}
-.steps{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:8px;font-size:12.5px;line-height:1.7;color:rgba(255,255,255,.75)}
-.err{margin:0;font-size:11.5px;line-height:1.6;color:#ffb4a8}
-.close-sheet{display:none}
-
-/* Mobile bar */
-.bar{display:none}
-@media (max-width:900px){
-  :root{--gutter:20px}
-  h1{font-size:26px}
-  .intro{padding-top:44px}
-  .photos{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
-  .ph .num{display:none}
-  .cart{position:fixed;left:0;right:0;bottom:0;max-width:none;max-height:88vh;overflow-y:auto;background:#000;border:0;border-top:1px solid var(--line-2);transform:translateY(105%);transition:transform .3s ease;z-index:40;padding:24px 20px 32px}
-  .cart>*{flex-shrink:0}
-  .cart>.row:first-of-type{padding-right:40px}
-  .cart{top:auto;visibility:hidden;transition:transform .3s ease,visibility 0s linear .3s}
-  .cart.open{transform:none;visibility:visible;transition:transform .3s ease,visibility 0s}
-  .close-sheet{display:block;position:absolute;top:12px;right:12px;width:40px;height:40px;background:none;border:0;font-size:20px;color:var(--muted);cursor:pointer}
-  .bar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:30;background:#000;border-top:1px solid var(--line-2);padding:12px 20px calc(14px + env(safe-area-inset-bottom));align-items:center;justify-content:space-between;gap:14px}
-  .bar .b1{display:flex;flex-direction:column;gap:4px}
-  .bar .b1 span{font-size:9.5px;letter-spacing:.2em;color:var(--muted)}
-  .bar .b1 strong{font-size:20px;font-weight:300;color:#fff}
-  .bar .btn{height:46px;font-size:10px}
-  .shade{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:35;display:none}
-  .shade.on{display:block}
-}
-
-/* Lightbox */
-.lb{position:fixed;inset:0;background:rgba(0,0,0,.96);z-index:60;display:none;flex-direction:column}
-.lb.on{display:flex}
-.lb .lbtop{display:flex;justify-content:space-between;align-items:center;padding:18px var(--gutter);font-size:10px;letter-spacing:.26em;color:var(--muted)}
-.lb .lbstage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:0 64px;position:relative}
-.lb .frame{max-width:100%;max-height:100%;aspect-ratio:3/2;width:min(100%,calc((100vh - 200px)*1.5))}
-.lb .frame img{width:100%;height:100%;object-fit:contain;display:block}
-.lb .nav-b{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:64px;background:none;border:0;color:#fff;font-size:26px;cursor:pointer;opacity:.7}
-.lb .nav-b:hover{opacity:1}
-.lb .prev{left:8px}.lb .next{right:8px}
-.lb .lbbot{display:flex;justify-content:center;padding:18px var(--gutter) 26px}
-.lb .x{background:none;border:0;color:#fff;font-size:22px;width:44px;height:44px;cursor:pointer}
-@media (max-width:900px){.lb .lbstage{padding:0 8px}.lb .nav-b{display:none}}
-
-/* States */
-.state{max-width:760px;margin:0 auto;padding:88px var(--gutter) 110px;display:flex;flex-direction:column;gap:26px}
-.ring{width:52px;height:52px;border-radius:50%;border:1px solid rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center}
-.spin{width:22px;height:22px;border:1.5px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:sp 1s linear infinite}
-@keyframes sp{to{transform:rotate(360deg)}}
-.dl{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
-.dl li{display:flex;align-items:center;gap:18px;padding:14px 0;border-bottom:1px solid var(--line)}
-.dl .n{flex:1;min-width:0;font-size:11.5px;letter-spacing:.12em;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.empty{padding:60px 0;font-size:12px;letter-spacing:.14em;color:var(--muted)}
-.foot{border-top:1px solid rgba(255,255,255,.08);padding:24px var(--gutter);display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;font-size:9.5px;letter-spacing:.26em;color:rgba(255,255,255,.5)}
-@media (max-width:900px){.foot{padding-bottom:110px}}
 </style>
 </head>
 <body>
 
-<header class="top">
-  <a class="logo" href="https://lucasmartineza.pics">LUCAS MARTINEZ</a>
-  <nav class="nav" aria-label="Principal">
-    <a href="https://lucasmartineza.pics">Gallery</a>
-    <a href="https://lucasmartineza.pics">About</a>
-    <a href="https://lucasmartineza.pics/tienda">Tienda</a>
-    <a class="on" href="#/" aria-current="page">Eventos</a>
-  </nav>
-</header>
-
-<div class="strip" id="strip" hidden>
-  <div class="strip-in" id="stripIn"></div>
-</div>
-
-<div id="view"></div>
-
-<footer class="foot">
-  <span>© LUCASMARTINEZA</span>
-  <a href="https://lucasmartineza.pics">WWW.LUCASMARTINEZA.PICS</a>
-</footer>
-
-<!-- Carrito / panel -->
-<div class="shade" id="shade"></div>
-<aside class="cart" id="cart" aria-label="Tu selección" hidden>
-  <button class="close-sheet" id="closeSheet" aria-label="Cerrar">×</button>
-  <div class="row">
-    <h2>TU SELECCIÓN</h2>
-    <span class="caps" style="font-size:10px;letter-spacing:.2em;color:var(--muted)" id="cCount">0 FOTOS</span>
-  </div>
-  <button class="clear" type="button" data-clear id="cClear" hidden style="align-self:flex-start;margin-top:-12px">DESELECCIONAR TODAS</button>
-  <p class="fine" id="cEmpty">Todavía no elegiste fotos. Entrá a un evento y tocá las que quieras llevarte.</p>
-  <ul class="list" id="cList"></ul>
-  <div class="sum">
-    <div class="row"><span style="color:var(--muted)">Precio por foto</span><span style="color:#fff" id="cUnit">—</span></div>
-    <div class="row" style="margin-top:6px"><span style="font-size:10px;letter-spacing:.3em;color:rgba(255,255,255,.75)">TOTAL</span><span class="total" id="cTotal">$0</span></div>
-    <div class="row" id="cTrRow" hidden><span style="color:var(--muted)">Pagando con transferencia</span><span style="color:#fff" id="cTr"></span></div>
-  </div>
-  <p class="nudge" id="cNudge"></p>
-  <div class="tiers" id="cTiers"><span style="font-size:9.5px;letter-spacing:.3em;color:var(--muted);margin-bottom:4px">PROMO POR CANTIDAD</span></div>
-  <form id="payForm" style="display:flex;flex-direction:column;gap:14px" novalidate>
-    <div class="field">
-      <label for="mail">TU MAIL (TE ENVIAMOS LAS FOTOS)</label>
-      <input id="mail" type="email" inputmode="email" autocomplete="email" placeholder="nombre@mail.com" required>
+<div class="topbar" id="topbar">
+  <div class="tb-left">
+    <div class="tb-name">Lucas Martinez</div>
+    <button class="tb-btn" id="btnGaleria">Gallery</button>
+    <button class="tb-btn" id="btnAbout">About</button>
+    <button class="tb-btn" onclick="document.getElementById('sectionComments').style.display='block';loadComments();" >Comments</button>
+    <div class="tb-shop">
+      <a class="tb-btn tb-shop-link" href="/tienda" style="text-decoration:none">Tienda</a>
+      <a class="tb-btn tb-shop-link" href="/eventos/" style="text-decoration:none">Eventos</a>
     </div>
-    <p class="err" id="cErr" hidden></p>
-    <button class="btn glow" id="payBtn" type="submit" disabled>PAGAR CON MERCADO PAGO</button>
-    <div id="trWrap" hidden style="display:flex;flex-direction:column;gap:14px">
-      <span class="or">O</span>
-      <button class="tr-btn" id="trBtn" type="button" disabled>PAGAR CON TRANSFERENCIA <span class="off" id="trOff" hidden></span></button>
-    </div>
-  </form>
-  <p class="fine">Mercado Pago: tarjeta, débito, dinero en cuenta o efectivo, y descargás al instante. Transferencia: te mandamos las fotos apenas confirmamos el pago. Siempre en alta calidad y sin marca de agua.</p>
-</aside>
-
-<div class="bar" id="bar" hidden>
-  <div class="b1"><span id="bCount">0 FOTOS</span><strong id="bTotal">$0</strong></div>
-  <button class="btn glow" id="bOpen" type="button">VER Y PAGAR</button>
-</div>
-
-<!-- Visor -->
-<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Ver foto">
-  <div class="lbtop"><span id="lbInfo"></span><button class="x" id="lbClose" aria-label="Cerrar">×</button></div>
-  <div class="lbstage">
-    <button class="nav-b prev" id="lbPrev" aria-label="Anterior">‹</button>
-    <div class="frame wm" id="lbFrame"><img id="lbImg" alt=""></div>
-    <button class="nav-b next" id="lbNext" aria-label="Siguiente">›</button>
   </div>
-  <div class="lbbot"><button class="btn" id="lbPick" type="button">ELEGIR ESTA FOTO</button></div>
+  <div class="tb-icons">
+    <button class="lang-btn" id="langES" onclick="setLang('es')">ES</button>
+    <span class="lang-sep">/</span>
+    <button class="lang-btn active" id="langEN" onclick="setLang('en')">EN</button>
+    <a class="tb-icon" href="https://instagram.com/lucasmartineza" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+    <a class="tb-icon" href="https://wa.me/5493513020815" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></a>
+    <a class="tb-icon" href="mailto:lucasmartinez.a@gmail.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg></a>
+  </div>
 </div>
+
+<nav class="tab-bar" id="tabBar">
+  <button class="tab-item active" id="tabHome">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+    <span>Home</span>
+  </button>
+  <button class="tab-item" id="tabGallery">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><polyline points="21,15 16,10 5,21"/></svg>
+    <span>Gallery</span>
+  </button>
+  <button class="tab-item" id="tabAbout">
+    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span>About</span>
+  </button>
+  <a class="tab-item tab-item-tienda" href="/tienda" style="text-decoration:none">
+    <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    <span>Tienda</span>
+  </a>
+  <a class="tab-item tab-item-tienda" href="/eventos/" style="text-decoration:none">
+    <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+    <span>Eventos</span>
+  </a>
+  <button class="tab-item" id="tabSpotify">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 11.5c2.5-.8 5-.8 8 0M7 15c3-1 5.5-1 9 0M9.5 8.5c2-.5 4-.5 6 0"/></svg>
+    <span>Spotify</span>
+  </button>
+</nav>
+
+<section class="cf-section" id="cfSection">
+  <div style="position:fixed;bottom:72px;left:0;right:0;z-index:50;pointer-events:none;overflow:hidden;height:36px;"><div id="homeTickerBox" style="position:absolute;right:-320px;background:rgba(0,0,0,0.6);border:0.5px solid rgba(255,255,255,0.12);border-radius:4px;padding:6px 14px;backdrop-filter:blur(4px);"><span class="ht-ig" style="display:block;font-size:0.6rem;font-weight:600;letter-spacing:0.1em;color:rgba(255,255,255,0.9);"></span><span class="ht-msg" style="display:block;font-size:0.65rem;font-weight:300;color:rgba(255,255,255,0.6);max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></span></div></div>
+  <div class="cf-stage" id="cfStage">
+    <div class="cf-track" id="cfTrack"></div>
+    <div class="cf-caption" id="cfCaption"></div>
+    <div class="cf-caption-m" id="cfCaptionM"></div>
+    <div class="cf-counter" id="cfCounter">1 / 172</div>
+    <div class="cf-arrows">
+      <div class="cf-arr" id="cfPrev">&#8592;</div>
+      <div class="cf-arr" id="cfNext">&#8594;</div>
+    </div>
+    <div class="scroll-hint">&#8595;</div>
+  </div>
+</section>
+
+<div class="sp-wrap">
+  <iframe src="https://open.spotify.com/embed/playlist/3NimH9q2tjkia3ocon5MsH?utm_source=generator&theme=0" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+<div class="fototeca" id="fototeca">
+  <div class="fototeca-header"><button class="fototeca-close" id="fototecaClose">Close &#x2715;</button></div>
+  <div class="fototeca-grid"><div class="photo-grid" id="photoGrid"></div></div>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" id="lbClose">&#x2715;</button>
+  <div class="lb-img-wrap">
+    <img id="lbImg" src="" alt="">
+    <div class="lb-nav">
+      <div class="lb-arr" id="lbPrev">&#8592;</div>
+      <div class="lb-arr" id="lbNext">&#8594;</div>
+    </div>
+  </div>
+  <div class="lb-meta" id="lbMeta"></div>
+</div>
+
+<section class="about-section" id="aboutSection">
+  <div class="about-inner" id="aboutInner">
+    <div class="about-label">About</div>
+    <div class="about-photo"><img src="about.jpg" alt="Lucas Martinez"></div>
+    <div class="about-text">
+      <p>I approach rally photography from a place that tries to move away from the most obvious. I am not solely interested in speed or the most spectacular moment, but also in what happens around it: the tension beforehand, the in-between instants, the relationship between the car and its surroundings.</p>
+      <p>I seek to construct the image rather than merely record it. In a context that tends to be chaotic and unpredictable, I am drawn to finding a certain order, a certain harmony. That is why the landscape often carries as much weight as the action, and framing becomes a tool for balancing those elements.</p>
+      <p>I do not want the images to shout or impose themselves through immediate impact. I am interested in the opposite: that they operate on a quieter register, that they compel or invite a brief pause. That within that pause, details emerge that are not visible at first glance: a suggested trajectory, a relationship of scales, an atmosphere. In that sense, I try to give each photograph a kind of persistence, one that does not exhaust itself on first sight.</p>
+      <p>My approach sits closer to an authorial vision than to pure documentation, without losing touch with what actually happens. I am interested not only in showing what occurred, but in conveying, to some degree, what it felt like to be there.</p>
+      <p>In some ways, these images also seek to detach from the noise and urgency of the moment in which they were taken. They invite being seen from a distance, in another time, where the chaos no longer dominates the scene and it becomes possible to pause and read what, in the instant, went unnoticed.</p>
+    </div>
+  </div>
+</section>
 
 <script>
-(function () {
-  'use strict';
+var HERO    = [{"file": "@lucasmartineza_-1822.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 500", "aperture": "f/5.0", "date": "2026-08-28"}}, {"file": "@lucasmartineza_-1779.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 500", "aperture": "f/5.0", "date": "2026-08-28"}}, {"file": "@lucasmartineza_-1658.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 400", "aperture": "f/5.6", "date": "2026-08-28"}}, {"file": "@lucasmartineza_-1580.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 4000", "aperture": "f/2.8", "date": "2026-08-27"}}, {"file": "0Y2A0865.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 125", "aperture": "f/2.8", "date": "2026-08-27"}}, {"file": "@lucasmartineza_-0058.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 200", "aperture": "f/2.8", "date": "2026-08-26"}}, {"file": "@lucasmartineza_-1801.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 500", "aperture": "f/5.0", "date": "2026-08-28"}}, {"file": "@lucasmartineza_-1915.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 320", "aperture": "f/6.3", "date": "2026-08-28"}}, {"file": "@lucasmartineza_-0086.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 250", "aperture": "f/2.8", "date": "2026-08-26"}}, {"file": "_MG_7323.JPG", "meta": {"camera": "Canon EOS R8", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 1250", "aperture": "f/4.0", "date": "1999-12-31"}}, {"file": "_MG_7178.JPG", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 100", "aperture": "f/4.0", "date": "1999-12-31"}}, {"file": "0Y2A8318.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 800", "aperture": "f/2.8", "date": "2026-09-11"}}, {"file": "_MG_0001-2.jpg", "meta": {"camera": "Canon EOS R8", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 250", "aperture": "f/6.3", "date": "1999-12-31"}}, {"file": "0Y2A9169.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/13.0", "date": "2026-09-11"}}, {"file": "_MG_8040.jpg", "meta": {"camera": "Canon EOS R8", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 640", "aperture": "f/7.1", "date": "1999-12-31"}}, {"file": "_MG_7205.JPG", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 125", "aperture": "f/4.0", "date": "1999-12-31"}}, {"file": "_MG_7613.jpg", "meta": {"camera": "Canon EOS R8", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 400", "aperture": "f/4.0", "date": "1999-12-31"}}, {"file": "0Y2A9743.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-09-13"}}, {"file": "0Y2A8405.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-09-11"}}, {"file": "0Y2A9871.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-09-13"}}, {"file": "0Y2A9643.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/3.2", "date": "2026-09-12"}}, {"file": "_MG_0056.jpg", "meta": {"camera": "Canon EOS R8", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 250", "aperture": "f/6.3", "date": "1999-12-31"}}, {"file": "@LUCASMARTINEZA_A-metr2.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 400", "aperture": "f/4.0", "date": "2026-07-26"}}, {"file": "@LUCASMARTINEZA_A-metr5.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 400", "aperture": "f/4.0", "date": "2026-07-26"}}, {"file": "@lucasmartineza_-9678.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/4.0", "date": "2026-07-26"}}, {"file": "@lucasmartineza_-9621.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 160", "aperture": "f/4.0", "date": "2026-07-26"}}, {"file": "@lucasmartineza_-9511.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/4.0", "date": "2026-07-26"}}, {"file": "@lucasmartineza_-9489.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/4.0", "date": "2026-07-26"}}, {"file": "@lucasmartineza_-9675.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/4.0", "date": "2026-07-26"}}, {"file": "@LUCASMARTINEZA_A-2.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 200", "aperture": "f/2.8", "date": "2026-06-28"}}, {"file": "@lucasmartineza_-9447.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/14.0", "date": "2026-05-17"}}, {"file": "@LUCASMARTINEZA_A-11.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/6.3", "date": "2026-06-26"}}, {"file": "@LUCASMARTINEZA_A-5.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 250", "aperture": "f/4.0", "date": "2026-06-27"}}, {"file": "@LUCASMARTINEZA_A-29.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/3.5", "date": "2026-05-23"}}, {"file": "@LUCASMARTINEZA_A-7.JPG", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 400", "aperture": "f/6.3", "date": "2026-06-27"}}, {"file": "@LUCASMARTINEZA_A-14.JPG", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 640", "aperture": "f/5.0", "date": "2026-06-21"}}, {"file": "@LUCASMARTINEZA_A-52.JPG", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 1000", "aperture": "f/6.3", "date": "2026-04-15"}}, {"file": "@LUCASMARTINEZA_A-47.JPG", "meta": {"date": "2026-04-17"}}, {"file": "@LUCASMARTINEZA_A-50.JPG", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 250", "aperture": "f/6.3", "date": "2026-04-15"}}, {"file": "@LUCASMARTINEZA_A-44.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 250", "aperture": "f/2.8", "date": "2026-04-18"}}, {"file": "@LUCASMARTINEZA_A-41.JPG", "meta": {}}, {"file": "@LUCASMARTINEZA_A-19.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-06-20"}}, {"file": "@LUCASMARTINEZA_A-26.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 320", "aperture": "f/4.0", "date": "2026-05-29"}}, {"file": "@LUCASMARTINEZA_A-9.JPG", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 100", "aperture": "f/6.3", "date": "2026-06-26"}}, {"file": "@LUCASMARTINEZA_A-23.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 320", "aperture": "f/4.0", "date": "2026-05-29"}}, {"file": "@LUCASMARTINEZA_A-37.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 1000", "aperture": "f/2.8", "date": "2026-05-16"}}, {"file": "@LUCASMARTINEZA_A-36.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/6.3", "date": "2026-05-17"}}, {"file": "@LUCASMARTINEZA_A-22.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 1600", "aperture": "f/4.0", "date": "2026-05-30"}}, {"file": "@LUCASMARTINEZA_A-34.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/13.0", "date": "2026-05-17"}}, {"file": "@LUCASMARTINEZA_A-21.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 500", "aperture": "f/2.8", "date": "2026-06-19"}}, {"file": "@lucasmartineza_-8400.jpg", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 250", "aperture": "f/2.8", "date": "1999-12-31"}}, {"file": "@lucasmartineza_-9521.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 1000", "aperture": "f/6.3", "date": "2026-04-15"}}, {"file": "@lucasmartineza_-9720.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 800", "aperture": "f/5.6", "date": "2026-04-15"}}, {"file": "@lucasmartineza_-1478.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-04-18"}}, {"file": "@lucasmartineza_-0438.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 125", "aperture": "f/2.8", "date": "2026-04-17"}}, {"file": "@lucasmartineza_-1900.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/5.0", "date": "2026-04-19"}}, {"file": "@lucasmartineza_-1891.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/5.0", "date": "2026-04-19"}}, {"file": "@lucasmartineza_-9978.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/5.0", "date": "2026-04-17"}}, {"file": "@lucasmartineza_-0800.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 320", "aperture": "f/2.8", "date": "2026-04-17"}}, {"file": "@lucasmartineza_-9674.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 250", "aperture": "f/6.3", "date": "2026-04-15"}}, {"file": "@lucasmartineza_-1598.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-04-18"}}, {"file": "IMG_4276.JPG", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 100", "aperture": "f/4.0", "date": "2024-01-02"}}, {"file": "IMG_4588.JPG", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 100", "aperture": "f/4.0", "date": "2024-01-02"}}, {"file": "IMG_3557.JPG", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 500", "aperture": "f/4.0", "date": "2024-01-01"}}, {"file": "0Y2A4446.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-03-15"}}, {"file": "0Y2A4491.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 160", "aperture": "f/2.8", "date": "2026-03-15"}}, {"file": "0Y2A4720.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 160", "aperture": "f/4.0", "date": "2026-03-15"}}, {"file": "IMG_4623.JPG", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 100", "aperture": "f/4.0", "date": "2024-01-02"}}, {"file": "0Y2A4715.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 160", "aperture": "f/4.0", "date": "2026-03-15"}}, {"file": "0Y2A4702.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 160", "aperture": "f/4.0", "date": "2026-03-15"}}, {"file": "0Y2A4439.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-03-15"}}, {"file": "0Y2A4760.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 160", "aperture": "f/4.0", "date": "2026-03-15"}}, {"file": "@lucasmartineza_-0069.jpg", "meta": {"camera": "FC3411", "lens": "22.4 mm f/2.8", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-03-22"}}, {"file": "@lucasmartineza_-6339.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 250", "aperture": "f/5.0", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-6268.jpg", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 125", "aperture": "f/5.0", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-6270.jpg", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 125", "aperture": "f/5.0", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-6253.jpg", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 125", "aperture": "f/5.0", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-2.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 250", "aperture": "f/5.0", "date": "2026-03-20"}}, {"file": "0Y2A6906.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-03-21"}}, {"file": "0Y2A6724.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/3.2", "date": "2026-03-21"}}, {"file": "0Y2A6646.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/3.2", "date": "2026-03-21"}}, {"file": "0Y2A7053.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-03-21"}}, {"file": "0Y2A7056.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-03-21"}}, {"file": "@lucasmartineza_-5123.jpg", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 100", "aperture": "f/4.0", "date": "2024-01-06"}}, {"file": "@lucasmartineza_-5910.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 100", "aperture": "f/5.6", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-5952.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 100", "aperture": "f/5.6", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-5826.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/4.0", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-5666.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 160", "aperture": "f/5.6", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-5934.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 100", "aperture": "f/5.6", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-5853.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/4.0", "date": "2026-03-20"}}, {"file": "@lucasmartineza_-4865.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 160", "aperture": "f/4.0", "date": "2026-03-15"}}, {"file": "@lucasmartineza_-3910.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/5.0", "date": "2026-02-27"}}, {"file": "@lucasmartineza_-3722 2.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/5.6", "date": "2026-02-27"}}, {"file": "@lucasmartineza_-3704.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/5.6", "date": "2026-02-27"}}, {"file": "@lucasmartineza_-0519.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-02-28"}}, {"file": "@lucasmartineza_-3962.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/5.0", "date": "2026-02-27"}}, {"file": "@lucasmartineza_-3722.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/5.6", "date": "2026-02-27"}}, {"file": "@lucasmartineza_-0609.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-02-28"}}, {"file": "@lucasmartineza_-0127.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-02-28"}}, {"file": "@lucasmartineza_-3607.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/5.6", "date": "2026-02-27"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-2-3.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 1000", "aperture": "f/5.6", "date": "2025-08-31"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-6203.jpg", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 100", "aperture": "f/3.5", "date": "2025-08-28"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-9445.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 320", "aperture": "f/2.8", "date": "2025-08-30"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-6367.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 400", "aperture": "f/5.6", "date": "2025-08-28"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-9863.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "70-200mm", "iso": "ISO 200", "aperture": "f/2.8", "date": "2025-08-31"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-.jpg", "meta": {}}, {"file": "@lucasmartineza_WRC_paraguay2025_-8869.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 160", "aperture": "f/5.0", "date": "2025-08-29"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-8644.jpg", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 100", "aperture": "f/9.0", "date": "2025-08-29"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-0042.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 200", "aperture": "f/4.0", "date": "2025-08-31"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-8568.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2025-08-29"}}, {"file": "@lucasmartineza_WRC_paraguay2025_-6597.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2025-08-28"}}, {"file": "@lucasmartineza-9034.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/4.0", "date": "2000-12-31"}}, {"file": "@LUCASMARTINEZA_1.jpg", "meta": {}}, {"file": "@lucasmartineza --1 6.JPG", "meta": {"camera": "Canon EOS 6D", "lens": "EF17-40mm f/4L USM", "iso": "ISO 200", "aperture": "f/11.0", "date": "2023-04-23"}}, {"file": "*@lucasmartineza-1164.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "aperture": "f/14.0", "date": "2024-11-30"}}, {"file": "@lucasmartineza-0007.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF8-15mm f/4L FISHEYE USM", "iso": "ISO 200", "aperture": "f/4.0", "date": "2025-09-12"}}, {"file": "@lucasmartineza-7998.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/8.0", "date": "2025-09-11"}}, {"file": "@lucasmartineza-7423.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "aperture": "f/9.0", "date": "2000-12-31"}}, {"file": "0Y2A9412 2.JPG", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 320", "aperture": "f/6.3", "date": "2025-09-13"}}, {"file": "@LUCASMARTINEZA-7816.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 250", "aperture": "f/4.0", "date": "2025-07-05"}}, {"file": "@lucasmartineza-58.jpg", "meta": {}}, {"file": "@LUCASMARTINEZA-2-16.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 125", "aperture": "f/6.3", "date": "2025-06-07"}}, {"file": "@lucasmartineza_sabado14.jpg", "meta": {"camera": "Canon EOS R8", "lens": "EF17-40mm f/4L USM", "iso": "ISO 125", "aperture": "f/4.0", "date": "2025-11-22"}}, {"file": "@LUCASMARTINEZA-2-9.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/4.5", "date": "2025-08-03"}}, {"file": "@lucasmartineza-8598.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "aperture": "f/6.3", "date": "2000-12-31"}}, {"file": "@lucasmartineza-1231.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 125", "aperture": "f/6.3", "date": "2025-10-04"}}, {"file": "@LUCASMARTINEZA-5056.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "15mm", "iso": "ISO 160", "aperture": "f/2.8", "date": "2025-07-05"}}, {"file": "@lucasmartineza_sabado29.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/11.0", "date": "2025-11-22"}}, {"file": "@lucasmartineza-2-8.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF8-15mm f/4L FISHEYE USM", "iso": "ISO 200", "aperture": "f/4.0", "date": "2025-09-12"}}, {"file": "@LUCASMARTINEZA-9108.jpg", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 100", "aperture": "f/5.6", "date": "2025-04-11"}}, {"file": "@lucasmartineza_-9427.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 200", "aperture": "f/4.0", "date": "2025-12-06"}}, {"file": "@LUCASMARTINEZA-0059.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "aperture": "f/5.6", "date": "2000-12-31"}}, {"file": "@lucasmartineza-12.jpg", "meta": {}}, {"file": "@LUCASMARTINEZA-0288.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/7.1", "date": "2025-04-13"}}, {"file": "@lucasmartineza_s1_68.JPG", "meta": {"date": "2023-06-03"}}, {"file": "*@lucasmartineza-01-3.jpg", "meta": {}}, {"file": "@lucasmartinezadrone-17.jpg", "meta": {"camera": "FC7303", "lens": "20.7 mm", "iso": "ISO 200", "aperture": "f/2.8", "date": "2024-04-14"}}, {"file": "*@lucasmartineza-0633.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/13.0", "date": "2024-11-29"}}, {"file": "@lucasmartineza-9291.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/5.0", "date": "2000-12-31"}}, {"file": "@LUCASMARTINEZA -1550.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF17-40mm f/4L USM", "iso": "ISO 100", "aperture": "f/9.0", "date": "2000-12-31"}}, {"file": "@lucasmartineza_-8919.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2025-12-05"}}, {"file": "@lucasmartineza__96.JPG", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF28-135mm f/3.5-5.6 IS USM", "iso": "ISO 100", "aperture": "f/5.0", "date": "2023-05-13"}}, {"file": "@LUCASMARTINEZA -2-9 2.jpg", "meta": {"date": "2024-06-08"}}, {"file": "0Y2A9353 2.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF8-15mm f/4L FISHEYE USM", "iso": "ISO 100", "aperture": "f/4.0", "date": "2025-09-14"}}, {"file": "0Y2A9418.JPG", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 125", "aperture": "f/5.0", "date": "2025-09-14"}}, {"file": "9E4Q2290.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF28-135mm f/3.5-5.6 IS USM", "iso": "ISO 200", "aperture": "f/4.5", "date": "2023-06-04"}}, {"file": "@lucasmartineza-9739.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "15mm", "iso": "ISO 800", "aperture": "f/10.0", "date": "2025-10-04"}}, {"file": "0Y2A9383.JPG", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 320", "aperture": "f/5.6", "date": "2025-09-13"}}, {"file": "@lucasmartineza-1616.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 160", "aperture": "f/6.3", "date": "2025-10-04"}}, {"file": "@lucasmartineza_viernes101.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 125", "aperture": "f/9.0", "date": "2025-11-21"}}, {"file": "@LUCASMARTINEZA-4421.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "15mm", "iso": "ISO 1000", "aperture": "f/5.6", "date": "2025-06-07"}}, {"file": "@lucasmartineza-9087 2.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 250", "aperture": "f/6.3", "date": "2025-09-13"}}, {"file": "@lucasmartineza_s2_127 2.jpg", "meta": {"camera": "Canon EOS 6D", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "aperture": "f/5.6", "date": "2023-06-03"}}, {"file": "@lucasmartineza_sabado18.JPG", "meta": {"camera": "Canon EOS R8", "lens": "EF17-40mm f/4L USM", "iso": "ISO 160", "aperture": "f/4.0", "date": "2025-11-22"}}, {"file": "@lucasmartineza-9339.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 100", "aperture": "f/5.6", "date": "2025-09-14"}}, {"file": "@lucasmartineza-2 2.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 250", "aperture": "f/4.0", "date": "2025-09-11"}}, {"file": "@lucasmartineza-0863.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/8.0", "date": "2024-11-30"}}, {"file": "@LUCASMARTINEZA-5304.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 125", "aperture": "f/6.3", "date": "2025-06-07"}}, {"file": "@lucasmartineza-0794.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "aperture": "f/10.0", "date": "2024-11-29"}}, {"file": "@lucasmartineza-9042 2.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/4.5", "date": "2000-12-31"}}, {"file": "@lucasmartineza-9564.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 320", "aperture": "f/5.6", "date": "2025-09-13"}}, {"file": "@lucasmartineza-9766.jpg", "meta": {"camera": "Canon EOS 7D", "lens": "15mm", "iso": "ISO 100", "aperture": "f/10.0", "date": "2024-10-25"}}, {"file": "@LUCASMARTINEZA-9957.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 100", "aperture": "f/7.1", "date": "2025-04-12"}}, {"file": "@lucasmartineza--2.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 250", "aperture": "f/6.3", "date": "2025-09-13"}}, {"file": "@lucasmartineza-6318.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF17-40mm f/4L USM", "iso": "ISO 100", "aperture": "f/5.0", "date": "2024-09-20"}}, {"file": "@lucasmartineza_sabado78.JPG", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 200", "aperture": "f/6.3", "date": "2025-11-22"}}, {"file": "@LUCASMARTINEZA-0180.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "aperture": "f/5.6", "date": "2000-12-31"}}, {"file": "@LUCASMARTINEZA-3885.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "15mm", "iso": "ISO 640", "aperture": "f/6.3", "date": "2025-04-13"}}, {"file": "@lucasmartineza_s2_173.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF28-135mm f/3.5-5.6 IS USM", "iso": "ISO 200", "aperture": "f/4.5", "date": "2023-06-03"}}, {"file": "@LUCASMARTINEZA-2-23.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 125", "aperture": "f/6.3", "date": "2025-06-07"}}, {"file": "@lucasmartineza-9617.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/5.0", "date": "2000-12-31"}}, {"file": "@LUCASMARTINEZA-4284.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/6.3", "date": "2025-06-06"}}];
+var GALLERY = [{"file": "@lucasmartineza_-1580.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 4000", "aperture": "f/2.8", "date": "2026-08-27"}}, {"file": "0Y2A0865.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 125", "aperture": "f/2.8", "date": "2026-08-27"}}, {"file": "@lucasmartineza_-0058.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 200", "aperture": "f/2.8", "date": "2026-08-26"}}, {"file": "@lucasmartineza_-1815.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 500", "aperture": "f/5.6", "date": "2026-08-28"}}, {"file": "@lucasmartineza_-1779.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 500", "aperture": "f/5.0", "date": "2026-08-28"}}, {"file": "@lucasmartineza_-1646.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 400", "aperture": "f/5.6", "date": "2026-08-28"}}, {"file": "@lucasmartineza_-1915.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 320", "aperture": "f/6.3", "date": "2026-08-28"}}, {"file": "@lucasmartineza_-1850.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 100", "aperture": "f/13.0", "date": "2026-08-28"}}, {"file": "@lucasmartineza_-1111.jpg", "meta": {"camera": "Canon EOS R8", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/14.0", "date": "1999-12-31"}}, {"file": "@lucasmartineza_-1887.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 320", "aperture": "f/6.3", "date": "2026-08-28"}}, {"file": "@lucasmartineza_-0224.jpg", "meta": {"camera": "Canon EOS R8", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "1999-12-31"}}, {"file": "@lucasmartineza_-1658.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 400", "aperture": "f/5.6", "date": "2026-08-28"}}, {"file": "@lucasmartineza_-1937.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 320", "aperture": "f/6.3", "date": "2026-08-28"}}, {"file": "@lucasmartineza_-0090.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 250", "aperture": "f/2.8", "date": "2026-08-26"}}, {"file": "@lucasmartineza_-0118.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 400", "aperture": "f/2.8", "date": "2026-08-26"}}, {"file": "@lucasmartineza_-0086.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 250", "aperture": "f/2.8", "date": "2026-08-26"}}, {"file": "0Y2A0897.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 125", "aperture": "f/2.8", "date": "2026-08-27"}}, {"file": "@lucasmartineza_-1759.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 500", "aperture": "f/6.3", "date": "2026-08-28"}}, {"file": "@LUCASMARTINEZA_2060.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/3.2", "date": "2026-09-06"}}, {"file": "@LUCASMARTINEZA_2067.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/22.0", "date": "2026-09-06"}}, {"file": "@LUCASMARTINEZA_2066.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/3.2", "date": "2026-09-06"}}, {"file": "@LUCASMARTINEZA_2112.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/4.0", "date": "2026-09-06"}}, {"file": "@LUCASMARTINEZA_2109.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/4.0", "date": "2026-09-06"}}, {"file": "@LUCASMARTINEZA_2001.jpg", "meta": {"camera": "Canon EOS R8", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 320", "aperture": "f/5.0", "date": "1999-12-31"}}, {"file": "@LUCASMARTINEZA_2010.jpg", "meta": {"camera": "Canon EOS R8", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 320", "aperture": "f/5.0", "date": "1999-12-31"}}, {"file": "@LUCASMARTINEZA_2007.jpg", "meta": {"camera": "Canon EOS R8", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 320", "aperture": "f/5.0", "date": "1999-12-31"}}, {"file": "@LUCASMARTINEZA_1006.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 320", "aperture": "f/4.0", "date": "2026-09-06"}}, {"file": "@LUCASMARTINEZA_1003.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 320", "aperture": "f/4.0", "date": "2026-09-06"}}, {"file": "@LUCASMARTINEZA_1009.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 320", "aperture": "f/4.0", "date": "2026-09-06"}}, {"file": "@lucasmartineza_-4106.jpg", "meta": {"camera": "Canon EOS R8", "lens": "70.0-200.0 mm", "iso": "ISO 1000", "aperture": "f/5.0", "date": "1999-12-31"}}, {"file": "0Y2A6694.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/4.0", "date": "2026-09-05"}}, {"file": "0Y2A6513.JPG", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 200", "aperture": "f/6.3", "date": "2026-09-05"}}, {"file": "@LUCASMARTINEZA_2026-09-08 at 9.57.17 PM 26.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/4.5", "date": "2026-09-05"}}, {"file": "@LUCASMARTINEZA_2026-09-08 at 9.57.17 PM 13.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/4.5", "date": "2026-09-05"}}, {"file": "@LUCASMARTINEZA_2026-09-08 at 9.57.17 PM 2.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/4.5", "date": "2026-09-05"}}, {"file": "@LUCASMARTINEZA_2026-09-08 at 9.57.17 PM 10.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/4.5", "date": "2026-09-05"}}, {"file": "@LUCASMARTINEZA335 2.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-09-04"}}, {"file": "@LUCASMARTINEZA308 2.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-09-04"}}, {"file": "@LUCASMARTINEZA_nocturno110.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 1600", "aperture": "f/4.0", "date": "2026-09-04"}}, {"file": "@LUCASMARTINEZA_nocturno82.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 1600", "aperture": "f/4.0", "date": "2026-09-04"}}, {"file": "0Y2A7661.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 500", "aperture": "f/2.8", "date": "2026-09-10"}}, {"file": "0Y2A9921.JPG", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 125", "aperture": "f/6.3", "date": "2026-09-12"}}, {"file": "0Y2A9921 2.JPG", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 125", "aperture": "f/6.3", "date": "2026-09-12"}}, {"file": "0Y2A8419.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-09-11"}}, {"file": "0Y2A7699.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 400", "aperture": "f/2.8", "date": "2026-09-10"}}, {"file": "0Y2A8555.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 2500", "aperture": "f/2.8", "date": "2026-09-11"}}, {"file": "_MG_7323.JPG", "meta": {"camera": "Canon EOS R8", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 1250", "aperture": "f/4.0", "date": "1999-12-31"}}, {"file": "_MG_0103.jpg", "meta": {"camera": "Canon EOS R8", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 125", "aperture": "f/5.0", "date": "1999-12-31"}}, {"file": "_MG_9641.JPG", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 500", "aperture": "f/7.1", "date": "1999-12-31"}}, {"file": "0Y2A9476.JPG", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 400", "aperture": "f/2.8", "date": "2026-09-11"}}, {"file": "0Y2A9463.JPG", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 640", "aperture": "f/2.8", "date": "2026-09-11"}}, {"file": "0Y2A9661.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/3.2", "date": "2026-09-12"}}, {"file": "_MG_7178.JPG", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 100", "aperture": "f/4.0", "date": "1999-12-31"}}, {"file": "0Y2A9610.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-09-13"}}, {"file": "0Y2A8318.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 800", "aperture": "f/2.8", "date": "2026-09-11"}}, {"file": "0Y2A9617.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 125", "aperture": "f/2.8", "date": "2026-09-12"}}, {"file": "_MG_0001-2.jpg", "meta": {"camera": "Canon EOS R8", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 250", "aperture": "f/6.3", "date": "1999-12-31"}}, {"file": "0Y2A9141.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 1250", "aperture": "f/2.8", "date": "2026-09-11"}}, {"file": "0Y2A9169.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/13.0", "date": "2026-09-11"}}, {"file": "_MG_8040.jpg", "meta": {"camera": "Canon EOS R8", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 640", "aperture": "f/7.1", "date": "1999-12-31"}}, {"file": "_MG_7158.JPG", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 100", "aperture": "f/4.0", "date": "1999-12-31"}}, {"file": "_MG_7205.JPG", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 125", "aperture": "f/4.0", "date": "1999-12-31"}}, {"file": "0Y2A9231.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/11.0", "date": "2026-09-11"}}, {"file": "0Y2A8310.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 160", "aperture": "f/2.8", "date": "2026-09-11"}}, {"file": "_MG_7214.JPG", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 100", "aperture": "f/4.0", "date": "1999-12-31"}}, {"file": "_MG_8092.jpg", "meta": {"camera": "Canon EOS R8", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 640", "aperture": "f/7.1", "date": "1999-12-31"}}, {"file": "_MG_7411.JPG", "meta": {"camera": "Canon EOS R8", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 1000", "aperture": "f/4.0", "date": "1999-12-31"}}, {"file": "_MG_7613.jpg", "meta": {"camera": "Canon EOS R8", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 400", "aperture": "f/4.0", "date": "1999-12-31"}}, {"file": "0Y2A9743.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-09-13"}}, {"file": "0Y2A9678 3.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-09-13"}}, {"file": "0Y2A9686.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-09-13"}}, {"file": "0Y2A9902.JPG", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 125", "aperture": "f/6.3", "date": "2026-09-12"}}, {"file": "0Y2A8405.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-09-11"}}, {"file": "_MG_0087.jpg", "meta": {"camera": "Canon EOS R8", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 125", "aperture": "f/4.0", "date": "1999-12-31"}}, {"file": "0Y2A9493.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 250", "aperture": "f/2.8", "date": "2026-09-11"}}, {"file": "0Y2A7243.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 125", "aperture": "f/2.8", "date": "2026-09-10"}}, {"file": "0Y2A9871.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-09-13"}}, {"file": "@lucasmartineza_-7128.jpg", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 5000", "aperture": "f/4.5", "date": "1999-12-31"}}, {"file": "0Y2A9643.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/3.2", "date": "2026-09-12"}}, {"file": "0Y2A7685.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 500", "aperture": "f/2.8", "date": "2026-09-10"}}, {"file": "_MG_0056.jpg", "meta": {"camera": "Canon EOS R8", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 250", "aperture": "f/6.3", "date": "1999-12-31"}}, {"file": "@LUCASMARTINEZA_A-metr1.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 200", "aperture": "f/4.0", "date": "2026-07-26"}}, {"file": "@LUCASMARTINEZA_A-metr3.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 400", "aperture": "f/4.0", "date": "2026-07-26"}}, {"file": "@LUCASMARTINEZA_A-metr2.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 400", "aperture": "f/4.0", "date": "2026-07-26"}}, {"file": "@LUCASMARTINEZA_A-metr5.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 400", "aperture": "f/4.0", "date": "2026-07-26"}}, {"file": "@LUCASMARTINEZA_A-metr4.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 400", "aperture": "f/4.0", "date": "2026-07-26"}}, {"file": "@lucasmartineza_-9675.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/4.0", "date": "2026-07-26"}}, {"file": "@lucasmartineza_-9511.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/4.0", "date": "2026-07-26"}}, {"file": "@lucasmartineza_-9489.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/4.0", "date": "2026-07-26"}}, {"file": "@lucasmartineza_-9678.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/4.0", "date": "2026-07-26"}}, {"file": "@lucasmartineza_-9621.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 160", "aperture": "f/4.0", "date": "2026-07-26"}}, {"file": "@LUCASMARTINEZA_A-10.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/6.3", "date": "2026-06-26"}}, {"file": "@LUCASMARTINEZA_A-38.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 1000", "aperture": "f/4.0", "date": "2026-05-16"}}, {"file": "@LUCASMARTINEZA_A-3.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 800", "aperture": "f/2.8", "date": "2026-06-28"}}, {"file": "@LUCASMARTINEZA_A-39.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 640", "aperture": "f/4.5", "date": "2026-05-16"}}, {"file": "@LUCASMARTINEZA_A-13.JPG", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 100", "aperture": "f/13.0", "date": "2026-06-21"}}, {"file": "@LUCASMARTINEZA_A-1.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-04-12"}}, {"file": "@LUCASMARTINEZA_A-16.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-06-21"}}, {"file": "@LUCASMARTINEZA_A-4.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/4.5", "date": "2026-06-27"}}, {"file": "@LUCASMARTINEZA_A-17.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-06-21"}}, {"file": "@LUCASMARTINEZA_A-15.JPG", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 640", "aperture": "f/5.6", "date": "2026-06-21"}}, {"file": "@LUCASMARTINEZA_A-6.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/4.0", "date": "2026-06-28"}}, {"file": "@LUCASMARTINEZA_A-49.JPG", "meta": {}}, {"file": "@LUCASMARTINEZA_A-48.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 320", "aperture": "f/2.8", "date": "2026-04-17"}}, {"file": "@LUCASMARTINEZA_A-53.JPG", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 320", "aperture": "f/6.3", "date": "2026-04-15"}}, {"file": "@LUCASMARTINEZA_A-45.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 320", "aperture": "f/2.8", "date": "2026-04-18"}}, {"file": "@lucasmartineza_-9638.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/14.0", "date": "2026-05-17"}}, {"file": "@LUCASMARTINEZA_A-40.JPG", "meta": {}}, {"file": "@LUCASMARTINEZA_A-54.JPG", "meta": {"camera": "Canon EOS R8", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 500", "aperture": "f/4.0", "date": "1999-12-31"}}, {"file": "@LUCASMARTINEZA_A-43.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 200", "aperture": "f/4.0", "date": "2026-04-18"}}, {"file": "@LUCASMARTINEZA_A-42.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 200", "aperture": "f/4.0", "date": "2026-04-18"}}, {"file": "@LUCASMARTINEZA_A-31.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/3.5", "date": "2026-05-23"}}, {"file": "@LUCASMARTINEZA_A-25.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 320", "aperture": "f/4.0", "date": "2026-05-29"}}, {"file": "@lucasmartineza_-9506.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/14.0", "date": "2026-05-17"}}, {"file": "@LUCASMARTINEZA_A-18.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/3.2", "date": "2026-06-20"}}, {"file": "@LUCASMARTINEZA_A-24.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 320", "aperture": "f/4.0", "date": "2026-05-29"}}, {"file": "@LUCASMARTINEZA_A-30.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 125", "aperture": "f/3.5", "date": "2026-05-23"}}, {"file": "@LUCASMARTINEZA_A-8.JPG", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 100", "aperture": "f/6.3", "date": "2026-06-26"}}, {"file": "@LUCASMARTINEZA_A-27.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 320", "aperture": "f/2.8", "date": "2026-05-29"}}, {"file": "@LUCASMARTINEZA_A-20.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-06-20"}}, {"file": "@LUCASMARTINEZA_A-35.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/6.3", "date": "2026-05-17"}}, {"file": "@lucasmartineza_-9452.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 640", "aperture": "f/6.3", "date": "2026-04-15"}}, {"file": "@lucasmartineza_-1972.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/5.0", "date": "2026-04-19"}}, {"file": "PILOTOS SUDAMERICANO 2026.jpg", "meta": {}}, {"file": "@lucasmartineza_-9486.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 320", "aperture": "f/6.3", "date": "2026-04-15"}}, {"file": "@lucasmartineza_-1545.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-04-18"}}, {"file": "@lucasmartineza_-9521.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 1000", "aperture": "f/6.3", "date": "2026-04-15"}}, {"file": "@lucasmartineza_-1023.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 800", "aperture": "f/4.0", "date": "2026-04-17"}}, {"file": "@lucasmartineza_-9494.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 320", "aperture": "f/6.3", "date": "2026-04-15"}}, {"file": "@lucasmartineza_-9720.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 800", "aperture": "f/5.6", "date": "2026-04-15"}}, {"file": "@lucasmartineza_-9431.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 2000", "aperture": "f/6.3", "date": "2026-04-15"}}, {"file": "@lucasmartineza_-3646.jpg", "meta": {"camera": "iPhone 17 Pro Max", "lens": "iPhone 17 Pro Max back triple camera 2.22mm f/2.2", "iso": "ISO 500", "aperture": "f/2.2", "date": "2026-04-17"}}, {"file": "@lucasmartineza_-1478.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-04-18"}}, {"file": "@lucasmartineza_-8448.jpg", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 125", "aperture": "f/2.8", "date": "1999-12-31"}}, {"file": "@lucasmartineza_-9597.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 160", "aperture": "f/6.3", "date": "2026-04-15"}}, {"file": "@lucasmartineza_-0438.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 125", "aperture": "f/2.8", "date": "2026-04-17"}}, {"file": "@lucasmartineza_-1900.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/5.0", "date": "2026-04-19"}}, {"file": "@lucasmartineza_-1891.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/5.0", "date": "2026-04-19"}}, {"file": "@lucasmartineza_-0812.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 320", "aperture": "f/2.8", "date": "2026-04-17"}}, {"file": "@lucasmartineza_-9416.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 1250", "aperture": "f/6.3", "date": "2026-04-15"}}, {"file": "@lucasmartineza_-9978.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/5.0", "date": "2026-04-17"}}, {"file": "@lucasmartineza_-0800.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 320", "aperture": "f/2.8", "date": "2026-04-17"}}, {"file": "@lucasmartineza_-1855.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/4.0", "date": "2026-04-19"}}, {"file": "@lucasmartineza_-1841.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/4.0", "date": "2026-04-19"}}, {"file": "@lucasmartineza_-1563.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-04-18"}}, {"file": "@lucasmartineza_-8430.jpg", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 160", "aperture": "f/2.8", "date": "1999-12-31"}}, {"file": "@lucasmartineza_-1004.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 5000", "aperture": "f/4.0", "date": "2026-04-17"}}, {"file": "@lucasmartineza_-8419.jpg", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 125", "aperture": "f/2.8", "date": "1999-12-31"}}, {"file": "@lucasmartineza_-9502.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 640", "aperture": "f/6.3", "date": "2026-04-15"}}, {"file": "@lucasmartineza_-1598.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-04-18"}}, {"file": "@LUCASMARTINEZA364.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-03-15"}}, {"file": "@LUCASMARTINEZA358.JPG", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 100", "aperture": "f/4.0", "date": "2024-01-02"}}, {"file": "@LUCASMARTINEZA359.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 160", "aperture": "f/4.0", "date": "2026-03-15"}}, {"file": "@LUCASMARTINEZA365.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 160", "aperture": "f/2.8", "date": "2026-03-15"}}, {"file": "@LUCASMARTINEZA366.JPG", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 500", "aperture": "f/4.0", "date": "2024-01-01"}}, {"file": "@LUCASMARTINEZA362.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 160", "aperture": "f/4.0", "date": "2026-03-15"}}, {"file": "@LUCASMARTINEZA363.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-03-15"}}, {"file": "@LUCASMARTINEZA361.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 160", "aperture": "f/4.0", "date": "2026-03-15"}}, {"file": "@LUCASMARTINEZA360.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 160", "aperture": "f/4.0", "date": "2026-03-15"}}, {"file": "@LUCASMARTINEZA357.JPG", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 100", "aperture": "f/4.0", "date": "2024-01-02"}}, {"file": "@LUCASMARTINEZA356.JPG", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 100", "aperture": "f/4.0", "date": "2024-01-02"}}, {"file": "@LUCASMARTINEZA277.jpg", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 100", "aperture": "f/3.5", "date": "2025-08-28"}}, {"file": "@LUCASMARTINEZA370.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 100", "aperture": "f/5.6", "date": "2026-03-20"}}, {"file": "@LUCASMARTINEZA371.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 100", "aperture": "f/5.6", "date": "2026-03-20"}}, {"file": "@LUCASMARTINEZA367.jpg", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 100", "aperture": "f/4.0", "date": "2024-01-06"}}, {"file": "@LUCASMARTINEZA373.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 250", "aperture": "f/5.0", "date": "2026-03-20"}}, {"file": "@LUCASMARTINEZA372.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 100", "aperture": "f/5.6", "date": "2026-03-20"}}, {"file": "@LUCASMARTINEZA376.jpg", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 125", "aperture": "f/5.0", "date": "2026-03-20"}}, {"file": "@LUCASMARTINEZA377.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 250", "aperture": "f/5.0", "date": "2026-03-20"}}, {"file": "@LUCASMARTINEZA349.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-02-28"}}, {"file": "@LUCASMARTINEZA375.jpg", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 125", "aperture": "f/5.0", "date": "2026-03-20"}}, {"file": "@LUCASMARTINEZA374.jpg", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 125", "aperture": "f/5.0", "date": "2026-03-20"}}, {"file": "@LUCASMARTINEZA348.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/5.0", "date": "2026-02-27"}}, {"file": "@LUCASMARTINEZA351.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/5.0", "date": "2026-02-27"}}, {"file": "@LUCASMARTINEZA379.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/3.2", "date": "2026-03-21"}}, {"file": "@LUCASMARTINEZA378.jpg", "meta": {"camera": "FC3411", "lens": "22.4 mm f/2.8", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-03-22"}}, {"file": "@LUCASMARTINEZA350.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/5.6", "date": "2026-02-27"}}, {"file": "@LUCASMARTINEZA346.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/5.6", "date": "2026-02-27"}}, {"file": "@LUCASMARTINEZA352.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-02-28"}}, {"file": "@LUCASMARTINEZA384.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 160", "aperture": "f/5.6", "date": "2026-03-20"}}, {"file": "@LUCASMARTINEZA353.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-02-28"}}, {"file": "@LUCASMARTINEZA347.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/5.6", "date": "2026-02-27"}}, {"file": "@LUCASMARTINEZA380.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/3.2", "date": "2026-03-21"}}, {"file": "@LUCASMARTINEZA381.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-03-21"}}, {"file": "@LUCASMARTINEZA368.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/4.0", "date": "2026-03-20"}}, {"file": "@LUCASMARTINEZA354.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/5.6", "date": "2026-02-27"}}, {"file": "@LUCASMARTINEZA383.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-03-21"}}, {"file": "@LUCASMARTINEZA382.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2026-03-21"}}, {"file": "@LUCASMARTINEZA355.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 160", "aperture": "f/4.0", "date": "2026-03-15"}}, {"file": "@LUCASMARTINEZA369.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/4.0", "date": "2026-03-20"}}, {"file": "@LUCASMARTINEZA285.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "70-200mm", "iso": "ISO 200", "aperture": "f/2.8", "date": "2025-08-31"}}, {"file": "@LUCASMARTINEZA284.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 200", "aperture": "f/4.0", "date": "2025-08-31"}}, {"file": "@LUCASMARTINEZA279.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2025-08-28"}}, {"file": "@LUCASMARTINEZA286.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 1000", "aperture": "f/5.6", "date": "2025-08-31"}}, {"file": "@LUCASMARTINEZA287.jpg", "meta": {}}, {"file": "@LUCASMARTINEZA278.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 400", "aperture": "f/5.6", "date": "2025-08-28"}}, {"file": "@LUCASMARTINEZA283.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 320", "aperture": "f/2.8", "date": "2025-08-30"}}, {"file": "@LUCASMARTINEZA282.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 160", "aperture": "f/5.0", "date": "2025-08-29"}}, {"file": "@LUCASMARTINEZA280.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2025-08-29"}}, {"file": "@LUCASMARTINEZA281.jpg", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 100", "aperture": "f/9.0", "date": "2025-08-29"}}, {"file": "@LUCASMARTINEZA298.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 320", "aperture": "f/2.8", "date": "2025-09-14"}}, {"file": "@LUCASMARTINEZA299.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 125", "aperture": "f/2.8", "date": "2025-09-14"}}, {"file": "@LUCASMARTINEZA304.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF8-15mm f/4L FISHEYE USM", "iso": "ISO 400", "aperture": "f/4.0", "date": "2025-09-11"}}, {"file": "@LUCASMARTINEZA338.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 320", "aperture": "f/6.3", "date": "2025-07-04"}}, {"file": "@LUCASMARTINEZA305.png", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 800", "aperture": "f/9.0", "date": "2025-09-13"}}, {"file": "@LUCASMARTINEZA339.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/16.0", "date": "2025-07-05"}}, {"file": "@LUCASMARTINEZA301.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/4.0", "date": "2025-09-14"}}, {"file": "@LUCASMARTINEZA249.jpg", "meta": {"camera": "Canon EOS 7D", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "aperture": "f/10.0", "date": "2024-10-25"}}, {"file": "@LUCASMARTINEZA248.jpg", "meta": {"camera": "Canon EOS 7D", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "aperture": "f/10.0", "date": "2024-10-25"}}, {"file": "@LUCASMARTINEZA302.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/4.0", "date": "2025-09-14"}}, {"file": "@LUCASMARTINEZA262.jpg", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 100", "aperture": "f/4.5", "date": "2025-04-11"}}, {"file": "@LUCASMARTINEZA276.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 250", "aperture": "f/6.3", "date": "2025-06-07"}}, {"file": "@LUCASMARTINEZA289.JPG", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 500", "aperture": "f/6.3", "date": "2025-09-12"}}, {"file": "@LUCASMARTINEZA288.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 320", "aperture": "f/4.0", "date": "2025-09-11"}}, {"file": "@LUCASMARTINEZA263.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 500", "aperture": "f/5.0", "date": "2025-04-11"}}, {"file": "@LUCASMARTINEZA238.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/5.0", "date": "2000-12-31"}}, {"file": "@LUCASMARTINEZA239.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/5.0", "date": "2000-12-31"}}, {"file": "@LUCASMARTINEZA229.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "15mm", "iso": "ISO 100", "aperture": "f/10.0", "date": "2000-12-31"}}, {"file": "@LUCASMARTINEZA215.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF28-135mm f/3.5-5.6 IS USM", "iso": "ISO 200", "aperture": "f/4.5", "date": "2023-06-04"}}, {"file": "@LUCASMARTINEZA225.jpg", "meta": {"camera": "FC7303", "lens": "20.7 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2024-04-14"}}, {"file": "@LUCASMARTINEZA237.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "aperture": "f/6.3", "date": "2000-12-31"}}, {"file": "@LUCASMARTINEZA223.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "aperture": "f/11.0", "date": "2000-12-31"}}, {"file": "@LUCASMARTINEZA222.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF17-40mm f/4L USM", "iso": "ISO 100", "aperture": "f/4.0", "date": "2000-12-31"}}, {"file": "@LUCASMARTINEZA236.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF17-40mm f/4L USM", "iso": "ISO 100", "aperture": "f/4.0", "date": "2024-08-04"}}, {"file": "@LUCASMARTINEZA342.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 125", "aperture": "f/5.6", "date": "2025-07-06"}}, {"file": "@LUCASMARTINEZA340.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 250", "aperture": "f/4.0", "date": "2025-07-05"}}, {"file": "@LUCASMARTINEZA341.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 160", "aperture": "f/6.3", "date": "2025-07-04"}}, {"file": "@LUCASMARTINEZA246.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 500", "aperture": "f/5.6", "date": "2000-12-31"}}, {"file": "@LUCASMARTINEZA252.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "aperture": "f/16.0", "date": "2024-10-26"}}, {"file": "@LUCASMARTINEZA291.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 320", "aperture": "f/5.0", "date": "2025-09-12"}}, {"file": "@LUCASMARTINEZA290.JPG", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 500", "aperture": "f/6.3", "date": "2025-09-12"}}, {"file": "@LUCASMARTINEZA247.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 500", "aperture": "f/5.0", "date": "2000-12-31"}}, {"file": "@LUCASMARTINEZA251.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/13.0", "date": "2024-10-26"}}, {"file": "@LUCASMARTINEZA245.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 200", "aperture": "f/5.6", "date": "2000-12-31"}}, {"file": "@LUCASMARTINEZA292.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 320", "aperture": "f/5.0", "date": "2025-09-12"}}, {"file": "@LUCASMARTINEZA250.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/13.0", "date": "2024-10-26"}}, {"file": "@LUCASMARTINEZA240.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "15mm", "iso": "ISO 200", "aperture": "f/6.3", "date": "2024-09-21"}}, {"file": "@LUCASMARTINEZA297.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 250", "aperture": "f/4.0", "date": "2025-09-14"}}, {"file": "@LUCASMARTINEZA296.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 250", "aperture": "f/6.3", "date": "2025-09-13"}}, {"file": "@LUCASMARTINEZA241.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "15mm", "iso": "ISO 400", "aperture": "f/9.0", "date": "2024-09-22"}}, {"file": "@LUCASMARTINEZA309.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "15mm", "iso": "ISO 800", "aperture": "f/11.0", "date": "2025-10-04"}}, {"file": "@LUCASMARTINEZA337.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 125", "aperture": "f/2.8", "date": "2025-07-04"}}, {"file": "@LUCASMARTINEZA257.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "15mm", "iso": "ISO 800", "aperture": "f/4.0", "date": "2007-02-09"}}, {"file": "@LUCASMARTINEZA294.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 1600", "aperture": "f/4.0", "date": "2025-09-12"}}, {"file": "@LUCASMARTINEZA295.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 500", "aperture": "f/5.0", "date": "2025-09-12"}}, {"file": "@LUCASMARTINEZA242.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/13.0", "date": "2000-12-31"}}, {"file": "@LUCASMARTINEZA336.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 250", "aperture": "f/5.0", "date": "2025-07-04"}}, {"file": "@LUCASMARTINEZA313.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 160", "aperture": "f/6.3", "date": "2025-10-04"}}, {"file": "@LUCASMARTINEZA307.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 100", "aperture": "f/5.6", "date": "2025-10-03"}}, {"file": "@LUCASMARTINEZA267.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 200", "aperture": "f/7.1", "date": "2025-05-23"}}, {"file": "@LUCASMARTINEZA273.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/6.3", "date": "2025-06-06"}}, {"file": "@LUCASMARTINEZA272.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/5.6", "date": "2025-06-06"}}, {"file": "@LUCASMARTINEZA266.jpg", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 100", "aperture": "f/4.0", "date": "2025-04-13"}}, {"file": "@LUCASMARTINEZA306.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 100", "aperture": "f/5.6", "date": "2025-10-03"}}, {"file": "@LUCASMARTINEZA312.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 100", "aperture": "f/14.0", "date": "2025-10-04"}}, {"file": "@LUCASMARTINEZA310.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 100", "aperture": "f/6.3", "date": "2025-10-04"}}, {"file": "@LUCASMARTINEZA270.JPG", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 400", "aperture": "f/6.3", "date": "2025-05-24"}}, {"file": "@LUCASMARTINEZA264.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 500", "aperture": "f/5.0", "date": "2025-04-11"}}, {"file": "@LUCASMARTINEZA258.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "aperture": "f/14.0", "date": "2024-11-30"}}, {"file": "@LUCASMARTINEZA259.jpg", "meta": {}}, {"file": "@LUCASMARTINEZA265.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 160", "aperture": "f/4.0", "date": "2025-04-12"}}, {"file": "@LUCASMARTINEZA271.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 400", "aperture": "f/6.3", "date": "2025-05-24"}}, {"file": "@LUCASMARTINEZA311.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 125", "aperture": "f/6.3", "date": "2025-10-04"}}, {"file": "@LUCASMARTINEZA329.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/4.0", "date": "2025-12-07"}}, {"file": "@LUCASMARTINEZA315.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 1250", "aperture": "f/8.0", "date": "2025-11-21"}}, {"file": "@LUCASMARTINEZA275.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 125", "aperture": "f/6.3", "date": "2025-06-07"}}, {"file": "@LUCASMARTINEZA261.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "15mm", "iso": "ISO 640", "aperture": "f/6.3", "date": "2025-03-09"}}, {"file": "@LUCASMARTINEZA260.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/13.0", "date": "2025-03-07"}}, {"file": "@LUCASMARTINEZA274.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 125", "aperture": "f/6.3", "date": "2025-06-07"}}, {"file": "@LUCASMARTINEZA314.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 125", "aperture": "f/9.0", "date": "2025-11-21"}}, {"file": "@LUCASMARTINEZA300.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2025-09-14"}}, {"file": "@LUCASMARTINEZA328.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2025-12-07"}}, {"file": "@LUCASMARTINEZA316.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/8.0", "date": "2025-11-21"}}, {"file": "@LUCASMARTINEZA303.jpg", "meta": {}}, {"file": "@LUCASMARTINEZA317.JPG", "meta": {"camera": "Canon EOS R8", "lens": "EF17-40mm f/4L USM", "iso": "ISO 100", "aperture": "f/4.0", "date": "2025-11-22"}}, {"file": "@LUCASMARTINEZA82.JPG", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "aperture": "f/8.0", "date": "2023-05-13"}}, {"file": "@LUCASMARTINEZA199.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "10-20mm", "iso": "ISO 100", "aperture": "f/9.0", "date": "2023-09-15"}}, {"file": "@LUCASMARTINEZA204.jpg", "meta": {"camera": "Canon EOS 6D", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 125", "aperture": "f/5.0", "date": "2023-09-30"}}, {"file": "@LUCASMARTINEZA210.jpg", "meta": {}}, {"file": "@LUCASMARTINEZA211.jpg", "meta": {}}, {"file": "@LUCASMARTINEZA205.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "aperture": "f/6.3", "date": "2023-10-01"}}, {"file": "@LUCASMARTINEZA198.jpg", "meta": {"camera": "Canon EOS 6D", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 160", "aperture": "f/7.1", "date": "2023-09-15"}}, {"file": "@LUCASMARTINEZA213.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "aperture": "f/5.6", "date": "2023-12-10"}}, {"file": "@LUCASMARTINEZA207.jpg", "meta": {"camera": "Canon EOS 6D", "lens": "EF17-40mm f/4L USM", "iso": "ISO 100", "aperture": "f/5.6", "date": "2023-10-01"}}, {"file": "@LUCASMARTINEZA206.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "10-20mm", "iso": "ISO 100", "aperture": "f/5.0", "date": "2023-09-30"}}, {"file": "@LUCASMARTINEZA212.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF17-40mm f/4L USM", "iso": "ISO 100", "aperture": "f/8.0", "date": "2023-11-10"}}, {"file": "@LUCASMARTINEZA216.jpg", "meta": {"camera": "Canon EOS 6D", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "aperture": "f/11.0", "date": "2023-06-23"}}, {"file": "@LUCASMARTINEZA202.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "aperture": "f/8.0", "date": "2023-09-29"}}, {"file": "@LUCASMARTINEZA203.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF17-40mm f/4L USM", "iso": "ISO 100", "aperture": "f/6.3", "date": "2023-09-30"}}, {"file": "@LUCASMARTINEZA217.jpg", "meta": {"camera": "Canon EOS 6D", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "aperture": "f/11.0", "date": "2023-06-23"}}, {"file": "@LUCASMARTINEZA201.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "aperture": "f/9.0", "date": "2023-09-16"}}, {"file": "@LUCASMARTINEZA3.JPG", "meta": {"camera": "Canon EOS-1D X", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "aperture": "f/8.0", "date": "2000-12-31"}}, {"file": "@LUCASMARTINEZA214.jpg", "meta": {"camera": "Canon EOS 6D", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 125", "aperture": "f/5.6", "date": "2023-06-03"}}, {"file": "@LUCASMARTINEZA200.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "10-20mm", "iso": "ISO 100", "aperture": "f/9.0", "date": "2023-09-15"}}, {"file": "@LUCASMARTINEZA228.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "15mm", "iso": "ISO 100", "aperture": "f/11.0", "date": "2000-12-31"}}, {"file": "@LUCASMARTINEZA345.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 250", "aperture": "f/2.8", "date": "2025-08-02"}}, {"file": "@LUCASMARTINEZA231.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF28-135mm f/3.5-5.6 IS USM", "iso": "ISO 100", "aperture": "f/9.0", "date": "2000-12-31"}}, {"file": "@LUCASMARTINEZA219.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "aperture": "f/13.0", "date": "2023-10-14"}}, {"file": "@LUCASMARTINEZA218.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "10-20mm", "iso": "ISO 100", "aperture": "f/8.0", "date": "2023-09-15"}}, {"file": "@LUCASMARTINEZA230.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF28-135mm f/3.5-5.6 IS USM", "iso": "ISO 100", "aperture": "f/9.0", "date": "2000-12-31"}}, {"file": "@LUCASMARTINEZA224.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "aperture": "f/5.6", "date": "2000-12-31"}}, {"file": "@LUCASMARTINEZA344.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/7.1", "date": "2025-08-03"}}, {"file": "@LUCASMARTINEZA232.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF28-135mm f/3.5-5.6 IS USM", "iso": "ISO 100", "aperture": "f/11.0", "date": "2000-12-31"}}, {"file": "@LUCASMARTINEZA226.jpg", "meta": {}}, {"file": "@LUCASMARTINEZA227.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 500", "aperture": "f/4.0", "date": "2024-04-14"}}, {"file": "@LUCASMARTINEZA233.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "15mm", "iso": "ISO 100", "aperture": "f/16.0", "date": "2000-12-31"}}, {"file": "@LUCASMARTINEZA192.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "aperture": "f/10.0", "date": "2023-05-14"}}, {"file": "@LUCASMARTINEZA343.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/5.6", "date": "2025-08-03"}}, {"file": "@LUCASMARTINEZA196.JPG", "meta": {"date": "2023-06-03"}}, {"file": "@LUCASMARTINEZA8.jpg", "meta": {"camera": "Canon EOS 6D", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 200", "aperture": "f/13.0", "date": "2023-04-22"}}, {"file": "@LUCASMARTINEZA197.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "10-20mm", "iso": "ISO 100", "aperture": "f/18.0", "date": "2023-09-15"}}, {"file": "@LUCASMARTINEZA208.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "aperture": "f/6.3", "date": "2023-10-01"}}, {"file": "@LUCASMARTINEZA220.jpg", "meta": {"camera": "Canon EOS 6D", "lens": "10-20mm", "iso": "ISO 200", "aperture": "f/5.6", "date": "2023-11-11"}}, {"file": "@LUCASMARTINEZA234.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "aperture": "f/11.0", "date": "2000-12-31"}}, {"file": "@LUCASMARTINEZA235.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "aperture": "f/11.0", "date": "2000-12-31"}}, {"file": "@LUCASMARTINEZA221.jpg", "meta": {"camera": "Canon EOS-1D Mark III", "lens": "EF17-40mm f/4L USM", "iso": "ISO 100", "aperture": "f/4.5", "date": "2023-11-11"}}, {"file": "@LUCASMARTINEZA209.jpg", "meta": {}}, {"file": "@LUCASMARTINEZA332.jpg", "meta": {}}, {"file": "@LUCASMARTINEZA326.jpg", "meta": {"camera": "Canon EOS R8", "lens": "70.0-200.0 mm", "iso": "ISO 200", "aperture": "f/4.0", "date": "2025-12-06"}}, {"file": "@LUCASMARTINEZA253.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/13.0", "date": "2024-10-27"}}, {"file": "@LUCASMARTINEZA327.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 160", "aperture": "f/2.8", "date": "2025-12-06"}}, {"file": "@LUCASMARTINEZA333.jpg", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 100", "aperture": "f/6.3", "date": "2025-06-06"}}, {"file": "@LUCASMARTINEZA325.jpg", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 640", "aperture": "f/4.0", "date": "2025-12-05"}}, {"file": "@LUCASMARTINEZA331.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "15mm", "iso": "ISO 1000", "aperture": "f/5.6", "date": "2025-06-07"}}, {"file": "@LUCASMARTINEZA319.JPG", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 200", "aperture": "f/6.3", "date": "2025-11-22"}}, {"file": "@LUCASMARTINEZA293.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF8-15mm f/4L FISHEYE USM", "iso": "ISO 200", "aperture": "f/4.0", "date": "2025-09-12"}}, {"file": "@LUCASMARTINEZA244.JPG", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/7.1", "date": "2000-12-31"}}, {"file": "@LUCASMARTINEZA318.JPG", "meta": {"camera": "Canon EOS R8", "lens": "EF17-40mm f/4L USM", "iso": "ISO 250", "aperture": "f/4.0", "date": "2025-11-22"}}, {"file": "@LUCASMARTINEZA330.jpg", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2025-12-07"}}, {"file": "@LUCASMARTINEZA324.jpg", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2025-12-05"}}, {"file": "@LUCASMARTINEZA308.jpg", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/6.3", "date": "2025-10-04"}}, {"file": "@LUCASMARTINEZA320.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2025-11-23"}}, {"file": "@LUCASMARTINEZA334.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "15mm", "iso": "ISO 1000", "aperture": "f/5.0", "date": "2025-06-07"}}, {"file": "@LUCASMARTINEZA268.JPG", "meta": {"camera": "Canon EOS R6", "lens": "24.0-15.0 mm", "iso": "ISO 125", "aperture": "f/3.5", "date": "2025-05-23"}}, {"file": "@LUCASMARTINEZA254.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/13.0", "date": "2024-10-27"}}, {"file": "@LUCASMARTINEZA255.JPG", "meta": {"camera": "Canon EOS 6D", "lens": "EF100-400mm f/4.5-5.6L IS USM", "iso": "ISO 100", "aperture": "f/14.0", "date": "2023-06-24"}}, {"file": "@LUCASMARTINEZA269.JPG", "meta": {"camera": "Canon EOS R6", "lens": "150-600mm F5-6.3 DG OS HSM | Contemporary 015", "iso": "ISO 800", "aperture": "f/6.3", "date": "2025-05-24"}}, {"file": "@LUCASMARTINEZA335.JPG", "meta": {"camera": "Canon EOS R6", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/7.1", "date": "2025-06-08"}}, {"file": "@LUCASMARTINEZA321.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2025-11-23"}}, {"file": "@LUCASMARTINEZA323.JPG", "meta": {"camera": "Canon EOS R6", "lens": "70.0-200.0 mm", "iso": "ISO 100", "aperture": "f/2.8", "date": "2025-11-23"}}, {"file": "@LUCASMARTINEZA243.JPG", "meta": {"camera": "Canon EOS-1D X", "lens": "15mm", "iso": "ISO 250", "aperture": "f/7.1", "date": "2000-12-31"}}, {"file": "@LUCASMARTINEZA256.jpg", "meta": {"camera": "Canon EOS-1D X", "lens": "EF24-105mm f/4L IS USM", "iso": "ISO 100", "aperture": "f/6.3", "date": "2024-11-28"}}, {"file": "@LUCASMARTINEZA322.JPG", "meta": {"camera": "Canon EOS R8", "lens": "24.0-15.0 mm", "iso": "ISO 100", "aperture": "f/4.0", "date": "2025-11-23"}}];
+var NH = HERO.length;
+var NG = GALLERY.length;
+var isMobile = window.innerWidth <= 768;
 
-  // ====== CONFIGURACIÓN ======
-  var API = 'https://script.google.com/macros/s/AKfycbxlfzv8HLsKcBwLiXujU6tgWmQ3ZGpNIWyGRJMF1_ovRFOlZXBUjhJJ88lhaZmgxqwZnQ/exec';
-  var WM_TEXT = 'LUCASMARTINEZA';
-  var WM_OPACITY = 0.55;      // trama diagonal
-  var WM_BIG_OPACITY = 0.8; // sello central
-  var TIERS = [[1, 10000, '1 foto'], [2, 8000, '2 fotos'], [3, 7000, '3 fotos'], [4, 6000, '4 o más']];
-  // ===========================
+var topbar       = document.getElementById('topbar');
+var cfStage      = document.getElementById('cfStage');
+var cfTrack      = document.getElementById('cfTrack');
+var cfCaption    = document.getElementById('cfCaption');
+var cfCaptionM   = document.getElementById('cfCaptionM');
+var cfCounter    = document.getElementById('cfCounter');
+var fototeca     = document.getElementById('fototeca');
+var photoGrid    = document.getElementById('photoGrid');
+var lightbox     = document.getElementById('lightbox');
+var lbImg        = document.getElementById('lbImg');
+var lbMeta       = document.getElementById('lbMeta');
+var aboutSection = document.getElementById('aboutSection');
+var aboutInner   = document.getElementById('aboutInner');
 
-  var $ = function (id) { return document.getElementById(id); };
-  var view = $('view');
-  var catalog = null, nodes = {}, parents = {};
-  var cart = loadCart();
-  var currentPhotos = [], lbIndex = 0, orderMode = false;
+var cur = 0, isAnimating = false, lbCur = 0, items = [];
 
-  // Marca de agua: un SVG repetido en diagonal
-  (function setWatermark() {
-    // Texto blanco con contorno oscuro: se lee tanto sobre cielo claro como sobre sombras
-    var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="90">' +
-      '<text x="100" y="51" text-anchor="middle" transform="rotate(-28 100 45)" ' +
-      'font-family="Montserrat, Arial, sans-serif" font-size="13" font-weight="500" letter-spacing="3" ' +
-      'fill="#fff" fill-opacity="' + WM_OPACITY + '" stroke="#000" stroke-opacity="0.4" stroke-width="1" paint-order="stroke">' +
-      WM_TEXT + '</text></svg>';
-    var big = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 220">' +
-      '<g transform="rotate(-18 300 110)">' +
-      '<text x="300" y="104" text-anchor="middle" font-family="Montserrat, Arial, sans-serif" font-size="52" font-weight="500" letter-spacing="8" ' +
-      'fill="#fff" fill-opacity="' + WM_BIG_OPACITY + '" stroke="#000" stroke-opacity="0.5" stroke-width="2.2" paint-order="stroke">' + WM_TEXT + '</text>' +
-      '<text x="300" y="142" text-anchor="middle" font-family="Montserrat, Arial, sans-serif" font-size="15" font-weight="500" letter-spacing="6" ' +
-      'fill="#fff" fill-opacity="' + WM_BIG_OPACITY + '" stroke="#000" stroke-opacity="0.5" stroke-width="1.2" paint-order="stroke">VISTA PREVIA · COMPRÁ LA FOTO SIN MARCA</text>' +
-      '</g></svg>';
-    var root = document.documentElement.style;
-    root.setProperty('--wm', 'url("data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg) + '")');
-    root.setProperty('--wm-big', 'url("data:image/svg+xml;charset=utf-8,' + encodeURIComponent(big) + '")');
-  })();
+// hero order: by date added
 
-  // Evita guardar con clic derecho o arrastrando
-  document.addEventListener('contextmenu', function (e) { if (e.target.closest('.wm, .ph, .event, .folder, .list')) e.preventDefault(); });
-  document.addEventListener('dragstart', function (e) { if (e.target.tagName === 'IMG') e.preventDefault(); });
+// build coverflow items
+HERO.forEach(function(d, i) {
+  var div = document.createElement('div');
+  div.className = 'cf-item';
+  var img = new Image();
+  img.onload = function() { this.classList.add('loaded'); };
+  img.src = (isMobile ? 'fotos-hero-m/' : 'fotos-hero/') + d.file;
+  div.appendChild(img);
+  div.addEventListener('click', function() { if (i !== cur) goTo(i); });
+  cfTrack.appendChild(div);
+  items.push(div);
+});
 
-  // ---------- utilidades ----------
-  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
-  function clean(name) { return String(name).replace(/^\s*\d+\s*[-_.)]?\s+/, '').trim(); }
-  function num(n) { var m = String(n).match(/(\d+)\s*$/); return m ? m[1] : n; }
-  function img(id, w) { return 'https://lh3.googleusercontent.com/d/' + id + '=w' + w; }
-  function pct(d) { return String(Math.round(d * 10) / 10).replace('.', ',') + '%'; }
-  function money(v) { return '$' + Number(v).toLocaleString('es-AR'); }
-  function unitFor(n) { if (n <= 1) return 10000; if (n === 2) return 8000; if (n === 3) return 7000; return 6000; }
-  function plural(n) { return n === 1 ? '1 FOTO' : n + ' FOTOS'; }
-  function loadCart() { try { return JSON.parse(localStorage.getItem('lma_cart') || '{}') || {}; } catch (e) { return {}; } }
-  function saveCart() { try { localStorage.setItem('lma_cart', JSON.stringify(cart)); } catch (e) {} }
+// build gallery grid
+GALLERY.forEach(function(d, i) {
+  var div = document.createElement('div');
+  div.className = 'grid-item';
+  var img = new Image();
+  img.src = (isMobile ? 'fotos-m/' : 'fotos/') + d.file;
+  div.appendChild(img);
+  div.addEventListener('click', (function(idx) {
+    return function() { closeF(); setTimeout(function() { openLB(idx); }, 200); };
+  })(i));
+  photoGrid.appendChild(div);
+});
 
-  function api(params) {
-    return fetch(API + '?' + new URLSearchParams(params).toString()).then(function (r) { return r.json(); });
-  }
-  function apiPost(body) {
-    return fetch(API, { method: 'POST', body: JSON.stringify(body) }).then(function (r) { return r.json(); });
-  }
+// align topbar
+function alignAll() {
+  isMobile = window.innerWidth <= 768;
+  var sw = cfStage.offsetWidth, sh = cfStage.offsetHeight;
+  var cw = Math.min(sw * 0.72, sh * 0.7 * 1.5);
+  var sm = (sw - cw) / 2;
+  topbar.style.left  = sm + 'px';
+  topbar.style.right = sm + 'px';
+  topbar.style.width = 'auto';
+  if (aboutInner) aboutInner.style.maxWidth = cw + 'px';
+  render();
+}
+window.addEventListener('resize', alignAll);
+requestAnimationFrame(function() { requestAnimationFrame(alignAll); });
 
-  function indexTree(list, parent) {
-    list.forEach(function (n) {
-      nodes[n.id] = n; parents[n.id] = parent || null;
-      n.photos.forEach(function (p) { p.where = pathOf(n.id).map(function (x) { return clean(x.name); }).join(' / '); });
-      indexTree(n.folders, n.id);
-    });
-  }
-  function pathOf(id) { var out = []; while (id) { out.unshift(nodes[id]); id = parents[id]; } return out; }
+function render() {
+  var sw = cfStage.offsetWidth, sh = cfStage.offsetHeight;
 
-  // ---------- render ----------
-  function renderStrip(activeEventId) {
-    var el = $('stripIn');
-    var html = '<span class="label">EVENTOS DISPONIBLES</span>';
-    catalog.events.forEach(function (ev) {
-      html += '<button type="button" data-go="' + ev.id + '"' + (ev.id === activeEventId ? ' aria-current="true"' : '') + '>' + esc(clean(ev.name)) + '</button>';
-    });
-    el.innerHTML = html;
-    $('strip').hidden = !catalog.events.length;
-  }
+  if (isMobile) {
+    // MOBILE: horizontal full-width with peek
+    var peek = 20;
+    var itemW = sw - peek * 2;
+    var itemH = sh * 0.74;
+    var captionBottom = sh - itemH / 2 - itemH * 0.5 + 8;
 
-  function parkCart() { document.body.appendChild($('cart')); }
-  function placeCart() {
-    var slot = $('cartSlot');
-    if (slot && window.matchMedia('(min-width: 901px)').matches) { closeSheet(); slot.appendChild($('cart')); }
-    else parkCart();
-  }
-  function showCart(on) {
-    $('cart').hidden = !on;
-    $('bar').hidden = !on;
-    if (!on) closeSheet();
-  }
-
-  function renderHome() {
-    parkCart();
-    currentPhotos = [];
-    renderStrip(null);
-    showCart(false);
-    document.title = 'Eventos · Lucas Martinez';
-    var cards = catalog.events.map(function (ev) {
-      return '<a class="event" href="#/f/' + ev.id + '">' +
-        '<div class="cover wm">' + (ev.cover ? '<img loading="lazy" src="' + img(ev.cover, 900) + '" alt="">' : '') +
-        '<span class="count">' + plural(ev.count) + '</span></div>' +
-        '<div class="meta"><span class="name">' + esc(clean(ev.name)) + '</span><span class="go">VER FOTOS →</span></div></a>';
-    }).join('');
-    view.innerHTML =
-      '<section class="intro">' +
-      '<p class="kicker">FOTOS DE EVENTOS</p>' +
-      '<h1>Encontrá tus fotos, elegilas y descargalas en alta calidad.</h1>' +
-      '<p class="lead">Elegí un evento, entrá a la carpeta del tramo o momento y tocá las fotos que quieras. Cuantas más llevás, menos pagás cada una.</p>' +
-      (cards ? '<div class="events">' + cards + '</div>' : '<p class="empty">Pronto vas a encontrar acá las fotos de los próximos eventos.</p>') +
-      '</section>';
-  }
-
-  function renderFolder(id) {
-    var node = nodes[id];
-    if (!node) { location.hash = '#/'; return; }
-    var path = pathOf(id);
-    parkCart();
-    renderStrip(path[0].id);
-    showCart(true);
-    document.title = clean(node.name) + ' · Lucas Martinez';
-
-    var crumbs = '<nav class="crumbs" aria-label="Ruta"><a href="#/">Eventos</a>';
-    path.forEach(function (n, i) {
-      crumbs += '<span class="sep" aria-hidden="true">/</span>';
-      crumbs += i === path.length - 1 ? '<span class="here">' + esc(clean(n.name)) + '</span>' : '<a href="#/f/' + n.id + '">' + esc(clean(n.name)) + '</a>';
-    });
-    crumbs += '</nav>';
-
-    var folders = '';
-    if (node.folders.length) {
-      folders = '<div class="folders">' + node.folders.map(function (f) {
-        return '<a class="folder" href="#/f/' + f.id + '">' +
-          '<span class="th wm">' + (f.cover ? '<img loading="lazy" src="' + img(f.cover, 300) + '" alt="">' : '') + '</span>' +
-          '<span class="tx"><span class="fn">' + esc(clean(f.name)) + '</span><span class="fc">' + plural(f.count) + '</span></span>' +
-          '<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a>';
-      }).join('') + '</div>';
-    }
-
-    currentPhotos = node.photos;
-    var photos = '';
-    if (node.photos.length) {
-      photos = '<div class="photos" id="photos">' + node.photos.map(function (p, i) {
-        var on = !!cart[p.id];
-        return '<div class="ph wm' + (on ? ' sel' : '') + '" data-id="' + p.id + '">' +
-          '<img loading="lazy" src="' + img(p.p, 600) + '" alt="" onload="this.classList.add(\'ok\')">' +
-          '<button class="pick" type="button" data-pick="' + i + '" aria-pressed="' + on + '" aria-label="Elegir foto ' + esc(num(p.n)) + '"></button>' +
-          '<span class="num">' + esc(num(p.n)) + '</span>' +
-          '<span class="dot" aria-hidden="true"><svg class="check" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>' +
-          '<button class="zoom" type="button" data-zoom="' + i + '" aria-label="Ver grande"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 1px 3px rgba(0,0,0,.7))"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button>' +
-          '</div>';
-      }).join('') + '</div>';
-    }
-
-    view.innerHTML =
-      '<div class="wrap"><section class="main">' + crumbs +
-      '<div class="gridhead"><h1 class="h2">' + esc(clean(node.name)) + '</h1>' +
-      (node.photos.length ? '<span style="display:flex;align-items:center;gap:20px;flex-wrap:wrap"><span class="hint">TOCÁ LAS FOTOS PARA ELEGIRLAS</span><button class="clear" type="button" data-clear-folder id="fClear" hidden>DESELECCIONAR ESTA CARPETA</button></span>' : '') + '</div>' +
-      (node.folders.length && !node.photos.length ? '<p class="lead" style="margin-top:10px">Elegí una carpeta para ver las fotos.</p>' : '') +
-      folders + photos +
-      '</section><div id="cartSlot" style="flex:1 1 300px;max-width:380px"></div></div>';
-
-    // El carrito vive en un solo lugar: al costado en escritorio, como hoja en celular
-    placeCart();
-    renderCart();
-    window.scrollTo(0, 0);
-  }
-
-  function renderCart() {
-    var items = Object.keys(cart).map(function (k) { return cart[k]; });
-    var n = items.length, unit = unitFor(n), total = n ? unit * n : 0;
-
-    $('cCount').textContent = plural(n);
-    $('cClear').hidden = n === 0;
-    var fc = $('fClear');
-    if (fc) fc.hidden = !currentPhotos.some(function (p) { return cart[p.id]; });
-    $('cEmpty').hidden = n > 0;
-    $('cList').innerHTML = items.map(function (it) {
-      return '<li><span class="mini wm"><img src="' + img(it.p, 200) + '" alt=""></span>' +
-        '<span class="t"><b>' + esc(num(it.n)) + '</b><span>' + esc(it.where || '') + '</span></span>' +
-        '<button class="x" type="button" data-remove="' + it.id + '" aria-label="Quitar foto ' + esc(num(it.n)) + '">×</button></li>';
-    }).join('');
-    $('cUnit').textContent = n ? money(unit) : '—';
-    $('cTotal').textContent = money(total);
-    $('cNudge').textContent = n === 0 ? 'Llevando 4 fotos o más, cada una sale ' + money(6000) + '.'
-      : n < 4 ? 'Sumá 1 foto más y cada una pasa a ' + money(unitFor(n + 1)) + '.'
-      : 'Tenés el mejor precio: ' + money(6000) + ' por foto.';
-
-    var active = n === 0 ? -1 : Math.min(n, 4) - 1;
-    var tiers = $('cTiers');
-    tiers.querySelectorAll('.tier').forEach(function (t) { t.remove(); });
-    TIERS.forEach(function (t, i) {
-      var d = document.createElement('div');
-      d.className = 'tier' + (i === active ? ' on' : '');
-      d.innerHTML = '<span>' + t[2] + '</span><span>' + money(t[1]) + (i ? ' c/u' : '') + '</span>';
-      tiers.appendChild(d);
+    items.forEach(function(el, i) {
+      var off = i - cur, x, opacity, zIndex;
+      if (off === 0)       { x = 0;                  opacity = 1;   zIndex = 10; el.style.filter = 'none'; }
+      else if (off === -1) { x = -(itemW + peek * 2); opacity = 0.4; zIndex = 5;  el.style.filter = 'saturate(0) brightness(0.4)'; }
+      else if (off === 1)  { x = itemW + peek * 2;    opacity = 0.4; zIndex = 5;  el.style.filter = 'saturate(0) brightness(0.4)'; }
+      else                 { x = off < 0 ? -sw * 3 : sw * 3; opacity = 0; zIndex = 1; el.style.filter = 'none'; }
+      el.style.width     = itemW + 'px';
+      el.style.height    = itemH + 'px';
+      el.style.transform = 'translateX(' + x + 'px)';
+      el.style.opacity   = opacity;
+      el.style.zIndex    = zIndex;
+      el.style.cursor    = off === 0 ? 'default' : 'pointer';
     });
 
-    $('payBtn').disabled = n === 0;
-    var tr = catalog && catalog.pay && catalog.pay.transfer;
-    $('trWrap').hidden = !tr;
-    if (tr) {
-      var d = Number(tr.discount) || 0;
-      $('trBtn').disabled = n === 0;
-      $('trOff').hidden = !d;
-      $('trOff').textContent = pct(d) + ' OFF';
-      $('cTrRow').hidden = !(n && d);
-      $('cTr').textContent = money(Math.round(total * (1 - d / 100)));
+    // mobile caption below photo
+    cfCaptionM.style.bottom = (sh - (sh/2 + itemH/2) + 8) + 'px';
+    cfCaptionM.style.left   = peek + 'px';
+    var m = HERO[cur].meta;
+    if (m && (m.camera || m.lens || m.iso || m.shutter || m.aperture)) {
+      var lines = [];
+      if (m.camera) lines.push('<span class="hi">' + m.camera + '</span>');
+      if (m.lens)   lines.push('<span>' + m.lens + '</span>');
+      var tech = [m.iso, m.shutter, m.aperture].filter(Boolean).join('  ');
+      if (tech) lines.push('<span>' + tech + '</span>');
+      cfCaptionM.innerHTML = lines.join('');
+      cfCaptionM.className = 'cf-caption-m visible';
+    } else {
+      cfCaptionM.innerHTML = '';
+      cfCaptionM.className = 'cf-caption-m';
     }
-    $('bCount').textContent = plural(n) + (n ? ' · ' + money(unit) + ' C/U' : '');
-    $('bTotal').textContent = money(total);
+    cfCounter.textContent = (cur+1) + ' / ' + NH;
+    return;
   }
 
-  function toggle(p) {
-    if (cart[p.id]) delete cart[p.id];
-    else cart[p.id] = { id: p.id, p: p.p, n: p.n, where: p.where };
-    saveCart();
-    var el = document.querySelector('.ph[data-id="' + p.id + '"]');
-    if (el) {
-      el.classList.toggle('sel', !!cart[p.id]);
-      el.querySelector('.pick').setAttribute('aria-pressed', !!cart[p.id]);
-    }
-    renderCart();
-    if ($('lb').classList.contains('on')) syncLbPick();
-  }
+  // DESKTOP
+  var cw = Math.min(sw * 0.72, sh * 0.7 * 1.5), ch = cw / 1.5;
+  var sidew = cw * 0.62, overlap = sidew * 0.35, sidex = cw/2 - overlap + sidew/2;
 
-  // ---------- visor ----------
-  function openLb(i) { lbIndex = i; showLb(); $('lb').classList.add('on'); document.body.style.overflow = 'hidden'; $('lbClose').focus(); }
-  function closeLb() { $('lb').classList.remove('on'); document.body.style.overflow = ''; }
-  function showLb() {
-    var p = currentPhotos[lbIndex];
-    $('lbImg').src = img(p.p, 1000);
-    $('lbInfo').textContent = num(p.n) + '  ·  ' + (lbIndex + 1) + ' / ' + currentPhotos.length;
-    syncLbPick();
-  }
-  function syncLbPick() {
-    var p = currentPhotos[lbIndex];
-    $('lbPick').textContent = cart[p.id] ? '✓ ELEGIDA · QUITAR' : 'ELEGIR ESTA FOTO';
-  }
-  function step(d) { lbIndex = (lbIndex + d + currentPhotos.length) % currentPhotos.length; showLb(); }
-
-  // ---------- hoja del carrito en celular ----------
-  function openSheet() { $('cart').classList.add('open'); $('shade').classList.add('on'); }
-  function closeSheet() { $('cart').classList.remove('open'); $('shade').classList.remove('on'); }
-
-  // ---------- pago ----------
-  function onPay(e, method) {
-    if (e) e.preventDefault();
-    var transfer = method === 'transfer';
-    var ids = Object.keys(cart);
-    var email = $('mail').value.trim();
-    var err = $('cErr');
-    err.hidden = true;
-    if (!ids.length) return;
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Revisá el mail: ahí te enviamos las fotos.'; err.hidden = false; $('mail').focus(); return; }
-    try { localStorage.setItem('lma_mail', email); } catch (x) {}
-    var btn = transfer ? $('trBtn') : $('payBtn');
-    var label = btn.innerHTML;
-    $('payBtn').disabled = true; $('trBtn').disabled = true;
-    btn.textContent = transfer ? 'GENERANDO PEDIDO…' : 'CONECTANDO CON MERCADO PAGO…';
-    apiPost({ action: 'checkout', ids: ids, email: email, method: transfer ? 'transfer' : 'mp' }).then(function (res) {
-      if (res.error) throw new Error(res.error);
-      if (transfer) {
-        if (!res.orderId) throw new Error('No se pudo generar el pedido.');
-        cart = {}; saveCart();
-        history.replaceState(null, '', location.pathname + '?pedido=' + res.orderId);
-        renderOrder(res.orderId, res);
-        return;
-      }
-      if (!res.url) throw new Error('No se pudo iniciar el pago.');
-      location.href = res.url;
-    }).catch(function (x) {
-      err.textContent = x.message || 'No se pudo iniciar el pago. Probá de nuevo.';
-      err.hidden = false;
-      btn.innerHTML = label;
-      $('payBtn').disabled = false; $('trBtn').disabled = false;
-    });
-  }
-
-  // ---------- pedido (vuelta de Mercado Pago) ----------
-  function renderOrder(orderId, initial) {
-    orderMode = true;
-    parkCart();
-    showCart(false);
-    $('strip').hidden = true;
-    var tries = 0, isTransfer = false;
-    view.innerHTML = '<section class="state"><span class="ring"><span class="spin"></span></span>' +
-      '<div><p class="kicker">CONSULTANDO TU PEDIDO</p><h1 style="font-size:28px">Un momento…</h1>' +
-      '<p class="lead">Estamos confirmando tu pago. No cierres esta página.</p></div></section>';
-    if (initial) { isTransfer = true; transferView(initial); }
-
-    (function poll() {
-      if (initial && tries === 0) { tries++; return setTimeout(poll, 15000); }
-      api({ action: 'order', id: orderId }).then(function (o) {
-        if (o.status === 'pagado') return done(o);
-        if (o.error) return fail(o.error);
-        if (o.status === 'cancelado') return fail('Este pedido se canceló porque no recibimos la transferencia a tiempo.');
-        if (o.status === 'transferencia') {
-          if (!isTransfer) { isTransfer = true; transferView(o); }
-          if (++tries < 240) setTimeout(poll, 15000);
-          return;
-        }
-        if (o.mp === 'rejected' || o.mp === 'cancelled') return fail('El pago no se aprobó. Podés volver a intentarlo con otro medio.');
-        if (++tries < 40) setTimeout(poll, 4000);
-        else pending();
-      }).catch(function () { if (++tries < 40) setTimeout(poll, 4000); else pending(); });
-    })();
-
-    function transferView(o) {
-      var lines = [
-        ['MONTO', money(o.total), String(o.total), true],
-        ['ALIAS', o.alias, o.alias],
-        o.titular ? ['TITULAR', o.titular, null] : null,
-        o.cbu ? ['CBU / CVU', o.cbu, o.cbu] : null,
-        ['CÓDIGO', o.code, o.code]
-      ].filter(Boolean);
-      var wa = o.whatsapp ? 'https://wa.me/' + o.whatsapp + '?text=' + encodeURIComponent(
-        'Hola Lucas! Hice la transferencia del pedido ' + o.code + ' por ' + money(o.total) +
-        ' (' + o.count + (o.count === 1 ? ' foto' : ' fotos') + '). Te adjunto el comprobante.') : '';
-      view.innerHTML = '<section class="state">' +
-        '<div><p class="kicker">PEDIDO ' + esc(o.code) + ' · PAGO POR TRANSFERENCIA</p>' +
-        '<h1 style="font-size:28px">Transferí ' + esc(money(o.total)) + ' y te mandamos tus fotos.</h1>' +
-        (o.discount ? '<p class="lead">Ya tiene aplicado el ' + pct(o.discount) + ' de descuento por pagar con transferencia.</p>' : '') + '</div>' +
-        '<div class="tbox">' + lines.map(function (l) {
-          return '<div class="tline"><span class="k">' + l[0] + '</span><span class="v' + (l[3] ? ' big' : '') + '">' + esc(l[1]) + '</span>' +
-            (l[2] ? '<button class="copy" type="button" data-copy="' + esc(l[2]) + '">COPIAR</button>' : '') + '</div>';
-        }).join('') + '</div>' +
-        '<ol class="steps">' +
-        '<li>Transferí el <b style="color:#fff;font-weight:400">monto exacto</b> al alias. Si podés, poné el código <b style="color:#fff;font-weight:400">' + esc(o.code) + '</b> en el concepto.</li>' +
-        '<li>Mandanos el comprobante por WhatsApp con el botón de abajo.</li>' +
-        '<li>Apenas lo confirmamos, te llegan las fotos en alta calidad al mail y también aparecen en esta página.</li></ol>' +
-        (wa ? '<a class="btn glow" style="align-self:flex-start" href="' + wa + '" target="_blank" rel="noopener">YA TRANSFERÍ · ENVIAR COMPROBANTE</a>' : '') +
-        '<p class="fine">Tenés 48 horas para transferir. Guardá el link de esta página: te sirve para ver el estado de tu pedido.</p>' +
-        '</section>';
-    }
-
-    function done(o) {
-      cart = {}; saveCart();
-      var until = o.expires ? new Date(o.expires).toLocaleDateString('es-AR') : '';
-      view.innerHTML = '<section class="state">' +
-        '<span class="ring"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>' +
-        '<div><p class="kicker">PAGO APROBADO</p><h1 style="font-size:30px">¡Gracias! Tus fotos están listas.</h1>' +
-        '<p class="lead">También te las mandamos por mail.' + (until ? ' Los links funcionan hasta el ' + until + '.' : '') + '</p></div>' +
-        (o.folder ? '<a class="btn" style="align-self:flex-start" href="' + esc(o.folder) + '" target="_blank" rel="noopener">DESCARGAR TODAS</a>' : '') +
-        '<ul class="dl">' + (o.files || []).map(function (f) {
-          return '<li><span class="n">' + esc(f.n) + '</span><a class="btn ghost" href="' + esc(f.url) + '" target="_blank" rel="noopener">DESCARGAR</a></li>';
-        }).join('') + '</ul>' +
-        '<a href="#/" class="caps" style="font-size:10px">← VOLVER A EVENTOS</a></section>';
-      history.replaceState(null, '', location.pathname + '?pedido=' + orderId);
-    }
-    function pending() {
-      view.innerHTML = '<section class="state"><div><p class="kicker">PAGO EN PROCESO</p><h1 style="font-size:28px">Tu pago todavía se está procesando.</h1>' +
-        '<p class="lead">Si pagaste en efectivo o por transferencia puede demorar. Apenas se acredite te llegan las fotos por mail. También podés recargar esta página más tarde.</p></div>' +
-        '<a href="#/" class="caps" style="font-size:10px">← VOLVER A EVENTOS</a></section>';
-    }
-    function fail(msg) {
-      view.innerHTML = '<section class="state"><div><p class="kicker">NO PUDIMOS CONFIRMAR EL PAGO</p><h1 style="font-size:28px">' + esc(msg) + '</h1>' +
-        '<p class="lead">Tus fotos elegidas siguen guardadas en tu selección.</p></div>' +
-        '<a href="' + location.pathname + '#/" class="btn" style="align-self:flex-start">VOLVER A MI SELECCIÓN</a></section>';
-    }
-  }
-
-  // ---------- router ----------
-  function route() {
-    var q = new URLSearchParams(location.search);
-    if (q.get('pedido') && (!location.hash || location.hash === '#')) return renderOrder(q.get('pedido'));
-    if (q.get('pedido')) history.replaceState(null, '', location.pathname + location.hash);
-    orderMode = false;
-    if (!catalog) return; // se dibuja cuando terminan de cargar los eventos
-    var m = location.hash.match(/^#\/f\/([\w-]+)/);
-    closeLb();
-    if (m) renderFolder(m[1]); else renderHome();
-  }
-
-  function afterBulk() {
-    saveCart();
-    document.querySelectorAll('.ph').forEach(function (el) {
-      var on = !!cart[el.dataset.id];
-      el.classList.toggle('sel', on);
-      el.querySelector('.pick').setAttribute('aria-pressed', on);
-    });
-    renderCart();
-  }
-
-  // ---------- eventos de la página ----------
-  document.addEventListener('click', function (e) {
-    var cp = e.target.closest('[data-copy]');
-    if (cp) {
-      var val = cp.dataset.copy;
-      var ok = function () { cp.textContent = 'COPIADO'; setTimeout(function () { cp.textContent = 'COPIAR'; }, 1600); };
-      if (navigator.clipboard) navigator.clipboard.writeText(val).then(ok, function () {});
-      else { var ta = document.createElement('textarea'); ta.value = val; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); ok(); } catch (x) {} ta.remove(); }
-      return;
-    }
-    if (e.target.closest('[data-clear]')) { cart = {}; return afterBulk(); }
-    if (e.target.closest('[data-clear-folder]')) { currentPhotos.forEach(function (p) { delete cart[p.id]; }); return afterBulk(); }
-    var t = e.target.closest('[data-pick],[data-zoom],[data-remove],[data-go]');
-    if (!t) return;
-    if (t.dataset.pick !== undefined) toggle(currentPhotos[+t.dataset.pick]);
-    else if (t.dataset.zoom !== undefined) openLb(+t.dataset.zoom);
-    else if (t.dataset.remove) { delete cart[t.dataset.remove]; saveCart(); var el = document.querySelector('.ph[data-id="' + t.dataset.remove + '"]'); if (el) el.classList.remove('sel'); renderCart(); }
-    else if (t.dataset.go) location.hash = '#/f/' + t.dataset.go;
+  items.forEach(function(el, i) {
+    var off = i - cur, x, scale, opacity, zIndex;
+    if (off === 0)       { x = 0;     scale = 1;         opacity = 1;    zIndex = 10; el.style.filter = 'none'; }
+    else if (off === -1) { x = -sidex; scale = sidew/cw;  opacity = 0.45; zIndex = 5;  el.style.filter = 'saturate(0) brightness(0.4)'; }
+    else if (off === 1)  { x = sidex;  scale = sidew/cw;  opacity = 0.45; zIndex = 5;  el.style.filter = 'saturate(0) brightness(0.4)'; }
+    else if (off < -1)   { x = -(sidex + sidew*0.3*Math.abs(off+1)); scale = sidew/cw*0.7; opacity = 0; zIndex = 1; el.style.filter = 'saturate(0) brightness(0.4)'; }
+    else                 { x = sidex + sidew*0.3*(off-1); scale = sidew/cw*0.7; opacity = 0; zIndex = 1; el.style.filter = 'saturate(0) brightness(0.4)'; }
+    el.style.width     = cw + 'px';
+    el.style.height    = ch + 'px';
+    el.style.transform = 'translateX(' + x + 'px) scale(' + scale + ')';
+    el.style.opacity   = opacity;
+    el.style.zIndex    = zIndex;
+    el.style.cursor    = off === 0 ? 'default' : 'pointer';
   });
-  $('payForm').addEventListener('submit', function (e) { onPay(e, 'mp'); });
-  $('trBtn').addEventListener('click', function () { onPay(null, 'transfer'); });
-  $('bOpen').addEventListener('click', openSheet);
-  $('closeSheet').addEventListener('click', closeSheet);
-  $('shade').addEventListener('click', closeSheet);
-  $('lbClose').addEventListener('click', closeLb);
-  $('lbPrev').addEventListener('click', function () { step(-1); });
-  $('lbNext').addEventListener('click', function () { step(1); });
-  $('lbPick').addEventListener('click', function () { toggle(currentPhotos[lbIndex]); });
-  document.addEventListener('keydown', function (e) {
-    if (!$('lb').classList.contains('on')) return;
-    if (e.key === 'Escape') closeLb();
-    if (e.key === 'ArrowLeft') step(-1);
-    if (e.key === 'ArrowRight') step(1);
-  });
-  (function swipe() {
-    var x0 = null;
-    $('lb').addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
-    $('lb').addEventListener('touchend', function (e) {
-      if (x0 === null) return;
-      var dx = e.changedTouches[0].clientX - x0; x0 = null;
-      if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1);
-    });
-  })();
-  try { $('mail').value = localStorage.getItem('lma_mail') || ''; } catch (e) {}
-  window.addEventListener('hashchange', route);
-  window.addEventListener('resize', placeCart);
 
-  // ---------- arranque ----------
-  if (new URLSearchParams(location.search).get('pedido') && !location.hash) { route(); }
-  else {
-    view.innerHTML = '<section class="intro"><p class="kicker">CARGANDO EVENTOS…</p></section>';
+  cfCounter.textContent = (cur+1) + ' / ' + NH;
+  var toc = (sh - ch) / 2, sm2 = (sw - cw) / 2;
+  cfCaption.style.top   = (toc + ch + 10) + 'px';
+  cfCaption.style.left  = sm2 + 'px';
+  cfCaption.style.width = cw + 'px';
+
+  var m = HERO[cur].meta;
+  if (m && (m.camera || m.lens || m.iso || m.shutter || m.aperture)) {
+    var lines = [];
+    if (m.camera) lines.push('<span class="hi">' + m.camera + '</span>');
+    if (m.lens)   lines.push('<span>' + m.lens + '</span>');
+    var tech = [m.iso, m.shutter, m.aperture].filter(Boolean).join('&nbsp;&nbsp;');
+    if (tech) lines.push('<span>' + tech + '</span>');
+    cfCaption.innerHTML = lines.join('');
+    cfCaption.className = 'cf-caption visible';
+  } else {
+    cfCaption.innerHTML = '';
+    cfCaption.className = 'cf-caption';
   }
-  api({ action: 'catalog' }).then(function (data) {
-    catalog = data && data.events ? data : { events: [] };
-    indexTree(catalog.events, null);
-    // Refresca los datos de las fotos guardadas en la selección
-    Object.keys(cart).forEach(function (k) {
-      var found = null;
-      Object.keys(nodes).some(function (id) { return nodes[id].photos.some(function (p) { if (p.id === k) { found = p; return true; } }); });
-      if (found) cart[k] = { id: found.id, p: found.p, n: found.n, where: found.where }; else delete cart[k];
-    });
-    saveCart();
-    if (!orderMode) route();
-  }).catch(function () {
-    view.innerHTML = '<section class="intro"><p class="kicker">NO PUDIMOS CARGAR LOS EVENTOS</p><p class="lead">Revisá tu conexión y recargá la página.</p></section>';
-  });
-})();
+}
+
+function goTo(n) {
+  if (isAnimating) return;
+  isAnimating = true;
+  cur = (n + NH) % NH;
+  render();
+  setTimeout(function() { isAnimating = false; }, 520);
+}
+
+document.getElementById('cfNext').addEventListener('click', function() { goTo(cur+1); });
+document.getElementById('cfPrev').addEventListener('click', function() { goTo(cur-1); });
+
+var autoTimer = setInterval(function() { goTo(cur+1); }, 5000);
+cfStage.addEventListener('pointerdown', function() { clearInterval(autoTimer); });
+
+// swipe
+var tsX = null, tsY = null;
+cfStage.addEventListener('touchstart', function(e) {
+  tsX = e.touches[0].clientX;
+  tsY = e.touches[0].clientY;
+}, {passive: true});
+cfStage.addEventListener('touchend', function(e) {
+  if (tsX === null) return;
+  var dx = e.changedTouches[0].clientX - tsX;
+  var dy = e.changedTouches[0].clientY - tsY;
+  // horizontal swipe always
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+    dx < 0 ? goTo(cur+1) : goTo(cur-1);
+  }
+  tsX = null; tsY = null;
+}, {passive: true});
+
+// desktop nav
+document.querySelector('.tb-name').addEventListener('click', function() {
+  closeF(); closeLB(); window.scrollTo({top:0,behavior:'smooth'});
+});
+document.getElementById('btnAbout').addEventListener('click', function() {
+  closeF(); closeLB();
+  setTimeout(function() { if(aboutSection) aboutSection.scrollIntoView({behavior:'smooth'}); }, 400);
+});
+
+// fototeca
+function openF() {
+  fototeca.style.display='flex';
+  requestAnimationFrame(function() { requestAnimationFrame(function() { fototeca.classList.add('visible'); }); });
+  document.getElementById('btnGaleria').classList.add('active');
+}
+function closeF() {
+  fototeca.classList.remove('visible');
+  setTimeout(function() { fototeca.style.display='none'; }, 350);
+  document.getElementById('btnGaleria').classList.remove('active');
+}
+document.getElementById('btnGaleria').addEventListener('click', openF);
+document.getElementById('fototecaClose').addEventListener('click', closeF);
+
+// lightbox
+function openLB(idx) {
+  lbCur = idx;
+  lbImg.src = (isMobile ? 'fotos-m/' : 'fotos/') + GALLERY[lbCur].file;
+  renderMeta(GALLERY[lbCur].meta);
+  lightbox.classList.add('open');
+}
+function closeLB() {
+  lightbox.classList.remove('open');
+  openF();
+}
+function lbGoTo(n) {
+  lbCur = (n + NG) % NG;
+  lbImg.src = (isMobile ? 'fotos-m/' : 'fotos/') + GALLERY[lbCur].file;
+  renderMeta(GALLERY[lbCur].meta);
+}
+function renderMeta(m) {
+  if (!m) { lbMeta.innerHTML=''; return; }
+  var rows=[];
+  if(m.camera) rows.push('<div class="lb-meta-row hi">'+m.camera+'</div>');
+  if(m.lens)   rows.push('<div class="lb-meta-row">'+m.lens+'</div>');
+  var tech=[m.iso,m.shutter,m.aperture].filter(Boolean).join('&nbsp;&nbsp;');
+  if(tech) rows.push('<div class="lb-meta-row">'+tech+'</div>');
+  if(m.date) rows.push('<div class="lb-meta-row">'+m.date+'</div>');
+  lbMeta.innerHTML=rows.join('');
+}
+document.getElementById('lbClose').addEventListener('click', closeLB);
+document.getElementById('lbPrev').addEventListener('click', function() { lbGoTo(lbCur-1); });
+document.getElementById('lbNext').addEventListener('click', function() { lbGoTo(lbCur+1); });
+lightbox.addEventListener('click', function(e) { if(e.target===lightbox) closeLB(); });
+
+// tab bar
+function setActiveTab(id) {
+  document.querySelectorAll('.tab-item').forEach(function(t) { t.classList.remove('active'); });
+  var el = document.getElementById(id);
+  if(el) el.classList.add('active');
+}
+document.getElementById('tabHome').addEventListener('click', function() {
+  closeF(); closeLB();
+  window.scrollTo({top:0,behavior:'smooth'});
+  setActiveTab('tabHome');
+});
+document.getElementById('tabGallery').addEventListener('click', function() {
+  openF(); setActiveTab('tabGallery');
+});
+document.getElementById('tabAbout').addEventListener('click', function() {
+  closeF(); closeLB();
+  setTimeout(function() { if(aboutSection) aboutSection.scrollIntoView({behavior:'smooth'}); }, 100);
+  setActiveTab('tabAbout');
+});
+document.getElementById('tabSpotify').addEventListener('click', function() {
+  window.open('https://open.spotify.com/playlist/3NimH9q2tjkia3ocon5MsH', '_blank');
+});
+
+// keyboard
+document.addEventListener('keydown', function(e) {
+  if (lightbox.classList.contains('open')) {
+    if(e.key==='ArrowLeft')  lbGoTo(lbCur-1);
+    if(e.key==='ArrowRight') lbGoTo(lbCur+1);
+    if(e.key==='Escape')     closeLB();
+  } else {
+    if(e.key==='ArrowLeft')  goTo(cur-1);
+    if(e.key==='ArrowRight') goTo(cur+1);
+  }
+});
+
+// language
+var LANG = {
+  es: {
+    galeria: 'Galería', about: 'Acerca de mi', cerrar: 'Cerrar',
+    about_text: [
+      'Trabajo la fotografía de rally desde un lugar que intenta correrse de lo más evidente. No me interesa únicamente la velocidad o el momento más espectacular, sino también lo que sucede alrededor: la tensión previa, los instantes intermedios, la relación entre el auto y el entorno.',
+      'Busco construir la imagen más que solo registrarla. En un contexto que suele ser caótico e impredecible, me interesa encontrar cierto orden, cierta armonía. Por eso muchas veces el paisaje tiene tanto peso como la acción, y el encuadre aparece como una herramienta para equilibrar esos elementos.',
+      'No busco que las imágenes griten ni que se impongan desde el impacto inmediato. Me interesa más bien lo contrario: que funcionen en un registro más bajo, que obliguen o inviten a una pausa breve. Que en esa pausa aparezcan detalles que no están a primera vista: una trayectoria insinuada, una relación de escalas, una atmósfera.',
+      'Mi enfoque está más cerca de una mirada autoral que de lo puramente documental, sin perder vínculo con lo que realmente ocurre. Me interesa no solo mostrar lo que pasó, sino transmitir, en alguna medida, cómo se sintió estar ahí.',
+      'De alguna forma, estas imágenes también buscan desprenderse del ruido y la urgencia del momento en que fueron tomadas. Invitan a ser vistas con distancia, en otro tiempo, donde el caos ya no domina la escena.'
+    ]
+  },
+  en: {
+    galeria: 'Gallery', about: 'About', cerrar: 'Close',
+    about_text: [
+      'I approach rally photography from a place that tries to move away from the most obvious. I am not solely interested in speed or the most spectacular moment, but also in what happens around it: the tension beforehand, the in-between instants, the relationship between the car and its surroundings.',
+      'I seek to construct the image rather than merely record it. In a context that tends to be chaotic and unpredictable, I am drawn to finding a certain order, a certain harmony. That is why the landscape often carries as much weight as the action, and framing becomes a tool for balancing those elements.',
+      'I do not want the images to shout or impose themselves through immediate impact. I am interested in the opposite: that they operate on a quieter register, that they compel or invite a brief pause. That within that pause, details emerge that are not visible at first glance: a suggested trajectory, a relationship of scales, an atmosphere.',
+      'My approach sits closer to an authorial vision than to pure documentation, without losing touch with what actually happens. I am interested not only in showing what occurred, but in conveying, to some degree, what it felt like to be there.',
+      'In some ways, these images also seek to detach from the noise and urgency of the moment in which they were taken. They invite being seen from a distance, in another time, where the chaos no longer dominates the scene and it becomes possible to pause and read what, in the instant, went unnoticed.'
+    ]
+  }
+};
+function setLang(lang) {
+  document.getElementById('langES').className = lang==='es' ? 'lang-btn active' : 'lang-btn';
+  document.getElementById('langEN').className = lang==='en' ? 'lang-btn active' : 'lang-btn';
+  var L = LANG[lang];
+  document.getElementById('btnGaleria').textContent = L.galeria;
+  document.getElementById('btnAbout').textContent   = L.about;
+  document.getElementById('fototecaClose').textContent = L.cerrar + ' ✕';
+  var paras = document.querySelectorAll('.about-text p');
+  for (var i=0; i<paras.length; i++) { if(L.about_text[i]) paras[i].textContent = L.about_text[i]; }
+}
 </script>
+<!-- COMMENTS DESKTOP -->
+<div id="sectionComments" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#000;z-index:400;overflow-y:auto;padding:72px 24px 80px;">
+  <div style="max-width:480px;margin:0 auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;">
+      <h2 style="color:#fff;font-size:0.85rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;margin:0;">Comments</h2>
+      <button onclick="document.getElementById('sectionComments').style.display='none'" style="background:none;border:none;color:rgba(255,255,255,0.5);font-family:'Montserrat',sans-serif;font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;">Cerrar ✕</button>
+    </div>
+    <div id="commentsList" style="margin-bottom:32px;display:flex;flex-direction:column;gap:16px;"></div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <input id="cmtInstagram" type="text" placeholder="@tu_instagram (obligatorio)" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:12px 14px;color:#fff;font-size:0.9rem;outline:none;font-family:inherit;" />
+      <textarea id="cmtMessage" placeholder="Dejá tu comentario..." rows="4" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:12px 14px;color:#fff;font-size:0.9rem;outline:none;resize:none;font-family:inherit;"></textarea>
+      <button id="cmtSubmit" onclick="submitComment()" style="background:#fff;color:#000;border:none;border-radius:6px;padding:13px;font-size:0.85rem;font-weight:600;cursor:pointer;letter-spacing:0.06em;font-family:inherit;">ENVIAR</button>
+      <div id="cmtMsg" style="display:none;color:#fff;font-size:0.8rem;text-align:center;letter-spacing:0.08em;opacity:0.7;"></div>
+    </div>
+  </div>
+</div>
+<script>
+var DB='https://api.jsonbin.io/v3/b/69ed3173aaba88219739827f';
+var DK='$2a$10$zJd2PlMExizSpNpIxFFCJ.SqmP9bUzh5Cc2wPY1AGL3de/EFMNV16';
+function renderComments(c){var l=document.getElementById('commentsList');if(!l)return;if(!c||!c.length){l.innerHTML='<p style="color:rgba(255,255,255,0.3);font-size:0.8rem;letter-spacing:0.08em;">Se el primero en comentar.</p>';return;}l.innerHTML=c.map(function(x){return'<div style="border-bottom:0.5px solid rgba(255,255,255,0.08);padding-bottom:14px;"><div style="color:#fff;font-size:0.8rem;font-weight:600;letter-spacing:0.06em;margin-bottom:4px;">'+x.instagram+'</div><div style="color:rgba(255,255,255,0.65);font-size:0.85rem;line-height:1.5;">'+x.message+'</div></div>';}).join('');}
+function loadComments(){fetch(DB+'/latest',{headers:{'X-Master-Key':DK,'X-Bin-Meta':'false'}}).then(function(r){return r.json();}).then(function(d){renderComments(d.comments||(d.record&&d.record.comments)||[]);}).catch(function(){});}
+function submitComment(){var ig=document.getElementById('cmtInstagram').value.trim();var msg=document.getElementById('cmtMessage').value.trim();var msgEl=document.getElementById('cmtMsg');if(!ig){msgEl.style.display='block';msgEl.textContent='El @instagram es obligatorio.';return;}if(!msg){msgEl.style.display='block';msgEl.textContent='Escribi un comentario.';return;}document.getElementById('cmtSubmit').textContent='Enviando...';fetch(DB+'/latest',{headers:{'X-Master-Key':DK}}).then(function(r){return r.json();}).then(function(d){var c=d.record&&d.record.comments||[];c.unshift({instagram:ig,message:msg});return fetch(DB,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':DK},body:JSON.stringify({comments:c})});}).then(function(){var fd=new FormData();fd.append('instagram',ig);fd.append('message',msg);fetch('https://formspree.io/f/mqewjpqj',{method:'POST',body:fd,mode:'no-cors'});document.getElementById('cmtInstagram').value='';document.getElementById('cmtMessage').value='';document.getElementById('cmtSubmit').textContent='ENVIAR';msgEl.style.display='block';msgEl.textContent='Comentario enviado!';setTimeout(function(){msgEl.style.display='none';loadComments();},1500);}).catch(function(){document.getElementById('cmtSubmit').textContent='ENVIAR';msgEl.style.display='block';msgEl.textContent='Error al enviar.';});}
+function startHomeTicker(c){if(!c||!c.length)return;var box=document.getElementById('homeTickerBox');if(!box)return;var idx=0;function show(){var x=c[idx%c.length];box.querySelector('.ht-ig').textContent=x.instagram;box.querySelector('.ht-msg').textContent=x.message;box.style.right='-320px';box.style.transition='none';setTimeout(function(){box.style.transition='right 0.8s ease';box.style.right='24px';setTimeout(function(){setTimeout(function(){box.style.transition='right 0.8s ease';box.style.right='-320px';setTimeout(function(){idx++;show();},900);},3000);},900);},50);}show();}
+fetch(DB+'/latest',{headers:{'X-Master-Key':DK,'X-Bin-Meta':'false'}}).then(function(r){return r.json();}).then(function(d){var c=d.comments||(d.record&&d.record.comments)||[];startHomeTicker(c);}).catch(function(){});
+</script>
+
 </body>
 </html>
