@@ -21,6 +21,13 @@ body{overflow-x:hidden;overflow-y:scroll;}
 .tb-btn:hover,.tb-btn.active{color:#fff;}
 .tb-btn-tienda{color:#fff;border:0.5px solid rgba(255,255,255,0.7);padding:5px 12px;border-radius:2px;box-shadow:0 0 8px rgba(255,255,255,0.18),0 0 20px rgba(255,255,255,0.08);transition:box-shadow 0.2s,color 0.2s;}
 .tb-btn-tienda:hover{box-shadow:0 0 12px rgba(255,255,255,0.35),0 0 28px rgba(255,255,255,0.15);}
+/* Tienda + Eventos: un solo botón partido. La barra se estira hasta el borde derecho para que no se tape el selector de idioma */
+.topbar{right:32px!important;gap:32px;}
+.tb-shop{display:flex;align-items:center;border:0.5px solid rgba(255,255,255,0.7);border-radius:2px;box-shadow:0 0 8px rgba(255,255,255,0.18),0 0 20px rgba(255,255,255,0.08);transition:box-shadow 0.2s;}
+.tb-shop:hover{box-shadow:0 0 12px rgba(255,255,255,0.35),0 0 28px rgba(255,255,255,0.15);}
+.tb-shop-link{color:#fff;padding:5px 12px;transition:background 0.2s;}
+.tb-shop-link+.tb-shop-link{border-left:0.5px solid rgba(255,255,255,0.45);}
+.tb-shop-link:hover{background:rgba(255,255,255,0.08);}
 .tb-icons{display:flex;gap:18px;align-items:center;}
 .tb-icon{color:rgba(255,255,255,0.55);text-decoration:none;display:flex;align-items:center;transition:color 0.2s;}
 .tb-icon:hover{color:#fff;}
@@ -97,6 +104,7 @@ body{overflow-x:hidden;overflow-y:scroll;}
 .tab-item-tienda{border:0.5px solid rgba(255,255,255,0.55);border-radius:6px;padding:4px 12px;box-shadow:0 0 8px rgba(255,255,255,0.15),0 0 18px rgba(255,255,255,0.07);}
 .tab-item-tienda svg{stroke:rgba(255,255,255,0.8);}
 .tab-item-tienda span{color:rgba(255,255,255,0.8);}
+@media(max-width:420px){.tab-item{padding:6px 10px;}.tab-item-tienda{padding:4px 9px;}}
 
 /* ── MOBILE CAPTION ── */
 .cf-caption-m{position:absolute;left:16px;display:none;flex-direction:column;gap:2px;pointer-events:none;opacity:0;transition:opacity 0.4s ease;}
@@ -128,7 +136,10 @@ body{overflow-x:hidden;overflow-y:scroll;}
     <button class="tb-btn" id="btnGaleria">Gallery</button>
     <button class="tb-btn" id="btnAbout">About</button>
     <button class="tb-btn" onclick="document.getElementById('sectionComments').style.display='block';loadComments();" >Comments</button>
-    <a class="tb-btn tb-btn-tienda" href="/tienda" style="text-decoration:none">Tienda</a>
+    <div class="tb-shop">
+      <a class="tb-btn tb-shop-link" href="/tienda" style="text-decoration:none">Tienda</a>
+      <a class="tb-btn tb-shop-link" href="/eventos/" style="text-decoration:none">Eventos</a>
+    </div>
   </div>
   <div class="tb-icons">
     <button class="lang-btn" id="langES" onclick="setLang('es')">ES</button>
@@ -156,6 +167,10 @@ body{overflow-x:hidden;overflow-y:scroll;}
   <a class="tab-item tab-item-tienda" href="/tienda" style="text-decoration:none">
     <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
     <span>Tienda</span>
+  </a>
+  <a class="tab-item tab-item-tienda" href="/eventos/" style="text-decoration:none">
+    <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+    <span>Eventos</span>
   </a>
   <button class="tab-item" id="tabSpotify">
     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 11.5c2.5-.8 5-.8 8 0M7 15c3-1 5.5-1 9 0M9.5 8.5c2-.5 4-.5 6 0"/></svg>
