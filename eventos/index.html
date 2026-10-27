@@ -156,6 +156,9 @@ h1{margin:14px 0 0;font-size:34px;font-weight:300;letter-spacing:.04em;color:var
 .copy{flex:none;height:32px;padding:0 10px;background:none;border:1px solid rgba(255,255,255,.3);color:#fff;font-size:9px;letter-spacing:.2em;cursor:pointer}
 .copy:hover{border-color:#fff}
 .state .btn{text-align:center;line-height:1.5;height:auto;min-height:52px;padding:12px 24px}
+a.btn,a.btn:hover{color:#000}
+a.btn.ghost,a.btn.ghost:hover{color:#fff}
+.sent{display:flex;gap:16px;align-items:flex-start;padding:18px;border:1px solid rgba(255,255,255,.35);background:#0b0b0b}
 .steps{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:8px;font-size:12.5px;line-height:1.7;color:rgba(255,255,255,.75)}
 .err{margin:0;font-size:11.5px;line-height:1.6;color:#ffb4a8}
 .close-sheet{display:none}
@@ -329,6 +332,10 @@ h1{margin:14px 0 0;font-size:34px;font-weight:300;letter-spacing:.04em;color:var
   function clean(name) { return String(name).replace(/^\s*\d+\s*[-_.)]?\s+/, '').trim(); }
   function num(n) { var m = String(n).match(/(\d+)\s*$/); return m ? m[1] : n; }
   function img(id, w) { return 'https://lh3.googleusercontent.com/d/' + id + '=w' + w; }
+  function phone(d) {
+    d = String(d);
+    return /^549\d{10}$/.test(d) ? '+54 9 ' + d.slice(3, 6) + ' ' + d.slice(6, 9) + '-' + d.slice(9) : '+' + d;
+  }
   function pct(d) { return String(Math.round(d * 10) / 10).replace('.', ',') + '%'; }
   function money(v) { return '$' + Number(v).toLocaleString('es-AR'); }
   function unitFor(n) { if (n <= 1) return 10000; if (n === 2) return 8000; if (n === 3) return 7000; return 6000; }
@@ -599,6 +606,8 @@ h1{margin:14px 0 0;font-size:34px;font-weight:300;letter-spacing:.04em;color:var
         o.cbu ? ['CBU / CVU', o.cbu, o.cbu] : null,
         ['CÓDIGO', o.code, o.code]
       ].filter(Boolean);
+      var sent = false;
+      try { sent = !!localStorage.getItem('lma_sent_' + o.code); } catch (x) {}
       var wa = o.whatsapp ? 'https://wa.me/' + o.whatsapp + '?text=' + encodeURIComponent(
         'Hola Lucas! Hice la transferencia del pedido ' + o.code + ' por ' + money(o.total) +
         ' (' + o.count + (o.count === 1 ? ' foto' : ' fotos') + '). Te adjunto el comprobante.') : '';
@@ -614,8 +623,14 @@ h1{margin:14px 0 0;font-size:34px;font-weight:300;letter-spacing:.04em;color:var
         '<li>Transferí el <b style="color:#fff;font-weight:400">monto exacto</b> al alias. Si podés, poné el código <b style="color:#fff;font-weight:400">' + esc(o.code) + '</b> en el concepto.</li>' +
         '<li>Mandanos el comprobante por WhatsApp con el botón de abajo.</li>' +
         '<li>Apenas lo confirmamos, te llegan las fotos en alta calidad al mail y también aparecen en esta página.</li></ol>' +
-        (wa ? '<a class="btn glow" style="align-self:flex-start" href="' + wa + '" target="_blank" rel="noopener">YA TRANSFERÍ · ENVIAR COMPROBANTE</a>' : '') +
+        (wa ? '<a class="btn glow" id="waBtn" data-sent="' + esc(o.code) + '" style="align-self:flex-start" href="' + wa + '" target="_blank" rel="noopener">' + (sent ? 'REENVIAR COMPROBANTE' : 'YA TRANSFERÍ · ENVIAR COMPROBANTE') + '</a>' : '') +
+        '<div class="sent" id="trSent"' + (sent ? '' : ' hidden') + '>' +
+          '<span class="ring" style="width:40px;height:40px;flex:none"><span class="spin" style="width:16px;height:16px"></span></span>' +
+          '<div><p style="margin:0;font-size:14px;color:#fff">¡Listo! Recibimos tu aviso.</p>' +
+          '<p class="lead" style="margin:6px 0 0;font-size:12.5px">En cuanto confirmemos tu transferencia (en general, en pocos minutos) te llegan las fotos al mail y aparecen acá mismo. No hace falta que hagas nada más.</p></div>' +
+        '</div>' +
         '<p class="fine">Tenés 48 horas para transferir. Guardá el link de esta página: te sirve para ver el estado de tu pedido.</p>' +
+        (o.whatsapp ? '<p class="fine" style="font-size:12px;color:rgba(255,255,255,.75)">¿Algún problema? Escribime al <a href="https://wa.me/' + o.whatsapp + '" target="_blank" rel="noopener" style="color:#fff;text-decoration:underline;text-underline-offset:3px">' + phone(o.whatsapp) + '</a> por WhatsApp.</p>' : '') +
         '</section>';
     }
 
@@ -669,6 +684,14 @@ h1{margin:14px 0 0;font-size:34px;font-weight:300;letter-spacing:.04em;color:var
 
   // ---------- eventos de la página ----------
   document.addEventListener('click', function (e) {
+    var ws = e.target.closest('[data-sent]');
+    if (ws) {
+      try { localStorage.setItem('lma_sent_' + ws.dataset.sent, '1'); } catch (x) {}
+      setTimeout(function () {
+        var box = $('trSent'); if (box) box.hidden = false;
+        ws.textContent = 'REENVIAR COMPROBANTE';
+      }, 400);
+    }
     var cp = e.target.closest('[data-copy]');
     if (cp) {
       var val = cp.dataset.copy;
