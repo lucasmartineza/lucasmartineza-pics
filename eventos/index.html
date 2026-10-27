@@ -70,13 +70,7 @@ h1{margin:14px 0 0;font-size:34px;font-weight:300;letter-spacing:.04em;color:var
 .wm{position:relative;overflow:hidden;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .wm img{pointer-events:none;-webkit-user-drag:none}
 .wm::after{content:"";position:absolute;inset:0;pointer-events:none;
-  background-image:var(--wm-big),var(--wm);
-  background-repeat:no-repeat,repeat;
-  background-position:center,center;
-  background-size:92% auto,200px 90px;
-  -webkit-mask-image:radial-gradient(ellipse 75% 70% at center,#000 45%,rgba(0,0,0,.55) 100%);
-          mask-image:radial-gradient(ellipse 75% 70% at center,#000 45%,rgba(0,0,0,.55) 100%)}
-.folder .th.wm::after,.list .mini.wm::after{background-image:var(--wm);background-size:110px 50px}
+  background-image:var(--wm);background-repeat:no-repeat;background-position:center;background-size:cover}
 
 /* Folders */
 .folders{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-top:30px}
@@ -291,9 +285,6 @@ a.btn.ghost,a.btn.ghost:hover{color:#fff}
 
   // ====== CONFIGURACIÓN ======
   var API = 'https://script.google.com/macros/s/AKfycbxlfzv8HLsKcBwLiXujU6tgWmQ3ZGpNIWyGRJMF1_ovRFOlZXBUjhJJ88lhaZmgxqwZnQ/exec';
-  var WM_TEXT = 'LUCASMARTINEZA';
-  var WM_OPACITY = 0.55;      // trama diagonal
-  var WM_BIG_OPACITY = 0.8; // sello central
   var TIERS = [[1, 10000, '1 foto'], [2, 8000, '2 fotos'], [3, 7000, '3 fotos'], [4, 6000, '4 o más']];
   // ===========================
 
@@ -303,24 +294,14 @@ a.btn.ghost,a.btn.ghost:hover{color:#fff}
   var cart = loadCart();
   var currentPhotos = [], lbIndex = 0, orderMode = false;
 
-  // Marca de agua: un SVG repetido en diagonal
+  // Marca de agua: el patrón de Lucas (lucasmartineza_watermark.svg), cubriendo toda la foto
   (function setWatermark() {
-    // Texto blanco con contorno oscuro: se lee tanto sobre cielo claro como sobre sombras
-    var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="90">' +
-      '<text x="100" y="51" text-anchor="middle" transform="rotate(-28 100 45)" ' +
-      'font-family="Montserrat, Arial, sans-serif" font-size="13" font-weight="500" letter-spacing="3" ' +
-      'fill="#fff" fill-opacity="' + WM_OPACITY + '" stroke="#000" stroke-opacity="0.4" stroke-width="1" paint-order="stroke">' +
-      WM_TEXT + '</text></svg>';
-    var big = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 220">' +
-      '<g transform="rotate(-18 300 110)">' +
-      '<text x="300" y="104" text-anchor="middle" font-family="Montserrat, Arial, sans-serif" font-size="52" font-weight="500" letter-spacing="8" ' +
-      'fill="#fff" fill-opacity="' + WM_BIG_OPACITY + '" stroke="#000" stroke-opacity="0.5" stroke-width="2.2" paint-order="stroke">' + WM_TEXT + '</text>' +
-      '<text x="300" y="142" text-anchor="middle" font-family="Montserrat, Arial, sans-serif" font-size="15" font-weight="500" letter-spacing="6" ' +
-      'fill="#fff" fill-opacity="' + WM_BIG_OPACITY + '" stroke="#000" stroke-opacity="0.5" stroke-width="1.2" paint-order="stroke">VISTA PREVIA · COMPRÁ LA FOTO SIN MARCA</text>' +
-      '</g></svg>';
-    var root = document.documentElement.style;
-    root.setProperty('--wm', 'url("data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg) + '")');
-    root.setProperty('--wm-big', 'url("data:image/svg+xml;charset=utf-8,' + encodeURIComponent(big) + '")');
+    var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1000" viewBox="0 0 1500 1000" preserveAspectRatio="xMidYMid slice">' +
+      '<defs><pattern id="watermark" width="370" height="170" patternUnits="userSpaceOnUse" patternTransform="rotate(-23)">' +
+      '<g fill="#ffffff" fill-opacity="0.27" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="32" letter-spacing="-0.8">' +
+      '<text x="-10" y="52">LUCASMARTINEZA</text><text x="175" y="137">LUCASMARTINEZA</text>' +
+      '</g></pattern></defs><rect width="1500" height="1000" fill="url(#watermark)"/></svg>';
+    document.documentElement.style.setProperty('--wm', 'url("data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg) + '")');
   })();
 
   // Evita guardar con clic derecho o arrastrando
