@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Eventos · Lucas Martinez</title>
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-W75LBGGRJ6"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-W75LBGGRJ6');</script>
 <meta name="description" content="Encontrá tus fotos de rally, elegilas y descargalas en alta calidad.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='black'/%3E%3Ctext x='16' y='21' font-family='Montserrat,sans-serif' font-size='11' font-weight='300' fill='white' text-anchor='middle' letter-spacing='2'%3ELM%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -318,6 +321,8 @@ a.btn.ghost,a.btn.ghost:hover{color:#fff}
     return /^549\d{10}$/.test(d) ? '+54 9 ' + d.slice(3, 6) + ' ' + d.slice(6, 9) + '-' + d.slice(9) : '+' + d;
   }
   function pct(d) { return String(Math.round(d * 10) / 10).replace('.', ',') + '%'; }
+  // Estadísticas (Google Analytics): solo datos de uso, nunca el mail del comprador
+  function track(name, params) { try { if (window.gtag) gtag('event', name, params || {}); } catch (x) {} }
   function money(v) { return '$' + Number(v).toLocaleString('es-AR'); }
   function unitFor(n) { if (n <= 1) return 10000; if (n === 2) return 8000; if (n === 3) return 7000; return 6000; }
   function plural(n) { return n === 1 ? '1 FOTO' : n + ' FOTOS'; }
@@ -392,6 +397,7 @@ a.btn.ghost,a.btn.ghost:hover{color:#fff}
     renderStrip(path[0].id);
     showCart(true);
     document.title = clean(node.name) + ' · Lucas Martinez';
+    track('ver_carpeta', { evento: clean(path[0].name), carpeta: path.map(function (x) { return clean(x.name); }).join(' / ') });
 
     var crumbs = '<nav class="crumbs" aria-label="Ruta"><a href="#/">Eventos</a>';
     path.forEach(function (n, i) {
@@ -486,7 +492,7 @@ a.btn.ghost,a.btn.ghost:hover{color:#fff}
 
   function toggle(p) {
     if (cart[p.id]) delete cart[p.id];
-    else cart[p.id] = { id: p.id, p: p.p, n: p.n, where: p.where };
+    else { cart[p.id] = { id: p.id, p: p.p, n: p.n, where: p.where }; track('add_to_cart', { currency: 'ARS', items: [{ item_id: p.id, item_name: num(p.n), item_category: p.where }] }); }
     saveCart();
     var el = document.querySelector('.ph[data-id="' + p.id + '"]');
     if (el) {
@@ -531,6 +537,7 @@ a.btn.ghost,a.btn.ghost:hover{color:#fff}
     var label = btn.innerHTML;
     $('payBtn').disabled = true; $('trBtn').disabled = true;
     btn.textContent = transfer ? 'GENERANDO PEDIDO…' : 'CONECTANDO CON MERCADO PAGO…';
+    track('begin_checkout', { currency: 'ARS', payment_type: transfer ? 'transferencia' : 'mercadopago', value: unitFor(ids.length) * ids.length, cantidad: ids.length });
     apiPost({ action: 'checkout', ids: ids, email: email, method: transfer ? 'transfer' : 'mp' }).then(function (res) {
       if (res.error) throw new Error(res.error);
       if (transfer) {
@@ -616,6 +623,9 @@ a.btn.ghost,a.btn.ghost:hover{color:#fff}
     }
 
     function done(o) {
+      var seen = false;
+      try { seen = !!localStorage.getItem('lma_ga_' + orderId); localStorage.setItem('lma_ga_' + orderId, '1'); } catch (x) {}
+      if (!seen) track('purchase', { transaction_id: orderId, currency: 'ARS', value: Number(o.total) || 0, cantidad: o.count });
       cart = {}; saveCart();
       var until = o.expires ? new Date(o.expires).toLocaleDateString('es-AR') : '';
       view.innerHTML = '<section class="state">' +
@@ -668,6 +678,7 @@ a.btn.ghost,a.btn.ghost:hover{color:#fff}
     var ws = e.target.closest('[data-sent]');
     if (ws) {
       try { localStorage.setItem('lma_sent_' + ws.dataset.sent, '1'); } catch (x) {}
+      track('comprobante_enviado', { pedido: ws.dataset.sent });
       setTimeout(function () {
         var box = $('trSent'); if (box) box.hidden = false;
         ws.textContent = 'REENVIAR COMPROBANTE';

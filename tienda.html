@@ -1,4 +1,7 @@
 <title>Tienda · Lucas Martínez</title>
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-W75LBGGRJ6"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-W75LBGGRJ6');</script>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
 <style>
 /* ── TOKENS ──────────────────────────────────────────── */
@@ -467,6 +470,7 @@ function addToCart(){
   updateCartBadge();
   closeDetail();
   showToast('Agregado al carrito');
+  if(window.gtag)gtag('event','add_to_cart',{currency:'ARS',value:dpPrice,items:[{item_name:dpPhoto,item_variant:dpSize.typeLabel+' '+dpSize.dim,price:dpPrice}]});
 }
 function removeFromCart(i){
   cart.splice(i,1);
@@ -637,6 +641,7 @@ function doOrder(){
   if(shippingCost) lines.push('💳 Total: '+fmt(sub+shippingCost));
   lines.push('');
   lines.push('¿Cómo seguimos?');
+  if(window.gtag)gtag('event','begin_checkout',{currency:'ARS',payment_type:'whatsapp',value:cart.reduce(function(a,c){return a+c.price;},0)});
   window.open('https://wa.me/5493513020815?text='+encodeURIComponent(lines.join('\n')),'_blank');
 }
 
@@ -652,6 +657,7 @@ function doOrderMP(){
   });
   if(!ok){showToast('Completá los datos de contacto');return;}
 
+  if(window.gtag)gtag('event','begin_checkout',{currency:'ARS',payment_type:'mercadopago',value:cart.reduce(function(a,c){return a+c.price;},0)});
   document.getElementById('orderBtns').style.display='none';
   document.getElementById('mpLoading').style.display='block';
 
