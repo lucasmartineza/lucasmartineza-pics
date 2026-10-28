@@ -295,7 +295,9 @@ a.btn.ghost,a.btn.ghost:hover{color:#fff}
   var view = $('view');
   var catalog = null, nodes = {}, parents = {};
   var cart = loadCart();
-  var currentPhotos = [], lbIndex = 0, orderMode = false;
+  var currentPhotos = [], lbIndex = 0, orderMode = false, paying = false;
+  var TR_LABEL = 'PAGAR CON TRANSFERENCIA <span class="off" id="trOff" hidden></span>';
+  var MP_LABEL = 'PAGAR CON MERCADO PAGO';
 
   // Marca de agua: el patrón de Lucas (lucasmartineza_watermark.svg), cubriendo toda la foto
   (function setWatermark() {
@@ -475,14 +477,15 @@ a.btn.ghost,a.btn.ghost:hover{color:#fff}
       tiers.appendChild(d);
     });
 
-    $('payBtn').disabled = n === 0;
+    if (!paying) { $('payBtn').textContent = MP_LABEL; $('trBtn').innerHTML = TR_LABEL; }
+    $('payBtn').disabled = n === 0 || paying;
     var tr = catalog && catalog.pay && catalog.pay.transfer;
     $('trWrap').hidden = !tr;
     if (tr) {
       var d = Number(tr.discount) || 0;
-      $('trBtn').disabled = n === 0;
-      $('trOff').hidden = !d;
-      $('trOff').textContent = pct(d) + ' OFF';
+      $('trBtn').disabled = n === 0 || paying;
+      var off = $('trOff');
+      if (off) { off.hidden = !d; off.textContent = pct(d) + ' OFF'; }
       $('cTrRow').hidden = !(n && d);
       $('cTr').textContent = money(Math.round(total * (1 - d / 100)));
     }
@@ -534,15 +537,16 @@ a.btn.ghost,a.btn.ghost:hover{color:#fff}
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Revisá el mail: ahí te enviamos las fotos.'; err.hidden = false; $('mail').focus(); return; }
     try { localStorage.setItem('lma_mail', email); } catch (x) {}
     var btn = transfer ? $('trBtn') : $('payBtn');
-    var label = btn.innerHTML;
+    paying = true;
     $('payBtn').disabled = true; $('trBtn').disabled = true;
-    btn.textContent = transfer ? 'GENERANDO PEDIDO…' : 'CONECTANDO CON MERCADO PAGO…';
+    btn.textContent = transfer ? 'PREPARANDO DATOS PARA TRANSFERIR…' : 'CONECTANDO CON MERCADO PAGO…';
     track('begin_checkout', { currency: 'ARS', payment_type: transfer ? 'transferencia' : 'mercadopago', value: unitFor(ids.length) * ids.length, cantidad: ids.length });
     apiPost({ action: 'checkout', ids: ids, email: email, method: transfer ? 'transfer' : 'mp' }).then(function (res) {
       if (res.error) throw new Error(res.error);
       if (transfer) {
         if (!res.orderId) throw new Error('No se pudo generar el pedido.');
-        cart = {}; saveCart();
+        paying = false;
+        cart = {}; saveCart(); renderCart();
         history.replaceState(null, '', location.pathname + '?pedido=' + res.orderId);
         renderOrder(res.orderId, res);
         return;
@@ -552,8 +556,8 @@ a.btn.ghost,a.btn.ghost:hover{color:#fff}
     }).catch(function (x) {
       err.textContent = x.message || 'No se pudo iniciar el pago. Probá de nuevo.';
       err.hidden = false;
-      btn.innerHTML = label;
-      $('payBtn').disabled = false; $('trBtn').disabled = false;
+      paying = false;
+      renderCart();
     });
   }
 
