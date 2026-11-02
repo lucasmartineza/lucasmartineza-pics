@@ -162,6 +162,21 @@ h1{margin:14px 0 0;font-size:34px;font-weight:300;letter-spacing:.04em;color:var
 .state .btn{text-align:center;line-height:1.5;height:auto;min-height:52px;padding:12px 24px}
 a.btn,a.btn:hover{color:#000}
 a.btn.ghost,a.btn.ghost:hover{color:#fff}
+.nrow{display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px;margin-top:22px;padding:16px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.nrow .nlabel{flex:none;font-size:11px;font-weight:500;letter-spacing:.3em;color:#fff}
+.nrow .nsearch{flex:1 1 300px;margin-top:0}
+.nbeta{flex-basis:100%;margin:0;font-size:11.5px;line-height:1.6;letter-spacing:.03em;color:var(--muted)}
+.nbeta b{display:inline-block;margin-right:8px;padding:2px 7px;border:1px solid rgba(255,255,255,.4);font-weight:500;font-size:9px;letter-spacing:.2em;color:#fff;vertical-align:1px}
+.nsearch{display:flex;gap:0;max-width:520px;border:1px solid rgba(255,255,255,.55);box-shadow:0 0 18px rgba(255,255,255,.07)}
+.nsearch label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.nsearch input{flex:1;min-width:0;height:48px;padding:0 18px;background:#0b0b0b;border:0;color:#fff;font:inherit;font-size:15px;letter-spacing:.06em;outline:none}
+.nsearch input::placeholder{color:rgba(255,255,255,.55);letter-spacing:.04em}
+.nsearch button{flex:none;height:48px;padding:0 22px;background:#fff;border:0;color:#000;font-size:10.5px;font-weight:500;letter-spacing:.22em;cursor:pointer}
+.pgroup{margin-top:34px}
+.pgroup-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.pgroup-head b{font-weight:400;font-size:12px;letter-spacing:.2em;color:#fff}
+.pgroup-head span{font-size:10px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase}
+.pgroup .photos{margin-top:12px}
 .cobertura{border:1px solid rgba(255,255,255,.55);background:#0d0d0d;padding:18px 18px 16px;display:flex;flex-direction:column;gap:12px;box-shadow:0 0 18px rgba(255,255,255,.08)}
 .cobertura .ck{font-size:9.5px;letter-spacing:.3em;color:#fff}
 .cobertura p{margin:0;font-size:13px;line-height:1.65;color:rgba(255,255,255,.9)}
@@ -452,27 +467,96 @@ a.btn.ghost,a.btn.ghost:hover{color:#fff}
     currentPhotos = node.photos;
     var photos = '';
     if (node.photos.length) {
-      photos = '<div class="photos" id="photos">' + node.photos.map(function (p, i) {
-        var on = !!cart[p.id];
-        return '<div class="ph wm' + (on ? ' sel' : '') + '" data-id="' + p.id + '">' +
-          '<img loading="lazy" src="' + img(p.p, 600) + '" alt="" onload="this.classList.add(\'ok\')">' +
-          '<button class="pick" type="button" data-pick="' + i + '" aria-pressed="' + on + '" aria-label="Elegir foto ' + esc(lbl(p)) + '"></button>' +
-          '<span class="num">' + esc(lbl(p)) + '</span>' +
-          '<span class="dot" aria-hidden="true"><svg class="check" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>' +
-          '<button class="zoom" type="button" data-zoom="' + i + '" aria-label="Ver grande"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 1px 3px rgba(0,0,0,.7))"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button>' +
-          '</div>';
-      }).join('') + '</div>';
+      photos = '<div class="photos" id="photos">' + node.photos.map(photoTile).join('') + '</div>';
     }
+    var search = searchOn() ? searchBox(path[0].id, '') : '';
 
     view.innerHTML =
       '<div class="wrap"><section class="main">' + crumbs +
       '<div class="gridhead"><h1 class="h2">' + esc(clean(node.name)) + '</h1>' +
       (node.photos.length ? '<span style="display:flex;align-items:center;gap:20px;flex-wrap:wrap"><span class="hint">TOCÁ LAS FOTOS PARA ELEGIRLAS</span><button class="clear" type="button" data-clear-folder id="fClear" hidden>DESELECCIONAR ESTA CARPETA</button></span>' : '') + '</div>' +
+      search +
       (node.folders.length && !node.photos.length ? '<p class="lead" style="margin-top:10px">Elegí una carpeta para ver las fotos.</p>' : '') +
       folders + photos +
       '</section><div id="cartSlot" style="flex:1 1 300px;max-width:380px"></div></div>';
 
     // El carrito vive en un solo lugar: al costado en escritorio, como hoja en celular
+    placeCart();
+    renderCart();
+    window.scrollTo(0, 0);
+  }
+
+  // ---------- foto (cuadrito de la grilla) ----------
+  function photoTile(p, i) {
+    var on = !!cart[p.id];
+    return '<div class="ph wm' + (on ? ' sel' : '') + '" data-id="' + p.id + '">' +
+      '<img loading="lazy" src="' + img(p.p, 600) + '" alt="" onload="this.classList.add(\'ok\')">' +
+      '<button class="pick" type="button" data-pick="' + i + '" aria-pressed="' + on + '" aria-label="Elegir foto ' + esc(lbl(p)) + '"></button>' +
+      '<span class="num">' + esc(lbl(p)) + '</span>' +
+      '<span class="dot" aria-hidden="true"><svg class="check" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>' +
+      '<button class="zoom" type="button" data-zoom="' + i + '" aria-label="Ver grande"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 1px 3px rgba(0,0,0,.7))"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button>' +
+      '</div>';
+  }
+
+  // ---------- buscador por número de inscripto ----------
+  function searchOn() {
+    if (catalog && catalog.search) return true;
+    try { return localStorage.getItem('lma_buscador') === '1'; } catch (x) { return false; }
+  }
+  function searchBox(eventId, value) {
+    return '<div class="nrow">' +
+      '<span class="nlabel" aria-hidden="true">BUSCAR POR NÚMERO</span>' +
+      '<form class="nsearch" data-event="' + eventId + '" role="search">' +
+      '<label for="nq">Buscar por número de inscripto</label>' +
+      '<input id="nq" name="q" type="search" inputmode="numeric" autocomplete="off" placeholder="Ej: 301" value="' + esc(value) + '">' +
+      '<button type="submit">BUSCAR</button></form>' +
+      '<p class="nbeta"><b>BETA</b>Desarrollo en beta: puede que no reconozca todas las fotos. Si no aparece alguna, buscala en el listado de fotos :)</p>' +
+      '</div>';
+  }
+  function renderSearch(eventId, q) {
+    var ev = nodes[eventId];
+    if (!ev) { location.hash = '#/'; return; }
+    parkCart();
+    renderStrip(eventId);
+    setCobertura(clean(ev.name));
+    showCart(true);
+    q = String(q).replace(/\D/g, '').replace(/^0+(?=\d)/, '');
+    document.title = 'N.º ' + q + ' · ' + clean(ev.name) + ' · Lucas Martinez';
+    // juntar las pasadas de ese número en todo el evento
+    var groups = [], byKey = {};
+    (function walk(n) {
+      n.photos.forEach(function (p) {
+        if (!p.k || p.k.split(',').indexOf(q) === -1) return;
+        var key = n.id + '|' + p.g;
+        if (!byKey[key]) { byKey[key] = { node: n, photos: [] }; groups.push(byKey[key]); }
+        byKey[key].photos.push(p);
+      });
+      n.folders.forEach(walk);
+    })(ev);
+    groups.sort(function (a, b) { var ta = a.photos[0].t || '', tb = b.photos[0].t || ''; return ta < tb ? -1 : ta > tb ? 1 : 0; });
+    currentPhotos = [];
+    var html = groups.map(function (g) {
+      var start = currentPhotos.length;
+      currentPhotos = currentPhotos.concat(g.photos);
+      var first = g.photos[0], last = g.photos[g.photos.length - 1];
+      var when = first.t ? lbl(first) + (last !== first && last.t ? ' – ' + lbl(last) : '') : '';
+      var where = pathOf(g.node.id).slice(1).map(function (x) { return clean(x.name); }).join(' / ');
+      return '<div class="pgroup"><div class="pgroup-head"><b>' + (when || 'PASADA') + '</b><span>' + g.photos.length + (g.photos.length === 1 ? ' foto' : ' fotos') + (where ? ' · ' + esc(where) : '') + '</span></div>' +
+        '<div class="photos">' + g.photos.map(function (p, j) { return photoTile(p, start + j); }).join('') + '</div></div>';
+    }).join('');
+    var total = currentPhotos.length;
+    track('buscar_numero', { evento: clean(ev.name), numero: q, resultados: total });
+    view.innerHTML =
+      '<div class="wrap"><section class="main">' +
+      '<nav class="crumbs" aria-label="Ruta"><a href="#/">Eventos</a><span class="sep" aria-hidden="true">/</span><a href="#/f/' + ev.id + '">' + esc(clean(ev.name)) + '</a><span class="sep" aria-hidden="true">/</span><span class="here">N.º ' + esc(q) + '</span></nav>' +
+      '<div class="gridhead"><h1 class="h2">' + esc(clean(ev.name)) + '</h1></div>' +
+      searchBox(ev.id, q) +
+      '<div class="gridhead" style="margin-top:26px"><h2 class="h2" style="margin:0;font-size:22px">N.º ' + esc(q) + '</h2>' +
+      (total ? '<span style="display:flex;align-items:center;gap:20px;flex-wrap:wrap"><span class="hint">' + total + (total === 1 ? ' FOTO' : ' FOTOS') + ' · ' + groups.length + (groups.length === 1 ? ' PASADA' : ' PASADAS') + '</span><button class="clear" type="button" data-clear-folder id="fClear" hidden>DESELECCIONAR ESTAS FOTOS</button></span>' : '') + '</div>' +
+      (total ? html :
+        '<p class="lead" style="margin-top:18px">Todavía no encontramos fotos del N.º ' + esc(q) + ' en este evento. Puede que el número no se vea en las fotos o que aún las estemos procesando. Recorré las carpetas del evento o escribinos por WhatsApp y te ayudamos a encontrarlas.</p>' +
+        '<p style="margin-top:22px"><a class="btn ghost" style="display:inline-flex;padding:0 22px" href="#/f/' + ev.id + '">VER TODAS LAS FOTOS DEL EVENTO</a></p>') +
+      '</section><div id="cartSlot" style="flex:1 1 300px;max-width:380px"></div></div>';
     placeCart();
     renderCart();
     window.scrollTo(0, 0);
@@ -694,8 +778,10 @@ a.btn.ghost,a.btn.ghost:hover{color:#fff}
     orderMode = false;
     if (!catalog) return; // se dibuja cuando terminan de cargar los eventos
     var m = location.hash.match(/^#\/f\/([\w-]+)/);
+    var b = location.hash.match(/^#\/b\/([\w-]+)\/(\d+)/);
     closeLb();
-    if (m) renderFolder(m[1]); else renderHome();
+    if (b) renderSearch(b[1], b[2]);
+    else if (m) renderFolder(m[1]); else renderHome();
   }
 
   function afterBulk() {
@@ -737,6 +823,18 @@ a.btn.ghost,a.btn.ghost:hover{color:#fff}
     else if (t.dataset.go) location.hash = '#/f/' + t.dataset.go;
   });
   $('payForm').addEventListener('submit', function (e) { onPay(e, 'mp'); });
+  document.addEventListener('submit', function (e) {
+    var f = e.target.closest && e.target.closest('form.nsearch');
+    if (!f) return;
+    e.preventDefault();
+    var q = String(f.q.value || '').replace(/\D/g, '');
+    if (!q) { f.q.focus(); return; }
+    location.hash = '#/b/' + f.dataset.event + '/' + q;
+  });
+  (function () {
+    var v = new URLSearchParams(location.search).get('buscador');
+    try { if (v === '1') localStorage.setItem('lma_buscador', '1'); if (v === '0') localStorage.removeItem('lma_buscador'); } catch (x) {}
+  })();
   $('trBtn').addEventListener('click', function () { onPay(null, 'transfer'); });
   $('bOpen').addEventListener('click', openSheet);
   $('closeSheet').addEventListener('click', closeSheet);
