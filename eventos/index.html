@@ -167,6 +167,17 @@ a.btn.ghost,a.btn.ghost:hover{color:#fff}
 .nrow .nsearch{flex:1 1 300px;margin-top:0}
 .nbeta{flex-basis:100%;margin:0;font-size:11.5px;line-height:1.6;letter-spacing:.03em;color:var(--muted)}
 .nbeta b{display:inline-block;margin-right:8px;padding:2px 7px;border:1px solid rgba(255,255,255,.4);font-weight:500;font-size:9px;letter-spacing:.2em;color:#fff;vertical-align:1px}
+.nprog{flex-basis:100%;display:flex;align-items:flex-start;gap:12px;margin:2px 0 0;padding:12px 14px;border:1px solid rgba(255,255,255,.22);background:#0b0b0b}
+.nprog .spin{flex:none;width:16px;height:16px;margin-top:2px}
+.nprog p{margin:0;font-size:12px;line-height:1.6;color:rgba(255,255,255,.75)}
+.nprog p b{display:block;font-weight:500;font-size:10.5px;letter-spacing:.2em;color:#fff;margin-bottom:2px}
+.nprog .bar{height:2px;background:rgba(255,255,255,.15);margin-top:8px;position:relative;overflow:hidden}
+.nprog .bar i{position:absolute;left:0;top:0;bottom:0;background:#fff}
+.share{display:none;flex-direction:column;gap:10px;padding:14px;border:1px dashed rgba(255,255,255,.4)}
+.share.on{display:flex}
+.share small{font-size:10px;letter-spacing:.2em;color:var(--muted)}
+.share .row2{display:flex;gap:8px;flex-wrap:wrap}
+.share .btn.ghost{flex:1 1 140px}
 .nsearch{display:flex;gap:0;max-width:520px;border:1px solid rgba(255,255,255,.55);box-shadow:0 0 18px rgba(255,255,255,.07)}
 .nsearch label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .nsearch input{flex:1;min-width:0;height:48px;padding:0 18px;background:#0b0b0b;border:0;color:#fff;font:inherit;font-size:15px;letter-spacing:.06em;outline:none}
@@ -284,6 +295,13 @@ a.btn.ghost,a.btn.ghost:hover{color:#fff}
   </div>
   <p class="nudge" id="cNudge"></p>
   <div class="tiers" id="cTiers"><span style="font-size:9.5px;letter-spacing:.3em;color:var(--muted);margin-bottom:4px">PROMO POR CANTIDAD</span></div>
+  <div class="share" id="shareBox">
+    <small>SOLO VOS · COMPARTIR CON UN CLIENTE</small>
+    <div class="row2">
+      <button class="btn ghost" type="button" id="shareCopy">COPIAR LINK</button>
+      <a class="btn ghost" id="shareWa" href="#" target="_blank" rel="noopener">ENVIAR POR WHATSAPP</a>
+    </div>
+  </div>
   <form id="payForm" style="display:flex;flex-direction:column;gap:14px" novalidate>
     <div class="field">
       <label for="mail">TU MAIL (TE ENVIAMOS LAS FOTOS)</label>
@@ -329,7 +347,7 @@ a.btn.ghost,a.btn.ghost:hover{color:#fff}
 
   var $ = function (id) { return document.getElementById(id); };
   var view = $('view');
-  var catalog = null, nodes = {}, parents = {};
+  var catalog = null, nodes = {}, parents = {}, photoById = {};
   var cart = loadCart();
   var currentPhotos = [], lbIndex = 0, orderMode = false, paying = false;
   var TR_LABEL = 'PAGAR CON TRANSFERENCIA <span class="off" id="trOff" hidden></span>';
@@ -379,7 +397,7 @@ a.btn.ghost,a.btn.ghost:hover{color:#fff}
   function indexTree(list, parent) {
     list.forEach(function (n) {
       nodes[n.id] = n; parents[n.id] = parent || null;
-      n.photos.forEach(function (p) { p.where = pathOf(n.id).map(function (x) { return clean(x.name); }).join(' / '); });
+      n.photos.forEach(function (p) { p.where = pathOf(n.id).map(function (x) { return clean(x.name); }).join(' / '); photoById[p.id] = p; });
       indexTree(n.folders, n.id);
     });
   }
@@ -469,7 +487,7 @@ a.btn.ghost,a.btn.ghost:hover{color:#fff}
     if (node.photos.length) {
       photos = '<div class="photos" id="photos">' + node.photos.map(photoTile).join('') + '</div>';
     }
-    var search = searchOn() ? searchBox(path[0].id, '') : '';
+    var search = searchOn(path[0].id) ? searchBox(path[0].id, '') : '';
 
     view.innerHTML =
       '<div class="wrap"><section class="main">' + crumbs +
@@ -499,10 +517,72 @@ a.btn.ghost,a.btn.ghost:hover{color:#fff}
   }
 
   // ---------- buscador por número de inscripto ----------
-  function searchOn() {
+  function isAdmin() { try { return localStorage.getItem('lma_admin') === '1'; } catch (x) { return false; } }
+  // Link para compartir: si hay fotos elegidas, esa selección; si estás en una búsqueda, ese número.
+  function shareUrl() {
+    var base = location.origin + location.pathname;
+    var ids = Object.keys(cart);
+    if (ids.length) return base + '#/sel/' + ids.join('.');
+    var b = location.hash.match(/^#\/b\/([\w-]+)\/(\d+)/);
+    return b ? base + '#/b/' + b[1] + '/' + b[2] : '';
+  }
+  function updateShare() {
+    var box = $('shareBox'), url = isAdmin() ? shareUrl() : '';
+    box.classList.toggle('on', !!url);
+    if (!url) return;
+    var n = Object.keys(cart).length;
+    var txt = n ? 'Hola! Te paso ' + (n === 1 ? 'la foto' : 'las ' + n + ' fotos') + ' que elegí para vos. Las podés ver y comprar acá:'
+                : 'Hola! Acá están todas tus fotos del evento. Las podés ver y comprar acá:';
+    $('shareWa').href = 'https://wa.me/?text=' + encodeURIComponent(txt + ' ' + url);
+    $('shareCopy').onclick = function () {
+      var done = function () { $('shareCopy').textContent = 'LINK COPIADO'; setTimeout(function () { $('shareCopy').textContent = 'COPIAR LINK'; }, 1600); };
+      if (navigator.clipboard) navigator.clipboard.writeText(url).then(done, function () { prompt('Copiá el link:', url); });
+      else prompt('Copiá el link:', url);
+    };
+  }
+
+  // Página con una selección de fotos armada para un cliente (#/sel/id1.id2...)
+  function renderSelection(list) {
+    var photos = list.split('.').map(function (id) { return photoById[id]; }).filter(Boolean);
+    parkCart();
+    var firstNode = null;
+    Object.keys(nodes).some(function (id) { if (nodes[id].photos.indexOf(photos[0]) >= 0) { firstNode = id; return true; } });
+    var evId = firstNode ? pathOf(firstNode)[0].id : null;
+    renderStrip(evId);
+    setCobertura(evId ? clean(nodes[evId].name) : '');
+    showCart(true);
+    document.title = 'Fotos seleccionadas · Lucas Martinez';
+    currentPhotos = photos;
+    track('ver_seleccion', { fotos: photos.length });
+    view.innerHTML =
+      '<div class="wrap"><section class="main">' +
+      '<nav class="crumbs" aria-label="Ruta"><a href="#/">Eventos</a>' + (evId ? '<span class="sep" aria-hidden="true">/</span><a href="#/f/' + evId + '">' + esc(clean(nodes[evId].name)) + '</a>' : '') + '<span class="sep" aria-hidden="true">/</span><span class="here">Selección</span></nav>' +
+      '<div class="gridhead"><h1 class="h2">Fotos elegidas para vos</h1>' +
+      (photos.length ? '<span style="display:flex;align-items:center;gap:20px;flex-wrap:wrap"><span class="hint">' + photos.length + (photos.length === 1 ? ' FOTO' : ' FOTOS') + ' · TOCÁ LAS QUE QUIERAS COMPRAR</span><button class="clear" type="button" data-clear-folder id="fClear" hidden>DESELECCIONAR ESTAS FOTOS</button></span>' : '') + '</div>' +
+      (photos.length ? '<div class="photos">' + photos.map(photoTile).join('') + '</div>'
+        : '<p class="lead" style="margin-top:18px">Estas fotos ya no están disponibles. Escribinos por WhatsApp y te ayudamos.</p>') +
+      '</section><div id="cartSlot" style="flex:1 1 300px;max-width:380px"></div></div>';
+    placeCart();
+    renderCart();
+    window.scrollTo(0, 0);
+  }
+
+  function searchOn(eventId) {
+    var ev = eventId && nodes[eventId];
+    if (ev && ev.s === false) return false; // el buscador no está activo en este evento
     if (catalog && catalog.search) return true;
     try { return localStorage.getItem('lma_buscador') === '1'; } catch (x) { return false; }
   }
+  function progressNote(eventId) {
+    var ai = nodes[eventId] && nodes[eventId].ai;
+    if (!ai || !ai.j) return '';
+    var when = ai.h < 1 ? 'en menos de 1 h' : 'en aprox. ' + Math.ceil(ai.h) + ' h';
+    return '<div class="nprog" role="status"><span class="spin" aria-hidden="true"></span><div style="flex:1;min-width:0">' +
+      '<p><b>IDENTIFICANDO NÚMEROS CON IA · ' + ai.p + '%</b>' +
+      'Estamos analizando las fotos de este evento. Si todavía no aparece la tuya, volvé a buscar ' + when + ' (o recorré el listado de fotos).</p>' +
+      '<div class="bar" aria-hidden="true"><i style="width:' + ai.p + '%"></i></div></div></div>';
+  }
+
   function searchBox(eventId, value) {
     return '<div class="nrow">' +
       '<span class="nlabel" aria-hidden="true">BUSCAR POR NÚMERO</span>' +
@@ -511,6 +591,7 @@ a.btn.ghost,a.btn.ghost:hover{color:#fff}
       '<input id="nq" name="q" type="search" inputmode="numeric" autocomplete="off" placeholder="Ej: 301" value="' + esc(value) + '">' +
       '<button type="submit">BUSCAR</button></form>' +
       '<p class="nbeta"><b>BETA</b>Desarrollo en beta: puede que no reconozca todas las fotos. Si no aparece alguna, buscala en el listado de fotos :)</p>' +
+      progressNote(eventId) +
       '</div>';
   }
   function renderSearch(eventId, q) {
@@ -594,6 +675,7 @@ a.btn.ghost,a.btn.ghost:hover{color:#fff}
 
     if (!paying) { $('payBtn').textContent = MP_LABEL; $('trBtn').innerHTML = TR_LABEL; }
     $('payBtn').disabled = n === 0 || paying;
+    updateShare();
     var tr = catalog && catalog.pay && catalog.pay.transfer;
     $('trWrap').hidden = !tr;
     if (tr) {
@@ -779,8 +861,10 @@ a.btn.ghost,a.btn.ghost:hover{color:#fff}
     if (!catalog) return; // se dibuja cuando terminan de cargar los eventos
     var m = location.hash.match(/^#\/f\/([\w-]+)/);
     var b = location.hash.match(/^#\/b\/([\w-]+)\/(\d+)/);
+    var sel = location.hash.match(/^#\/sel\/([\w.-]+)/);
     closeLb();
-    if (b) renderSearch(b[1], b[2]);
+    if (sel) renderSelection(sel[1]);
+    else if (b) renderSearch(b[1], b[2]);
     else if (m) renderFolder(m[1]); else renderHome();
   }
 
@@ -834,6 +918,8 @@ a.btn.ghost,a.btn.ghost:hover{color:#fff}
   (function () {
     var v = new URLSearchParams(location.search).get('buscador');
     try { if (v === '1') localStorage.setItem('lma_buscador', '1'); if (v === '0') localStorage.removeItem('lma_buscador'); } catch (x) {}
+    var a = new URLSearchParams(location.search).get('admin');
+    try { if (a === '1') { localStorage.setItem('lma_admin', '1'); localStorage.setItem('lma_buscador', '1'); } if (a === '0') localStorage.removeItem('lma_admin'); } catch (x) {}
   })();
   $('trBtn').addEventListener('click', function () { onPay(null, 'transfer'); });
   $('bOpen').addEventListener('click', openSheet);
